@@ -17,4 +17,11 @@ if compgen -G "$R/rgf/20??/*.xls" > /dev/null; then
 fi
 mkdir -p site
 python3 scripts/montar.py src/portal.html src/base.css dados/receita.json site/index.html dados/despesa.json
+# o GitHub Pages serve o arquivo como está: envolve o portal num documento HTML completo
+python3 - <<'PY'
+p = 'site/index.html'; t = open(p, encoding='utf8').read()
+if not t.lstrip().lower().startswith('<!doctype'):
+    t = '<!doctype html>\n<html lang="pt-BR">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' + t.replace('</style>', '</style>\n</head>\n<body>', 1) + '\n</body>\n</html>\n'
+    open(p, 'w', encoding='utf8').write(t)
+PY
 cp site/index.html index.html

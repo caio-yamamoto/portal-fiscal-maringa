@@ -1,6 +1,12 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Portal Fiscal de Maringá</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&display=swap">
 <style>
+[hidden]{display:none!important}
 
 /* Layout: cabeçalho com seletor de ano e abas no topo; cada aba é um painel de leitura rápida — resumo em cima, tabela de conferência embaixo. */
 :root{
@@ -393,6 +399,8 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
 #mponte tr.res td{font-weight:650;border-top:2px solid var(--line-2)}
 @media (prefers-reduced-motion:reduce){.tg .ar{transition:none}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <div class="stick">
@@ -1635,3 +1643,6 @@ let inicial = false; addEventListener('hashchange',show); show(); clamp(); inici
 const stick = document.querySelector('.stick');
 addEventListener('scroll', () => { const y = window.scrollY; if(y>140) stick.classList.add('compact'); else if(y<10) stick.classList.remove('compact'); }, {passive:true});
 </script>
+
+</body>
+</html>
