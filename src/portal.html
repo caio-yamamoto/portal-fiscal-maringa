@@ -1,0 +1,1498 @@
+<title>Portal Fiscal de Maringá</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+__CSS__
+/* ===== Versão clean: menos caixas, uma barra de filtros, cor só onde há informação ===== */
+.wrap{max-width:none;padding-inline:clamp(16px,2.5vw,40px);gap:28px}
+header.top{padding:14px 20px;align-items:center}
+header.top h1{font-size:1.35rem}
+header.top .tag{font-size:.78rem;color:var(--band-sub)}
+.controls{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.ctl{display:flex;align-items:center;gap:8px}
+.ctl .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--band-sub)}
+#msel{font:600 .9rem var(--body);padding:7px 30px 7px 12px;border-radius:8px;border:1px solid var(--band-line);background:var(--band-on);color:var(--band-on-ink);cursor:pointer}
+.stick.compact header.top{padding:8px 16px}
+.stick.compact header.top .tag{display:none}
+nav.tabs a.ext{margin-left:auto;color:var(--accent);font-weight:600;position:relative}
+nav.tabs a.ext:hover{text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+section.tab{gap:32px}
+.sec{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sec-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sec-h h2{font-size:1.15rem}
+.sec-h .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* informação em ícone */
+.info{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--line-2);background:var(--surface);color:var(--muted);font:700 .72rem var(--body);cursor:help;padding:0;flex:0 0 auto}
+.info:hover,.info:focus-visible{color:var(--accent);border-color:var(--accent);outline:none}
+.info::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(calc(-50% + var(--dx,0px)));width:max-content;max-width:min(340px,calc(100vw - 32px));background:var(--ink);color:var(--bg);font:400 .78rem/1.45 var(--body);padding:8px 10px;border-radius:6px;display:none;pointer-events:none;z-index:20;white-space:normal;text-align:left}
+.info:hover::after,.info:focus-visible::after{display:block}
+
+/* barra de filtros */
+.filtros{display:flex;flex-direction:column;gap:10px;padding-bottom:4px}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
+.frow label{display:flex;flex-direction:column;gap:4px;min-width:0}
+.frow .note{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.frow select{width:100%;min-width:0;font:500 .88rem var(--body);padding:8px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink)}
+.frow select:disabled{opacity:.55}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font:500 .82rem var(--body);padding:6px 12px;border:1px solid var(--line-2);border-radius:999px;background:var(--surface);color:var(--ink-2);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.limpar{font:600 .8rem var(--body);background:none;border:0;color:var(--accent);cursor:pointer;padding:6px 4px}
+.limpar[hidden]{display:none}
+details.fbox>summary{display:none}
+@media (max-width:720px){table.clean td.nm,table.clean th.nm{min-width:170px}}
+@media (max-width:720px){
+  details.fbox>summary{display:flex;align-items:center;justify-content:space-between;list-style:none;cursor:pointer;font-weight:600;padding:10px 14px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface)}
+  details.fbox>summary::-webkit-details-marker{display:none}
+  details.fbox[open]>summary{margin-bottom:10px}
+}
+
+/* busca de fonte */
+.fl{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fl .note{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.combo{position:relative}
+.combo input{width:100%;font:500 .88rem var(--body);padding:8px 32px 8px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink)}
+.combo input::placeholder{color:var(--ink-2);opacity:1}
+.combo input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.combo .cx{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--muted);cursor:pointer;font-size:.85rem;padding:4px 6px}
+.combo .cx:hover{color:var(--ink)}
+.combo ul{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;margin:0;padding:4px;list-style:none;max-height:320px;overflow:auto;background:var(--surface);border:1px solid var(--line-2);border-radius:8px;box-shadow:0 10px 28px rgba(0,0,0,.14)}
+.combo li{padding:7px 10px;border-radius:6px;cursor:pointer;font-size:.86rem;line-height:1.35}
+.combo li .k{font-variant-numeric:tabular-nums;font-weight:600;margin-right:6px}
+.combo li[aria-selected="true"],.combo li:hover{background:var(--accent-soft)}
+.combo li.nada{color:var(--muted);cursor:default;background:none}
+/* números principais */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px 32px}
+.kpi{display:flex;flex-direction:column;gap:2px;padding-left:14px;border-left:3px solid var(--line-2)}
+.kpi.r{border-left-color:var(--s1)}
+.kpi .label{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:var(--display);font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi .c{font-size:.84rem;color:var(--ink-2)}
+.kpi .c b{font-weight:600}
+.prog{display:flex;flex-direction:column;gap:6px;max-width:900px}
+.prog .t{font-size:.86rem;color:var(--ink-2)}
+:root{--mark:#d4860b}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mark:#f2b84b}}
+:root[data-theme="dark"]{--mark:#f2b84b}
+.pbar{position:relative;padding-top:4px}
+.pbar.com{padding-top:30px}
+.pbar .trk{height:14px;border-radius:7px;background:var(--track);overflow:hidden}
+.pbar .trk i{display:block;height:100%;background:var(--s1);border-radius:7px 0 0 7px}
+.pbar .mk{position:absolute;bottom:-5px;top:24px;width:4px;margin-left:-2px;border-radius:2px;background:var(--mark);box-shadow:0 0 0 2px var(--bg)}
+.pbar .mkl{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;font-size:.78rem;color:var(--ink);background:var(--surface);border:1.5px solid var(--mark);border-radius:6px;padding:1px 8px}
+.pbar .mkl.dir{transform:translateX(calc(-100% + 12px))}
+.pbar .mkl.esq{transform:translateX(-12px)}
+.prog .leg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.8rem;color:var(--ink-2);margin-top:4px}
+.prog .leg>span{display:inline-flex;align-items:center;gap:6px}
+.prog .leg i.sq{width:12px;height:12px;border-radius:3px;background:var(--s1)}
+.prog .leg i.ln{width:4px;height:14px;border-radius:2px;background:var(--mark)}
+.good-t{color:var(--good-ink)} .warn-t{color:var(--warn-ink)} .crit-t{color:var(--crit-ink)}
+
+/* destaques */
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}
+.mc{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:inherit}
+.mc:hover{border-color:var(--accent)}
+.mc[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.mc .n{font-size:.78rem;font-weight:600;color:var(--ink-2)}
+.mc .v{font-family:var(--display);font-size:1.05rem;font-weight:700;font-variant-numeric:tabular-nums}
+.mc .p{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* gráfico */
+:root{--prev:#b7cbe0;--s1:#155c98}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--prev:#3d5672;--s1:#5ea3e0}}
+:root[data-theme="dark"]{--prev:#3d5672;--s1:#5ea3e0}
+.legend i.sw{width:12px;height:12px;border-radius:3px}
+.seg2{display:inline-flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden}
+.seg2 button{font:600 .8rem var(--body);padding:6px 12px;border:0;background:var(--surface);color:var(--ink-2);cursor:pointer}
+.seg2 button+button{border-left:1px solid var(--line-2)}
+.seg2 button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.chart svg{height:280px}
+
+/* tabelas enxutas */
+.tablebox{border-color:var(--line);border-radius:10px}
+table.clean th,table.clean td{border-bottom:1px solid var(--line);padding:10px 12px}
+table.clean thead th{background:var(--surface);border-bottom:1px solid var(--line-2)}
+table.clean tbody tr:hover td{background:var(--bg)}
+table.clean td.cod{color:var(--muted);font-size:.78rem;white-space:nowrap;min-width:0;width:1%}
+table.clean th.cod{width:1%}
+table.clean td.nm,table.clean th.nm{white-space:normal;min-width:240px;text-align:left}
+table.clean td.cod,table.clean th.cod{text-align:left}
+table.clean tr.n0 td{font-weight:600}
+#dtab td,#dtab th{padding-top:5px;padding-bottom:5px}
+#dtab tr td.cod{font-size:.72rem!important;opacity:.8}
+#dtab tr.n0 td{background:var(--hl,rgba(127,127,127,.07));font-weight:650;border-top:1px solid var(--line)}
+#dtab tr.n1 td.nm,#dtab tr.n2 td.nm{font-weight:400}
+#dtab tr.n3 td{font-size:.84rem}
+#dtab tr.n4 td{font-size:.82rem;color:var(--muted)}
+#dtab td.dbar .bt{display:block;width:84px;height:3px;margin:3px 0 0 auto;border-radius:2px;background:var(--line);overflow:hidden}
+#dtab td.dbar .bt i{display:block;height:100%;background:var(--s1)}
+#dtab td{vertical-align:middle}
+table.clean tr.n1 td.nm{font-weight:500}
+table.clean td.mut{color:var(--muted)}
+.xtra[hidden]{display:none!important}
+.tg{display:inline-flex;align-items:flex-start;gap:6px;cursor:pointer;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left}
+.tg .ar{display:inline-block;width:12px;flex:0 0 12px;color:var(--muted);transition:transform .12s}
+.tg[aria-expanded="true"] .ar{transform:rotate(90deg)}
+.tg .sp{display:inline-block;width:12px;flex:0 0 12px}
+span.tg{vertical-align:top}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools input{font:inherit;font-size:.88rem;padding:8px 12px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink);flex:1 1 260px;min-width:0}
+.btn{font:600 .8rem var(--body);padding:7px 12px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink-2);cursor:pointer}
+.btn:hover{color:var(--ink);border-color:var(--accent)}
+.btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.neg{color:var(--crit-ink)} .pos{color:var(--good-ink)}
+mark{background:var(--warn-bg);color:inherit;border-radius:2px}
+.dif{display:inline-flex;align-items:center;gap:6px}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid var(--line-2);border-radius:6px;background:var(--surface);color:var(--accent);cursor:pointer;padding:0}
+.ib:hover{border-color:var(--accent);background:var(--accent-soft)}
+
+/* janela de detalhamento */
+dialog#det{width:min(1000px,96vw);max-height:88vh;overflow:auto;border:1px solid var(--line-2);border-radius:12px;padding:20px;background:var(--bg);color:var(--ink);box-shadow:0 20px 50px rgba(0,0,0,.25)}
+dialog#det::backdrop{background:rgba(10,20,30,.45)}
+dialog#det[open]{display:flex;flex-direction:column;gap:14px}
+.dlg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+#det table{font-size:.8rem}
+#det th,#det td{padding:8px 9px}
+#det table td:first-child{white-space:normal;min-width:0;width:50%}
+#det .tablebox{min-width:0}
+#detfecha{white-space:nowrap}
+.cd{display:block;font-size:.72rem;color:var(--muted)}
+
+footer{max-width:100ch}
+.ord{display:inline-flex;align-items:center;gap:6px}.ord select{font:500 .82rem var(--body);padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink)}
+#xtab td.nm{min-width:280px}
+button.srt{all:unset;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;white-space:nowrap}
+button.srt:hover,button.srt.on{color:var(--ink)}
+button.srt:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+button.srt span{color:var(--muted);font-size:.85em}
+.alerta{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--crit-bg);color:var(--crit-ink);font-weight:700;border:1px solid var(--crit)}
+.alerta::before{content:"▼ ";font-size:.75em}
+#xtab tr.rneg td{background:color-mix(in srgb, var(--crit-bg) 45%, var(--surface))}
+#xtab tr.rneg td:first-child{box-shadow:inset 4px 0 0 var(--crit)}
+.alerta.am{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn)}
+.alerta.am::before{content:"▲ "}
+.alerta.ex::before{content:""}
+.alerta.ex{padding:1px 8px;font-weight:600}
+#xtab tr.ramb td{background:color-mix(in srgb, var(--warn-bg) 50%, var(--surface))}
+#xtab tr.ramb td:first-child{box-shadow:inset 4px 0 0 var(--warn)}
+table.clean tr.sub-h td{font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+table.clean td.warn-t{color:var(--warn-ink)} table.clean td.crit-t{color:var(--crit-ink)}
+.meds{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px 40px}
+.med{display:flex;flex-direction:column;gap:6px}
+.med .mt{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;color:var(--ink-2)}
+.med .mt b{font-family:var(--display);font-size:1.15rem}
+.med .pbar .mk{top:-5px;bottom:-5px}
+.med .pbar .mk.al{background:var(--warn)}
+.med .leg{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.8rem;color:var(--ink-2)}
+.med .leg>span{display:inline-flex;align-items:center;gap:6px}
+.med .leg i.sq{width:12px;height:12px;border-radius:3px;background:var(--s1)}
+.med .leg i.ln{width:4px;height:14px;border-radius:2px}
+.med .leg i.al{background:var(--warn)} .med .leg i.lm{background:var(--crit)}
+.med .pbar .mkl.lim{border-color:var(--crit)}
+.med .pbar .mk:not(.al){background:var(--crit)}
+.med .note{font-size:.78rem}
+th.csel,td.csel{background:color-mix(in srgb, var(--accent-soft) 60%, transparent)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.vnota summary{cursor:pointer;font-weight:600;font-size:.86rem;color:var(--ink-2)}
+.vnota p{margin-top:8px;max-width:110ch}
+table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clean th.pt{padding-left:4px}
+.tablebox.rolagem{max-height:min(65vh,620px);overflow:auto;overscroll-behavior:contain}
+.tablebox.rolagem thead th{position:sticky;top:0;z-index:2;box-shadow:inset 0 -1px 0 var(--line-2)}
+.tablebox.rolagem tr.tot td{position:sticky;bottom:0;z-index:1;background:var(--surface);box-shadow:inset 0 2px 0 var(--line-2)}
+.dcorpo{display:flex;flex-direction:column;gap:32px}
+.dcorpo[hidden]{display:none}
+:root{--liq:#5f93c9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--liq:#3f78b4}}
+:root[data-theme="dark"]{--liq:#3f78b4}
+.pbar .trk.stk{position:relative}
+.pbar .trk.stk i{position:absolute;left:0;top:0;bottom:0;border-radius:7px 0 0 7px}
+.prog .leg i.sq.e{background:var(--prev)} .prog .leg i.sq.l{background:var(--liq)}
+#dagr button{padding:6px 11px}
+@media (max-width:720px){#dagr{order:3;width:100%;display:grid;grid-template-columns:repeat(4,1fr)}#dagr button{padding:7px 4px}}
+.soon{display:flex;flex-direction:column;gap:6px;max-width:60ch}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.lcard.lbig{grid-column:1/-1}
+.lcard .lh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.lcard .lt{font-size:.92rem;color:var(--ink-2);font-weight:500}
+.lcard .lv{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.lcard .lv b{font-family:var(--display);font-size:1.7rem;line-height:1.1;color:var(--ink)}
+.lcard .lv span{font-size:.85rem;color:var(--muted)}
+.lcard .lx{font-size:.84rem;color:var(--ink-2);margin:0;font-weight:400}
+#lend{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.lcard .lb{font-size:.76rem;color:var(--muted);margin:0}
+.lst{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:.76rem;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid transparent}
+.lst.ok{background:var(--good-bg);color:var(--good-ink)} .lst.at{background:var(--warn-bg);color:var(--warn-ink)} .lst.ex{background:var(--crit-bg);color:var(--crit-ink)} .lst.pa{background:var(--track);color:var(--ink-2)}
+.lbar{position:relative;padding:6px 0 4px}
+.lbar .trk{height:12px;border-radius:6px;background:var(--track);overflow:hidden}
+.lbar .trk i{display:block;height:100%;background:var(--s1);border-radius:6px 0 0 6px}
+.lbar .mk{position:absolute;top:1px;bottom:-1px;width:3px;margin-left:-1.5px;border-radius:2px;box-shadow:0 0 0 2px var(--surface)}
+.lbar .mk.lm{background:var(--crit)} .lbar .mk.pr{background:#e8811a} .lbar .mk.al{background:var(--warn)} .lbar .mk.mn{background:var(--ink)} .lbar .mk.an{background:var(--muted);width:2px;top:4px;bottom:2px;opacity:.8}
+.lleg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.78rem;color:var(--ink-2)}
+.lleg>span{display:inline-flex;align-items:center;gap:6px}
+.lleg i{width:3px;height:13px;border-radius:2px;display:inline-block}
+.lleg i.sq{width:11px;height:11px;border-radius:3px;background:var(--s1)}
+.lleg i.lm{background:var(--crit)} .lleg i.pr{background:#e8811a} .lleg i.al{background:var(--warn)} .lleg i.mn{background:var(--ink)} .lleg i.an{background:var(--muted)}
+.lresumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:8px 24px}
+.lresumo .lr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.lresumo .lr span:first-child{color:var(--ink-2)}
+.lresumo .lr b{font-family:var(--display);font-size:1rem}
+#lbim td.fut{color:var(--muted)}
+.mline{position:relative;height:46px;margin:4px 0 0}
+.mline .ax{position:absolute;left:0;right:0;top:22px;height:2px;background:var(--line-2);border-radius:1px}
+.mline .z{position:absolute;top:14px;width:1px;height:18px;background:var(--muted)}
+.mline .zt{position:absolute;top:34px;font-size:.7rem;color:var(--muted);transform:translateX(-50%)}
+.mline .seg{position:absolute;top:20px;height:6px;border-radius:3px;background:var(--good);opacity:.35}
+.mline .seg.neg{background:var(--crit)}
+.mline .mm{position:absolute;top:10px;width:3px;height:26px;margin-left:-1.5px;border-radius:2px;background:var(--crit);box-shadow:0 0 0 2px var(--surface)}
+.mline .pa{position:absolute;top:17px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--surface);border:2px solid var(--muted)}
+.mline .rv{position:absolute;top:15px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--s1);box-shadow:0 0 0 2px var(--surface)}
+.lleg i.dot{width:11px;height:11px;border-radius:50%;background:var(--s1)} .lleg i.dot.pa{background:var(--surface);border:2px solid var(--muted);width:9px;height:9px}
+#mponte tr.res td{font-weight:650;border-top:2px solid var(--line-2)}
+@media (prefers-reduced-motion:reduce){.tg .ar{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="stick">
+  <header class="top">
+    <div>
+      <h1>Portal Fiscal de Maringá</h1>
+      <span class="tag" id="htag">Prefeitura, sem a Maringá Previdência</span>
+    </div>
+    <div class="controls">
+      <div class="ctl"><span class="lbl" id="yl">Exercício</span><div class="seg" role="group" aria-labelledby="yl" id="years"></div></div>
+      <label class="ctl"><span class="lbl" id="mlbl">Acumulado até</span><select id="msel" aria-label="Acumulado até o mês"></select></label>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="Seções">
+    <a href="#receita" data-nav="receita">Receita</a>
+    <a href="#despesa" data-nav="despesa">Despesa</a>
+    <a href="#rxd" data-nav="rxd">Receita × Despesa</a>
+    <a href="#divida" data-nav="divida">Dívida consolidada</a>
+    <a href="#metas" data-nav="metas">Metas fiscais</a>
+    <a href="#limites" data-nav="limites">Limites legais</a>
+    <a class="ext" href="https://app.powerbi.com/view?r=eyJrIjoiYzAxZjU0ZjMtY2MwMS00MDI4LTkzN2UtYTI5YzNjZjU4MmNmIiwidCI6IjkwMjYwOTNlLTNhZTYtNDBmMi1hMWZmLWFlODkxNDNhMDI5MyJ9" target="_blank" rel="noopener noreferrer">Dashboard no Power BI <span aria-hidden="true">↗</span><span class="sr">(abre em nova aba)</span></a>
+  </nav>
+  </div>
+
+  <section class="tab" data-sec="receita">
+    <details class="fbox" id="fbox" open>
+      <summary><span id="fsum">Filtros</span><span aria-hidden="true">▾</span></summary>
+      <div class="filtros">
+        <div class="chips" id="fchips" role="group" aria-label="Receita"></div>
+        <div class="frow">
+          <label><span class="note">Categoria e origem</span><select id="forig"></select></label>
+          <label><span class="note">Natureza</span><select id="fnat"></select></label>
+          <div class="fl"><label class="note" for="ffonq">Fonte de recursos</label><div class="combo"><input id="ffonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ffonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="ffonx" aria-label="Limpar fonte" hidden>✕</button><ul id="ffonl" role="listbox" aria-label="Fontes de recursos" hidden></ul></div><select id="ffon" hidden aria-hidden="true" tabindex="-1"></select></div>
+        </div>
+        <div><button type="button" class="limpar" id="flimpa" hidden>Limpar filtros</button></div>
+      </div>
+    </details>
+
+    <div class="sec">
+      <div class="sec-h"><h2 id="kt">Resumo</h2><button type="button" class="info" data-tip="Previsto: cronograma mensal de arrecadação da lei orçamentária. Realizado: arrecadação líquida de restituições, descontos e da retenção para o FUNDEB. Os filtros acima valem para toda a página." aria-label="Como ler estes números">i</button></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="prog" id="prog"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2 id="ct">Previsto e realizado</h2><button type="button" class="info" id="cinfo" aria-label="Sobre o gráfico">i</button>
+        <div class="right"><div class="seg2" id="rmodo" role="group" aria-label="Modo do gráfico"><button type="button" data-modo="mensal" aria-pressed="true">Mensal</button><button type="button" data-modo="acumulado" aria-pressed="false">Acumulado</button></div></div></div>
+      <div class="legend" id="lg"></div>
+      <div class="chart" id="ch"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Principais tributos e transferências</h2><button type="button" class="info" data-tip="Clique em um item para filtrar a página por ele. A barra mostra o realizado sobre o previsto no período. As transferências estão líquidas da retenção para o FUNDEB." aria-label="Sobre os principais tributos">i</button></div>
+      <div class="mini" id="mini"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Por natureza de receita</h2><button type="button" class="info" data-tip="Clique em uma linha para abrir os níveis abaixo dela. A busca procura por nome ou código." aria-label="Sobre a tabela por natureza">i</button>
+        <div class="right"><button type="button" class="btn" id="natmais" aria-pressed="false">Mais colunas</button></div></div>
+      <div class="tools"><input type="search" id="qnat" placeholder="Buscar natureza: IPTU, multas, 1.7.2…" aria-label="Buscar natureza de receita"><button class="btn" type="button" id="abrenat">Abrir tudo</button><button class="btn" type="button" id="fechanat">Recolher</button></div>
+      <div class="tablebox"><table class="clean tree" id="tnat"></table></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Mês a mês</h2><button type="button" class="info" data-tip="A lupa ao lado da diferença abre o detalhamento do mês: quais naturezas de receita ficaram acima ou abaixo do previsto." aria-label="Sobre a tabela mês a mês">i</button>
+        <div class="right"><button type="button" class="btn" id="mesmais" aria-pressed="false">Mais colunas</button></div></div>
+      <div class="tablebox"><table class="clean" id="tmes"></table></div>
+    </div>
+  </section>
+
+  <section class="tab" data-sec="despesa" hidden>
+    <div class="soon" id="dvazio" hidden><h2>Despesa</h2><p class="sub" id="dvaziot"></p></div>
+    <div id="dcorpo" class="dcorpo">
+    <details class="fbox" id="dfbox" open>
+      <summary><span id="dfsum">Filtros</span><span aria-hidden="true">▾</span></summary>
+      <div class="filtros">
+        <div class="frow">
+          <label><span class="note">Secretaria</span><select id="dorg"></select></label>
+          <label><span class="note">Unidade orçamentária</span><select id="dun"></select></label>
+          <div class="fl"><label class="note" for="dpaq">Projeto/atividade</label><div class="combo"><input id="dpaq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dpal" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dpax" aria-label="Limpar projeto/atividade" hidden>✕</button><ul id="dpal" role="listbox" aria-label="Projetos e atividades" hidden></ul></div><select id="dpa" hidden aria-hidden="true" tabindex="-1"></select></div>
+          <label><span class="note">Natureza da despesa</span><select id="dnat"></select></label>
+          <div class="fl"><label class="note" for="dfonq">Fonte de recursos</label><div class="combo"><input id="dfonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dfonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dfonx" aria-label="Limpar fonte" hidden>✕</button><ul id="dfonl" role="listbox" aria-label="Fontes de recursos" hidden></ul></div><select id="dfon" hidden aria-hidden="true" tabindex="-1"></select></div>
+        </div>
+        <div><button type="button" class="limpar" id="dlimpa" hidden>Limpar filtros</button></div>
+      </div>
+    </details>
+
+    <div class="sec">
+      <div class="sec-h"><h2 id="dkt">Resumo</h2><button type="button" class="info" data-tip="Dotação atualizada: orçamento inicial mais os créditos adicionais, menos as anulações, na posição do fim do mês. Empenhado: despesa contratada. Liquidado: bem entregue ou serviço prestado. Pago: valor que saiu do caixa. Os filtros acima valem para toda a página." aria-label="Como ler estes números">i</button></div>
+      <div class="kpis" id="dkpis"></div>
+      <div class="prog" id="dprog"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2 id="dct">Empenhado e liquidado</h2><button type="button" class="info" id="dcinfo" aria-label="Sobre o gráfico">i</button>
+        <div class="right"><div class="seg2" id="dmodo" role="group" aria-label="Modo do gráfico"><button type="button" data-modo="mensal" aria-pressed="true">Mensal</button><button type="button" data-modo="acumulado" aria-pressed="false">Acumulado</button></div></div></div>
+      <div class="legend" id="dlg"></div>
+      <div class="chart" id="dch"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Por grupo de despesa</h2><button type="button" class="info" data-tip="Clique em um grupo para filtrar a página por ele; segure Ctrl (ou ⌘ no Mac) para somar mais de um. O valor é o liquidado e a barra mostra o liquidado sobre a dotação atualizada." aria-label="Sobre os grupos de despesa">i</button></div>
+      <div class="mini" id="dmini"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Execução por</h2><div class="seg2" id="dagr" role="group" aria-label="Agrupar a tabela por"><button type="button" data-a="org">Secretaria</button><button type="button" data-a="fun">Função</button><button type="button" data-a="nat">Natureza</button><button type="button" data-a="fon">Fonte</button></div><button type="button" class="info" data-tip="Clique em uma linha para abrir os níveis abaixo dela. Secretaria abre em unidade orçamentária, projeto/atividade, elemento, desdobramento/subdesdobramento e fonte de recursos; Função abre em subfunções e ações; Natureza abre em grupo, modalidade, elemento e subelemento; Fonte abre em grupo e elemento. % comprometido = (empenhado + reservado) ÷ dotação atualizada, comparado com a parte do ano já decorrida. Em vermelho, execução baixa: menos da metade do esperado para o período. Em amarelo, atenção: entre metade e três quartos do esperado. Só são marcadas as linhas com sobra de pelo menos R$ 10 mil; a reserva de contingência não entra. O botão Só execução abaixo do esperado mostra apenas essas linhas. No subelemento não há dotação: o orçamento é fixado por elemento. A barrinha sob a dotação atualizada compara a linha com a maior do mesmo nível; passe o mouse para ver o percentual do total. Em Mais colunas aparecem dotação inicial, pago, % liquidado e os saldos; o saldo a empenhar se divide em reservado (já comprometido em reserva de dotação) e saldo disponível." aria-label="Sobre a tabela de execução">i</button>
+        <div class="right"><button type="button" class="btn" id="dbaixa" aria-pressed="false">Só execução abaixo do esperado</button><button type="button" class="btn" id="dmais" aria-pressed="false">Mais colunas</button></div></div>
+      <div class="tools"><input type="search" id="dq" placeholder="Buscar por nome ou código" aria-label="Buscar na tabela de execução"><button class="btn" type="button" id="dabre">Abrir tudo</button><button class="btn" type="button" id="dfecha">Recolher</button></div>
+      <div class="tablebox rolagem" id="dtabbox"><table class="clean tree" id="dtab"></table></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Mês a mês</h2><button type="button" class="info" data-tip="Valores de cada mês. A dotação inicial é a da lei orçamentária; a atualizada é a posição no fim do mês; com Mais colunas aparecem os acumulados desde janeiro." aria-label="Sobre a tabela mês a mês">i</button>
+        <div class="right"><button type="button" class="btn" id="dmesmais" aria-pressed="false">Mais colunas</button></div></div>
+      <div class="tablebox"><table class="clean" id="dmes"></table></div>
+    </div>
+    </div>
+  </section>
+  <section class="tab" data-sec="rxd" hidden>
+    <div class="soon" id="xvazio" hidden><h2>Receita × Despesa</h2><p class="sub" id="xvaziot"></p></div>
+    <div id="xcorpo" class="dcorpo">
+    <div class="filtros"><div class="frow">
+      <div class="fl"><label class="note" for="xfonq">Fonte de recursos (só do exercício)</label><div class="combo"><input id="xfonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="xfonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="xfonx" aria-label="Limpar fonte" hidden>✕</button><ul id="xfonl" role="listbox" aria-label="Fontes de recursos" hidden></ul></div><select id="xfon" hidden aria-hidden="true" tabindex="-1"></select></div>
+    </div></div>
+    <div class="sec">
+      <div class="sec-h"><h2 id="xkt">Resumo</h2><button type="button" class="info" data-tip="Compara, fonte a fonte, o que foi arrecadado no ano com o que foi empenhado, liquidado e pago com esses recursos. Só entram as fontes do exercício: a despesa feita com superávit de anos anteriores e a reserva de contingência ficam de fora. O empenho de contratos anuais costuma se concentrar no início do ano, por isso a comparação mais justa é com o liquidado." aria-label="Como ler estes números">i</button></div>
+      <div class="kpis" id="xkpis"></div>
+      <div class="prog" id="xprog"></div>
+      <p class="note" id="xsup"></p>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Arrecadado, empenhado e liquidado</h2><button type="button" class="info" data-tip="No modo Mensal, o traço escuro é o arrecadado no mês; a barra larga é o empenhado e a estreita, o liquidado. No Acumulado, as três linhas somam desde janeiro." aria-label="Sobre o gráfico">i</button>
+        <div class="right"><div class="seg2" id="xmodo" role="group" aria-label="Modo do gráfico"><button type="button" data-modo="mensal" aria-pressed="true">Mensal</button><button type="button" data-modo="acumulado" aria-pressed="false">Acumulado</button></div></div></div>
+      <div class="legend" id="xlg"></div>
+      <div class="chart" id="xch"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Por fonte de recursos</h2><button type="button" class="info" data-tip="Clique no título de uma coluna para ordenar; clique de novo para inverter a ordem. Clique em uma fonte para ver as receitas que entraram nela e os grupos de despesa pagos com ela. Destaque amarelo (▲ no empenhado): empenhado acima do arrecadado. Destaque vermelho (▼ no saldo): liquidado acima do arrecadado, o caso mais grave. Ordene pelo Empenhado ou pelo Saldo para agrupar essas fontes." aria-label="Sobre a tabela por fonte">i</button>
+        <div class="right"><button type="button" class="btn" id="xmais" aria-pressed="false">Mais colunas</button></div></div>
+      <div class="tablebox rolagem"><table class="clean tree" id="xtab"></table></div>
+    </div>
+    </div>
+  </section>
+  <section class="tab" data-sec="divida" hidden>
+    <div class="soon" id="vvazio" hidden><h2>Dívida consolidada</h2><p class="sub" id="vvaziot"></p></div>
+    <div id="vcorpo" class="dcorpo">
+    <div class="sec">
+      <div class="sec-h"><h2 id="vkt">Dívida consolidada</h2><button type="button" class="info" data-tip="Valores do Município, como exige a Lei de Responsabilidade Fiscal, tirados do Relatório de Gestão Fiscal (RGF). A dívida consolidada líquida é a dívida menos o caixa disponível; quando o caixa é maior que a dívida, ela fica negativa. O seletor de mês, nesta aba, escolhe o quadrimestre." aria-label="Como ler estes números">i</button></div>
+      <div class="kpis" id="vkpis"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Limites de endividamento</h2><button type="button" class="info" data-tip="Os percentuais são calculados sobre a receita corrente líquida ajustada (sem as emendas individuais da União), como no RGF." aria-label="Sobre os limites">i</button></div>
+      <div class="meds" id="vmed"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Evolução por quadrimestre</h2><button type="button" class="info" data-tip="Barras: dívida consolidada e caixa líquido deduzido. Linha: dívida consolidada líquida (dívida menos caixa); abaixo de zero, o caixa supera a dívida." aria-label="Sobre o gráfico">i</button></div>
+      <div class="legend" id="vlg"></div>
+      <div class="chart" id="vch"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Composição da dívida</h2><button type="button" class="info" data-tip="Saldo no fim do exercício anterior e no fim de cada quadrimestre do ano. A coluna destacada é o quadrimestre escolhido; a variação no ano compara esse quadrimestre com o saldo do fim do exercício anterior." aria-label="Sobre a composição">i</button></div>
+      <div class="tablebox"><table class="clean" id="vtab"></table></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Outros compromissos fora da dívida consolidada</h2><button type="button" class="info" data-tip="Valores informados no RGF que não entram no cálculo da dívida consolidada, como o passivo atuarial do regime próprio de previdência e os restos a pagar não processados." aria-label="Sobre outros compromissos">i</button></div>
+      <div class="tablebox"><table class="clean" id="vfora"></table></div>
+    </div>
+    <div class="sec" id="vpref">
+      <div class="sec-h"><h2 id="vpt">Prefeitura: pagamentos da dívida e operações de crédito</h2><button type="button" class="info" data-tip="Dados da Prefeitura, sem a Maringá Previdência: despesa liquidada nos grupos Juros e encargos da dívida (3.2) e Amortização da dívida (4.6), por ação, e receitas de operações de crédito (natureza 2.1) arrecadadas, até o fim do quadrimestre escolhido." aria-label="Sobre pagamentos e operações">i</button></div>
+      <div class="grid2">
+        <div class="tablebox"><table class="clean" id="vserv"></table></div>
+        <div class="tablebox"><table class="clean" id="voper"></table></div>
+      </div>
+    </div>
+    <details class="vnota" id="vnotabox"><summary>Nota explicativa do RGF</summary><p class="note" id="vnota"></p></details>
+    </div>
+  </section>
+  <section class="tab" data-sec="metas" hidden>
+    <div class="soon" id="mvazio" hidden><h2>Metas fiscais</h2><p class="sub" id="mvaziot"></p></div>
+    <div id="mcorpo" class="dcorpo">
+    <div class="sec">
+      <div class="sec-h"><h2 id="mkt">Metas fiscais</h2><button type="button" class="info" data-tip="Resultados primário e nominal do Município, sem o regime próprio de previdência (RPPS), comparados com as metas fixadas no Anexo de Metas Fiscais da Lei de Diretrizes Orçamentárias (LDO). Fonte: RREO, Anexo 6, publicado no Siconfi. O seletor do topo, nesta aba, escolhe o bimestre; os valores são acumulados desde janeiro." aria-label="Como ler estes números">i</button></div>
+      <div class="kpis" id="mkpis"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Cumprimento das metas</h2><button type="button" class="info" data-tip="Resultado primário: receitas primárias menos despesas primárias pagas (incluindo restos a pagar pagos). Mostra se as receitas do ano cobrem as despesas sem contar juros e dívida. Resultado nominal: primário mais os juros recebidos, menos os juros pagos; também equivale à redução da dívida consolidada líquida. As metas são anuais e são mínimos: um valor negativo significa que a LDO admite déficit. A meta é verificada no fim do ano; durante o ano o resultado costuma cair, porque a arrecadação se concentra nos primeiros meses (IPTU)." aria-label="Sobre as metas">i</button></div>
+      <div class="lgrid" id="mcards"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Resultado primário ao longo do ano</h2><button type="button" class="info" data-tip="Resultado primário acumulado até cada bimestre, no ano escolhido e no anterior. A linha tracejada é a meta anual do ano escolhido." aria-label="Sobre o gráfico">i</button></div>
+      <div class="legend" id="mlg"></div>
+      <div class="chart" id="mch"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Como se chega ao resultado</h2><button type="button" class="info" data-tip="Passo a passo do cálculo acima da linha (pelas receitas e despesas), no ano escolhido e no mesmo bimestre do ano anterior." aria-label="Sobre o cálculo">i</button></div>
+      <div class="tablebox"><table class="clean" id="mponte"></table></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Receitas primárias</h2><button type="button" class="info" data-tip="Receitas que entram no resultado primário, sem as do RPPS. Ficam de fora as receitas financeiras: rendimentos de aplicações, operações de crédito e alienação de investimentos." aria-label="Sobre as receitas primárias">i</button></div>
+      <div class="tablebox"><table class="clean" id="mrec"></table></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Despesas primárias</h2><button type="button" class="info" data-tip="Despesas que entram no resultado primário, sem as do RPPS. Ficam de fora os juros e a amortização da dívida e a concessão de empréstimos. Para o resultado conta o que foi pago, inclusive restos a pagar de anos anteriores." aria-label="Sobre as despesas primárias">i</button></div>
+      <div class="tablebox"><table class="clean" id="mdes"></table></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Cálculo abaixo da linha</h2><button type="button" class="info" data-tip="Outra forma de medir o resultado nominal: a variação da dívida consolidada líquida entre 31 de dezembro do ano anterior e o fim do bimestre. Se a dívida líquida cai, o resultado é positivo. As diferenças em relação ao cálculo acima da linha vêm de ajustes de metodologia, explicados na nota do RREO." aria-label="Sobre o cálculo abaixo da linha">i</button></div>
+      <div class="tablebox"><table class="clean" id="mabaixo"></table></div>
+    </div>
+    <details class="vnota" id="mnotabox"><summary>Nota explicativa do RREO</summary><p class="note" id="mnota"></p></details>
+    </div>
+  </section>
+  <section class="tab" data-sec="limites" hidden>
+    <div class="soon" id="lvazio" hidden><h2>Limites legais</h2><p class="sub" id="lvaziot"></p></div>
+    <div id="lcorpo" class="dcorpo">
+    <div class="sec">
+      <div class="sec-h"><h2 id="lkt">Limites legais</h2><button type="button" class="info" data-tip="Limites e mínimos exigidos pela Constituição, pela Lei de Responsabilidade Fiscal e por resoluções do Senado, tirados do Relatório de Gestão Fiscal (RGF) e do Relatório Resumido da Execução Orçamentária (RREO) do Poder Executivo, publicados no Siconfi. O seletor do topo, nesta aba, escolhe o quadrimestre; educação e saúde usam o bimestre que termina no mesmo mês." aria-label="Como ler estes números">i</button></div>
+      <div class="lresumo" id="lresumo"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Despesa com pessoal</h2><button type="button" class="info" data-tip="Despesa total com pessoal dos últimos 12 meses, dividida pela receita corrente líquida ajustada. Para o Poder Executivo municipal, o limite máximo é 54% (LRF, art. 20, III, b). Acima de 48,6% (alerta), o Tribunal de Contas emite alerta; acima de 51,3% (prudencial), ficam vedados reajustes, criação de cargos, novas contratações e horas extras." aria-label="Sobre a despesa com pessoal">i</button></div>
+      <div class="lgrid" id="lpes"></div>
+      <div class="legend" id="llg"></div>
+      <div class="chart" id="lch"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Educação e saúde</h2><button type="button" class="info" data-tip="Mínimos constitucionais anuais sobre as receitas de impostos e transferências: 25% em manutenção e desenvolvimento do ensino (CF, art. 212) e 15% em ações e serviços públicos de saúde (LC 141/2012). Do FUNDEB, ao menos 70% devem ir para a remuneração dos profissionais da educação básica (Lei 14.113/2020). O percentual cresce ao longo do ano e só é verificado no fechamento do exercício; o marcador cinza mostra o mesmo bimestre do ano anterior." aria-label="Sobre educação e saúde">i</button></div>
+      <div class="lgrid" id="ledu"></div>
+      <div class="tablebox"><table class="clean" id="lbim"></table></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>Endividamento e operações de crédito</h2><button type="button" class="info" data-tip="Limites do Senado sobre a receita corrente líquida ajustada: dívida consolidada líquida até 120% (Resolução 40/2001), operações de crédito no ano até 16% e antecipação de receita (ARO) até 7% (Resolução 43/2001), garantias até 22%. Regra de ouro: as operações de crédito não podem superar as despesas de capital (CF, art. 167, III)." aria-label="Sobre endividamento">i</button></div>
+      <div class="lgrid" id="lend"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2 id="lpt">Composição da despesa com pessoal</h2><button type="button" class="info" data-tip="Valores dos 12 meses que terminam no fim de cada quadrimestre, como no Anexo 1 do RGF. Despesas não computadas são as que a LRF manda excluir (art. 19, §1º), como indenizações por demissão, decisões judiciais de períodos anteriores e inativos pagos com recursos vinculados. A coluna destacada é o quadrimestre escolhido." aria-label="Sobre a composição">i</button></div>
+      <div class="tablebox"><table class="clean" id="ltab"></table></div>
+    </div>
+    </div>
+  </section>
+
+  <dialog id="det" aria-labelledby="dett">
+    <div class="dlg-head"><div><h3 id="dett"></h3><p class="note">Cada linha é uma natureza de receita, somando todas as fontes de recursos, com os filtros da página.</p></div><button type="button" class="btn" id="detfecha">Fechar ✕</button></div>
+    <p id="detres" style="margin:0"></p>
+    <div class="sec"><h3 style="font-size:.92rem">Abaixo do previsto</h3><div class="tablebox"><table id="detneg"></table></div></div>
+    <div class="sec"><h3 style="font-size:.92rem">Acima do previsto</h3><div class="tablebox"><table id="detpos"></table></div></div>
+  </dialog>
+
+  <footer>
+    <p class="note">Painel independente, montado a partir de relatórios do sistema contábil da Prefeitura de Maringá (Elotech). Não é um site oficial da Prefeitura. Valores da Prefeitura, sem a Maringá Previdência.</p>
+    <p class="note" id="rodape"></p>
+  </footer>
+</div>
+
+<script>
+/* os dados de receita e despesa vão compactados (gzip + base64) para manter a página leve; o navegador descompacta e só então inicia o painel */
+(async function(){
+  const abre = async b64 => { const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0)); const st = new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip')); return JSON.parse(await new Response(st).text()); };
+  try { window.__PFD = { DATA: await abre('__DATAGZ__'), DESP: await abre('__DESPGZ__') }; }
+  catch(e){ document.querySelector('.wrap').insertAdjacentHTML('afterbegin', '<p class="note" style="padding:16px;color:var(--crit-ink)">Não foi possível carregar os dados neste navegador. Use uma versão atual do Chrome, Edge, Firefox ou Safari.</p>'); return; }
+  const s = document.createElement('script'); s.textContent = document.getElementById('app').textContent; document.body.appendChild(s);
+})();
+</script>
+<script type="text/x-app" id="app">
+const DATA = window.__PFD.DATA;
+const YEARS = Object.keys(DATA.anos).sort(), NOMES = DATA.nomes;
+const $ = id => document.getElementById(id);
+const n0 = new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
+const brl = v => { if(v==null) return '–'; const r = Math.round(v); return (r<0?'−':'')+'R$ '+n0.format(Math.abs(r)); };
+const dec = (v,d=1) => (v<0?'−':'')+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const mi = v => { if(v==null) return '–'; const r=Math.round(v), a=Math.abs(r), s=r<0?'−':''; return a>=1e9 ? s+'R$ '+dec(a/1e9,2)+' bi' : a>=1e6 ? s+'R$ '+dec(a/1e6,2)+' mi' : a>=1e3 ? s+'R$ '+dec(a/1e3,1)+' mil' : s+'R$ '+dec(a,0); };
+const short = v => { if(v==null) return '–'; const a=Math.abs(v), s=v<0?'−':''; return a>=1e9 ? s+'R$ '+dec(a/1e9,2)+' bi' : s+'R$ '+dec(a/1e6,1)+' mi'; };
+const pct = (v,d=1) => v==null||!isFinite(v) ? '–' : dec(v,d)+'%';
+const ratio = (a,b) => (a==null||!b) ? null : a/b*100;
+const signed = s => s.startsWith('−') ? s : '+'+s;
+const bar = (p,mark) => `<div class="bar" role="img" aria-label="${pct(p)}"><i style="width:${Math.max(0,Math.min(100,p||0))}%"></i>${mark!=null?`<b style="left:${Math.min(100,mark)}%"></b>`:''}</div>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const MN = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const M3 = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const sumTo = (a,m) => { let s=0; for(let i=0;i<m;i++) s+=a[i]; return s; };
+const add = (a,b) => { for(let i=0;i<12;i++) a[i]+=b[i]; };
+const zero = () => ({prev:new Array(12).fill(0), real:new Array(12).fill(0)});
+const capP = s => s.charAt(0).toUpperCase()+s.slice(1);
+const DEST = [['IPTU','1.1.1.2.50'],['ISS','1.1.1.4.51'],['ITBI','1.1.1.2.53'],['IRRF','1.1.1.3.03'],['Cota-parte do FPM','1.7.1.1.51'],['Cota-parte do ICMS','1.7.2.1.50'],['Cota-parte do IPVA','1.7.2.1.51']];
+
+/* ---------- Nomes: acentos e siglas que o sistema não traz ---------- */
+const ACENTO = {transferencias:'transferências',transferencia:'transferência',contribuicoes:'contribuições',contribuicao:'contribuição',servicos:'serviços',servico:'serviço',operacoes:'operações',operacao:'operação',credito:'crédito',creditos:'créditos',alienacao:'alienação',previdencia:'previdência',patrimonio:'patrimônio',patrimonial:'patrimonial',imoveis:'imóveis',imovel:'imóvel',moveis:'móveis',divida:'dívida',dividas:'dívidas',uniao:'união',saude:'saúde',educacao:'educação',manutencao:'manutenção',basica:'básica',iluminacao:'iluminação',publica:'pública',publico:'público',publicos:'públicos',publicas:'públicas',municipios:'municípios',municipio:'município',municipal:'municipal',participacao:'participação',transmissao:'transmissão',fiscalizacao:'fiscalização',licenca:'licença',aplicacao:'aplicação',aplicacoes:'aplicações',remuneracao:'remuneração',deposito:'depósito',depositos:'depósitos',convenio:'convênio',convenios:'convênios',assistencia:'assistência',agua:'água',emprestimos:'empréstimos',emprestimo:'empréstimo',orcamentaria:'orçamentária',orcamentarias:'orçamentárias',economica:'econômica',eletrica:'elétrica',indenizacoes:'indenizações',restituicoes:'restituições',nao:'não',especifica:'específica',especificas:'específicas',legislacao:'legislação',compensacao:'compensação',compensacoes:'compensações',valorizacao:'valorização',exploracao:'exploração',concessao:'concessão',permissao:'permissão',autorizacao:'autorização',cessao:'cessão',inscricao:'inscrição',certidoes:'certidões',emissao:'emissão',dominio:'domínio',vigilancia:'vigilância',sanitaria:'sanitária',media:'média',transito:'trânsito',inteligencia:'inteligência',voluntarias:'voluntárias',voluntaria:'voluntária',beneficios:'benefícios',beneficio:'benefício',atencao:'atenção',farmaceutica:'farmacêutica',epidemiologica:'epidemiológica',programas:'programas',infancia:'infância',adolescencia:'adolescência',cultura:'cultura',ambito:'âmbito',propria:'própria',proprios:'próprios',proprio:'próprio',tecnico:'técnico',tecnica:'técnica',area:'área',areas:'áreas',inclusao:'inclusão',pagamento:'pagamento',administracao:'administração',arrecadacao:'arrecadação',titulos:'títulos',titulo:'título',acoes:'ações',acao:'ação',ambulatorial:'ambulatorial',complementacao:'complementação',transporte:'transporte',estadual:'estadual',federal:'federal',recurso:'recurso',ensino:'ensino',juridica:'jurídica',fisica:'física',policia:'polícia',taxa:'taxa',poder:'poder',execucao:'execução',demolicao:'demolição',construcao:'construção',edificacao:'edificação',edificacoes:'edificações',localizacao:'localização',funcionamento:'funcionamento',ocupacao:'ocupação',utilizacao:'utilização',fundacao:'fundação',tributaria:'tributária',tributarias:'tributárias',financiamento:'financiamento',renuncia:'renúncia',aquisicao:'aquisição',alimentacao:'alimentação',escolar:'escolar',contribuinte:'contribuinte',seguranca:'segurança',promocao:'promoção',protecao:'proteção',idoso:'idoso',criancas:'crianças',crianca:'criança',familia:'família',orgaos:'órgãos',orgao:'órgão',juros:'juros',cobranca:'cobrança',ativo:'ativo',estacionamento:'estacionamento',rotativo:'rotativo',expedicao:'expedição',vistoria:'vistoria',analise:'análise',projetos:'projetos',aprovacao:'aprovação',informacao:'informação',informacoes:'informações',resolucao:'resolução',maringa:'Maringá',ministerio:'ministério',ampliacao:'ampliação',modernizacao:'modernização',uniao:'União',complementacao:'complementação',parana:'Paraná',estrategia:'estratégia',reforco:'reforço',hospitalar:'hospitalar',atencao:'atenção',media:'média',alta:'alta',complexidade:'complexidade',recuperacao:'recuperação',retencao:'retenção',deducao:'dedução',deducoes:'deduções',tributos:'tributos',mobiliario:'mobiliário',imobiliario:'imobiliário',exercicio:'exercício',exercicios:'exercícios',anteriores:'anteriores',servidores:'servidores',patronal:'patronal',contribuicoes:'contribuições',manutencao:'manutenção',protecao:'proteção',implantacao:'implantação',realizacao:'realização',premiacoes:'premiações',qualificacao:'qualificação',capacitacao:'capacitação',ampliacao:'ampliação',pavimentacao:'pavimentação',asfaltica:'asfáltica',equilibrio:'equilíbrio',economico:'econômico',sentencas:'sentenças',precatorios:'precatórios',desapropriacao:'desapropriação',obrigacoes:'obrigações',diarias:'diárias',locacao:'locação',mao:'mão',comunicacao:'comunicação',amortizacao:'amortização',consorcio:'consórcio',consorcios:'consórcios',contingencia:'contingência',auxilios:'auxílios',auxilio:'auxílio',deficiencia:'deficiência',politicas:'políticas',politica:'política',politicos:'políticos',eletronica:'eletrônica',eletronicos:'eletrônicos',turistica:'turística',japao:'Japão',agencia:'agência',barracoes:'barracões',saloes:'salões',comunitarios:'comunitários',comunitario:'comunitário',quarteis:'quartéis',habitacao:'habitação',logistica:'logística',predio:'prédio',gestao:'gestão',disposicao:'disposição',previdenciario:'previdenciário',previdenciarias:'previdenciárias',previdenciaria:'previdenciária',inovacao:'inovação',ciencia:'ciência',espacos:'espaços',artisticas:'artísticas',artistico:'artístico',aceleracao:'aceleração',individuos:'indivíduos',prevencao:'prevenção',nutricao:'nutrição',tecnologico:'tecnológico',cientifico:'científico',cientificas:'científicas',difusao:'difusão',historico:'histórico',arqueologico:'arqueológico',judiciario:'judiciário',orcamento:'orçamento',normatizacao:'normatização',formacao:'formação',aereo:'aéreo',rodoviario:'rodoviário',preservacao:'preservação',conservacao:'conservação',agropecuaria:'agropecuária',producao:'produção',comercio:'comércio',instalacoes:'instalações',subvencoes:'subvenções',pensoes:'pensões',distribuicao:'distribuição',premios:'prêmios',contratacao:'contratação',terceirizacao:'terceirização',substituicao:'substituição',inversoes:'inversões',instituicoes:'instituições',instituicao:'instituição',variaveis:'variáveis',locomocao:'locomoção',equalizacao:'equalização',precos:'preços',constituicao:'constituição',correcao:'correção',monetaria:'monetária',mobiliaria:'mobiliária',subsidios:'subsídios',gratificacao:'gratificação',ferias:'férias',funcao:'função',funcoes:'funções',medico:'médico',medicos:'médicos',odontologico:'odontológico',veiculos:'veículos',combustiveis:'combustíveis',generos:'gêneros',alimenticios:'alimentícios',higienizacao:'higienização',maquinas:'máquinas',juridicos:'jurídicos',farmacologico:'farmacológico',graficos:'gráficos',domestico:'doméstico',audio:'áudio',video:'vídeo',mobiliario:'mobiliário',utensilios:'utensílios',laboratorio:'laboratório',laboratoriais:'laboratoriais',pecas:'peças',acessorios:'acessórios',informatica:'informática',licencas:'licenças',periodicos:'periódicos',congeneres:'congêneres',intraorcamentarias:'intraorçamentárias',intraorcamentaria:'intraorçamentária',desportivas:'desportivas',culturais:'culturais',indenizacao:'indenização',estagiarios:'estagiários',estagio:'estágio',ressarcimento:'ressarcimento',contribuicao:'contribuição',obrigacao:'obrigação',sentenca:'sentença',judiciais:'judiciais',calcadas:'calçadas',calcamento:'calçamento',drenagem:'drenagem',sinalizacao:'sinalização',semaforica:'semafórica',vias:'vias',publica:'pública',urbanizacao:'urbanização',revitalizacao:'revitalização',recuperacao:'recuperação',reestruturacao:'reestruturação',estruturacao:'estruturação',aquisicoes:'aquisições',doacao:'doação',doacoes:'doações',organizacoes:'organizações',organizacao:'organização',sociedade:'sociedade',civil:'civil',orcamentario:'orçamentário',participativo:'participativo',saude:'saúde',servidor:'servidor',servidores:'servidores',inativos:'inativos',pensionistas:'pensionistas',aposentadorias:'aposentadorias',familiar:'familiar',agricola:'agrícola',economia:'economia',solidaria:'solidária',emergencia:'emergência',emergencial:'emergencial',calamidade:'calamidade',diagnostico:'diagnóstico',terapeutico:'terapêutico',profilatico:'profilático',hospitais:'hospitais',clinicas:'clínicas',clinica:'clínica',especialidades:'especialidades',odontologia:'odontologia',ambulancias:'ambulâncias',farmacia:'farmácia',farmacias:'farmácias',basicas:'básicas',unidade:'unidade',transicao:'transição',municipais:'municipais',estudantes:'estudantes',universitario:'universitário',creches:'creches',escolas:'escolas',merenda:'merenda',uniformes:'uniformes',didatico:'didático',didaticos:'didáticos',pedagogico:'pedagógico',pedagogicos:'pedagógicos',tecnicos:'técnicos',tecnicas:'técnicas',eventos:'eventos',ginasio:'ginásio',ginasios:'ginásios',estadio:'estádio',piscina:'piscina',parques:'parques',pracas:'praças',praca:'praça',arborizacao:'arborização',paisagismo:'paisagismo',residuos:'resíduos',solidos:'sólidos',reciclaveis:'recicláveis',reciclagem:'reciclagem',aterro:'aterro',sanitario:'sanitário',varricao:'varrição',rocada:'roçada',capina:'capina',onibus:'ônibus',terminais:'terminais',rodoviaria:'rodoviária',aeroportuaria:'aeroportuária',vicinais:'vicinais',estradas:'estradas',pontes:'pontes',viadutos:'viadutos',trincheiras:'trincheiras',ciclovias:'ciclovias',iluminacao:'iluminação',eficiencia:'eficiência',energetica:'energética',teleatendimento:'teleatendimento',videomonitoramento:'videomonitoramento',guarda:'guarda',transito:'trânsito',infracoes:'infrações',multas:'multas',fiscalizacao:'fiscalização',vigilancia:'vigilância',zoonoses:'zoonoses',castracao:'castração',caes:'cães',adocao:'adoção',bem:'bem',musica:'música',teatro:'teatro',museu:'museu',biblioteca:'biblioteca',bibliotecas:'bibliotecas',memoria:'memória',patrimonio:'patrimônio',edicao:'edição',editais:'editais',lei:'lei',incentivo:'incentivo',ate:'até',apos:'após',orgao:'órgão',orgaos:'órgãos',numero:'número',agua:'água',termino:'término',conclusao:'conclusão',execucao:'execução',reposicao:'reposição',implementacao:'implementação',contrapartida:'contrapartida',emendas:'emendas',parlamentares:'parlamentares',estaduais:'estaduais',convenios:'convênios',reforcos:'reforços',hidricos:'hídricos',ambiental:'ambiental',ambientais:'ambientais',historia:'história',genero:'gênero',raca:'raça',etnia:'etnia',indigenas:'indígenas',migrantes:'migrantes',refugiados:'refugiados',situacao:'situação',rua:'rua',vulnerabilidade:'vulnerabilidade',violencia:'violência',vitimas:'vítimas',dependencia:'dependência',quimica:'química',terapeuticas:'terapêuticas',residencias:'residências',republica:'república',casa:'casa',lar:'lar',abrigo:'abrigo',convivencia:'convivência',fortalecimento:'fortalecimento',vinculos:'vínculos',beneficio:'benefício',eventuais:'eventuais',cadastro:'cadastro',unico:'único',transferencia:'transferência',familias:'famílias',idosos:'idosos',mulher:'mulher',mulheres:'mulheres',juventude:'juventude',jovem:'jovem',jovens:'jovens',igualdade:'igualdade',racial:'racial',promube:'PROMUBE',floriano:'Floriano',iguatemi:'Iguatemi',oscar:'Oscar',niemeyer:'Niemeyer',parana:'Paraná',brasil:'Brasil',restituicao:'restituição',urgencias:'urgências',urgencia:'urgência',glosas:'glosas',indevido:'indevido'};
+const SIGLAS = ['ICMS','IPVA','IPI','ITR','FPM','FUNDEB','SUS','IPTU','ISS','ISSQN','ITBI','IRRF','CIDE','COSIP','FNDE','PNAE','PNATE','CEF','FINISA','BNDES','ECA','FMDCA','PRODEM','PROCON','DRM','COPEL','ESTAR','FAEC','MAC','LC','EC','RFB','UBS','CRAS','CREAS','SUAS','FIA','DPVAT','CFEM','PAB','PSE','IN','SAMU','CAPS','APS','FNAS','FMAS','VAAT','VAAF','VAAR','COVID','SESA','SESAU','SEED','MS','FMS','RPPS','INSS','PASEP','FGTS','SAMA','CCI','FMPDI','FMSD','FMD','AMT','PMM','TI','PPP','CIP','UPA','CMEI','CMEIS','ESF','NASF','CEO','FNS','FMHIS','FMMA','FMC','FMDL','FMI','FMDI','FUMDES','PROGE','CMDCA','CMAS','CMPDI','CMS','DF','OS','OSC','OSCIP','TECHLAB','SUAS','PAEFI','PAIF','SCFV','LOA','LDO','PPA','SEMUSP','IPPLAM','URBAMAR','SAAE','DST','AIDS','HIV','TCE','MP','PR'];
+const SIG = new Set(SIGLAS.map(s=>s.toLowerCase()));
+function bonito(s){
+  s = String(s).toLowerCase().replace(/\s+/g,' ').trim();
+  s = s.replace(/[a-zà-ú0-9]+/gi, w => SIG.has(w) ? w.toUpperCase() : (ACENTO[w] || w));
+  return capP(s);
+}
+const BASE = ['0','0','0','0','00','0','0','00','00','00','00','00'];
+const pad = segs => { const b = BASE.slice(); segs.forEach((s,i)=>b[i]=s); return b.join('.')+'.'; };
+const nomeNat = code => { const n = NOMES[code]; return n ? bonito(n) : 'Natureza '+code; };
+const curtoC = c => { const s = c.replace(/\.$/,'').split('.'); while(s.length>5 && /^0+$/.test(s[s.length-1])) s.pop(); return s.join('.'); };
+
+/* ---------- Estado ---------- */
+let curY = YEARS[YEARS.length-1], curM = null, modo = 'mensal', mesDet = null;
+const SEL = new Set(); let FILTRADOS = [], NATALL = null, natAno = null, TAB = 'receita'; const COMBO = {};
+const abertos = new Set(['1','2']);
+const TOQUE = !!(window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches);
+try { const s = localStorage.getItem('pfc-ano'); if(s && DATA.anos[s]) curY = s; const b = +localStorage.getItem('pfc-mes'); if(b>=1 && b<=12) curM = b; const md = localStorage.getItem('pfc-modo'); if(md==='mensal'||md==='acumulado') modo = md; } catch(e){}
+const clamp = () => { const A = DATA.anos[curY], n = A.meses; if(!curM || curM>n) curM = (A.parcial===n && n>1) ? n-1 : n; };
+const save = () => { try { localStorage.setItem('pfc-ano', curY); localStorage.setItem('pfc-mes', curM); localStorage.setItem('pfc-modo', modo); } catch(e){} };
+
+/* ---------- Árvore por natureza ---------- */
+function novoNo(key, label, code){ return {key, label, code, prev:new Array(12).fill(0), real:new Array(12).fill(0), kids:[], map:{}}; }
+function arvore(itens){
+  const raiz = novoNo('root','',''), idx = {};
+  itens.forEach(([f,c,p,r]) => {
+    const s = c.replace(/\.$/,'').split('.'); let no = raiz;
+    for(let d=0; d<s.length; d++){
+      if(/^0+$/.test(s[d])) continue;
+      const k = s.slice(0,d+1).join('.');
+      if(!no.map[k]){ const nn = novoNo(k, nomeNat(pad(s.slice(0,d+1))), k); no.map[k] = nn; no.kids.push(nn); idx[k] = nn; }
+      no = no.map[k]; add(no.prev,p); add(no.real,r);
+    }
+  });
+  const cmp = (a,b) => { const x = a.code.split('.'), y = b.code.split('.'); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (+x[i]||0)-(+y[i]||0); if(d) return d; } return x.length-y.length; };
+  const ord = n => { n.kids.sort(cmp); n.kids.forEach(ord); }; ord(raiz);
+  return {raiz, idx};
+}
+
+/* ---------- Filtros ---------- */
+function prefNat(){ return $('fnat').value || $('forig').value; }
+function passa(it, ign){ const [f,c] = it, pre = [...SEL], np = prefNat(), fon = $('ffon').value;
+  if(!(ign && ign.fonte) && fon && f!==fon) return false;
+  if(!(ign && ign.receita) && pre.length && !pre.some(x=>c.startsWith(x+'.'))) return false;
+  if(!(ign && ign.nat) && np && !c.startsWith(np+'.')) return false;
+  return true; }
+function montarFiltros(){
+  const A = DATA.anos[curY];
+  if(natAno !== curY){ NATALL = arvore(A.itens); natAno = curY; }
+  const box = $('fchips');
+  if(!box.children.length) box.innerHTML = `<button type="button" class="chip" data-p="">Todas as receitas</button>` + DEST.map(([n,p])=>`<button type="button" class="chip" data-p="${p}">${n}</button>`).join('');
+  box.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.p ? SEL.has(b.dataset.p) : SEL.size===0));
+  const so = $('forig'), sn = $('fnat'), sf = $('ffon');
+  if(so.dataset.ano !== curY){ const at = so.value;
+    so.innerHTML = '<option value="">Receitas correntes e de capital</option>' + NATALL.raiz.kids.map(cat => `<option value="${cat.key}" style="font-weight:600">${cat.code} – ${esc(cat.label)}</option>` + cat.kids.map(o=>`<option value="${o.key}">\u2003${o.code} – ${esc(o.label)}</option>`).join('')).join('');
+    so.value = NATALL.idx[at] ? at : ''; so.dataset.ano = curY; }
+  if(sn.dataset.chave !== curY+'|'+so.value){ const at = sn.value, ops = [];
+    const walk = (no,d) => no.kids.forEach(k => { if(k.key.split('.').length>7) return; ops.push(`<option value="${k.key}">${' '.repeat(d)}${k.code} – ${esc(k.label)}</option>`); walk(k,d+1); });
+    if(so.value) walk(NATALL.idx[so.value], 0);
+    sn.innerHTML = so.value ? `<option value="">Todas as naturezas de ${esc(NATALL.idx[so.value].label.toLowerCase())}</option>` + ops.join('') : '<option value="">Escolha a categoria ou origem</option>';
+    sn.disabled = !so.value; sn.value = ops.some(o=>o.includes(`value="${at}"`)) ? at : ''; sn.dataset.chave = curY+'|'+so.value; }
+  const chave = curY+'|'+[...SEL].sort().join(',')+'|'+prefNat();
+  if(sf.dataset.chave !== chave){ const at = sf.value;
+    const fs = [...new Set(A.itens.filter(it => passa(it,{fonte:true}) && (sumTo(it[2],12)||sumTo(it[3],12))).map(i=>i[0]))].sort((a,b)=>(+a)-(+b));
+    sf.innerHTML = `<option value="">Todas as fontes (${fs.length})</option>` + fs.map(f=>`<option value="${f}">${f} – ${esc(String(A.fontes[f]||'sem arrecadação no ano').replace(/\s+/g,' ').trim())}</option>`).join('');
+    sf.value = fs.includes(at) ? at : ''; sf.dataset.chave = chave; }
+  const ativos = (SEL.size?1:0) + (prefNat()?1:0) + (sf.value?1:0);
+  if(COMBO.ffon && document.activeElement!==$('ffonq')) COMBO.ffon.texto();
+  $('flimpa').hidden = !ativos; $('fsum').textContent = ativos ? `Filtros (${ativos})` : 'Filtros';
+}
+function resumoFiltro(){
+  const nomes = DEST.filter(d=>SEL.has(d[1])).map(d=>d[0]), np = prefNat(), fon = $('ffon').value;
+  return [nomes.length ? (nomes.length>1 ? nomes.slice(0,-1).join(', ')+' e '+nomes[nomes.length-1] : nomes[0]) : '', np ? `${np} ${NATALL.idx[np].label}` : '', fon ? `fonte ${fon}` : ''].filter(Boolean).join(' · ');
+}
+
+/* ---------- Gráficos ---------- */
+const drawers = {}; let observado = false;
+function eixo(top){ const step = [1e4,2e4,5e4,1e5,2e5,5e5,1e6,2e6,5e6,1e7,2e7,5e7,1e8,2e8,5e8,1e9].find(s => top/s <= 5) || 2e9; return {step, max:Math.ceil(top/step)*step}; }
+const tk = v => v===0 ? '0' : v>=1e9 ? (v/1e9).toLocaleString('pt-BR')+' bi' : v>=1e6 ? (v/1e6).toLocaleString('pt-BR')+' mi' : (v/1e3).toLocaleString('pt-BR')+' mil';
+function grafico(T, nReal, sel, parcial){
+  const el = $('ch');
+  $('lg').innerHTML = `<span><i class="sw" style="background:var(--prev)"></i>Previsto</span><span><i class="sw" style="background:var(--s1)"></i>Realizado</span>`;
+  drawers.ch = function(){
+    const W = Math.max(280, el.clientWidth), H = 280, m = {l:54,r:modo==='acumulado'?64:12,t:14,b:26};
+    let P = T.prev.slice(), R = T.real.slice(0,nReal);
+    if(modo==='acumulado'){ let a=0,b=0; P = P.map(v=>a+=v); R = R.map(v=>b+=v); }
+    const {step,max} = eixo(Math.max(1,...P,...R)), bw = (W-m.l-m.r)/12, y = v => H-m.b - Math.max(0,v)/max*(H-m.t-m.b), cx = i => m.l + bw*i + bw/2;
+    let g = '';
+    for(let t=0;t<=max+1;t+=step) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--line)" stroke-width="1"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${tk(t)}</text>`;
+    if(sel!=null) g += `<rect x="${m.l+bw*sel+1}" y="${m.t}" width="${bw-2}" height="${H-m.t-m.b}" rx="6" style="fill:var(--ink);fill-opacity:.05"/>`;
+    if(modo==='mensal'){
+      const pw = Math.max(6, Math.min(56, bw*0.74)), rw = Math.max(4, pw*0.52);
+      const barra = (x0,w,h,cor) => { const r = Math.min(4, w/2, h/2); return `<path d="M${x0},${H-m.b} v${-(h-r)} q0,${-r} ${r},${-r} h${w-2*r} q${r},0 ${r},${r} v${h-r} z" style="fill:var(${cor})"/>`; };
+      for(let i=0;i<12;i++){ const hp = H-m.b-y(P[i]); if(hp>0) g += barra(cx(i)-pw/2, pw, hp, '--prev'); if(i<nReal){ const hr = H-m.b-y(R[i]); if(hr>0) g += barra(cx(i)-rw/2, rw, hr, '--s1'); } }
+    } else {
+      g += `<polyline fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--prev)" points="${P.map((v,i)=>cx(i)+','+y(v)).join(' ')}"/>`;
+      g += `<polyline fill="none" stroke-width="2.5" style="stroke:var(--s1)" points="${R.map((v,i)=>cx(i)+','+y(v)).join(' ')}"/>`;
+      R.forEach((v,i)=> g += `<circle cx="${cx(i)}" cy="${y(v)}" r="${i===sel?5:3}" style="fill:var(--s1);stroke:var(--surface)" stroke-width="2"/>`);
+      const lb = [{t:tk(P[11]),yy:y(P[11]),c:'--ink-2'},{t:tk(R[R.length-1]),yy:y(R[R.length-1]),c:'--ink',x:cx(R.length-1)}];
+      g += `<text x="${cx(11)+8}" y="${lb[0].yy+4}" font-size="11" style="fill:var(--ink-2)">${lb[0].t}</text>`;
+      if(R.length) g += `<text x="${cx(R.length-1)+8}" y="${lb[1].yy+(Math.abs(lb[1].yy-lb[0].yy)<13 && R.length===12?16:4)}" font-size="11" font-weight="600" style="fill:var(--ink)">${lb[1].t}</text>`;
+    }
+    for(let i=0;i<12;i++){ if(W>=520 || i%2===0 || i===11) g += `<text x="${cx(i)}" y="${H-8}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${M3[i]}${parcial===i+1?'*':''}</text>`;
+      g += `<rect data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H}" fill="transparent" style="cursor:${i<nReal?'pointer':'default'}"/>`; }
+    g += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" style="stroke:var(--line-2)" stroke-width="1"/>`;
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de previsto e realizado por mês; os valores estão na tabela Mês a mês">${g}</svg><div class="tip" hidden></div>`;
+    const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { const i = +r.dataset.i;
+      const show = () => { const d = i<nReal ? R[i]-P[i] : null;
+        tip.innerHTML = `<strong>${capP(MN[i])}${modo==='acumulado'?' (acumulado)':''}${parcial===i+1?' · em aberto':''}</strong><br>Previsto: ${brl(P[i])}<br>Realizado: ${i<nReal?brl(R[i]):'–'}${d!=null?`<br>Diferença: ${signed(brl(d))}`:''}${i<nReal?'<br><em>Clique para detalhar o mês</em>':''}`; tip.hidden = false;
+        tip.style.left = Math.min(Math.max(cx(i),110),W-110)+'px'; tip.style.top = (Math.min(y(P[i]), i<nReal?y(R[i]):H)-8)+'px'; };
+      r.addEventListener('mouseenter', show); r.addEventListener('mouseleave', () => tip.hidden = true);
+      r.addEventListener('click', () => { if(i<nReal) abrirDet(i); }); });
+  };
+  drawers.ch();
+  if(!observado){ observado = true; new ResizeObserver(()=>drawers.ch()).observe(el); }
+}
+
+/* ---------- Renderização ---------- */
+const corDif = (d, base) => (!base && !d) ? 'mut' : (base && Math.abs(d)/base <= 0.05) ? 'mut' : d<0 ? 'neg' : 'pos';
+function render(){
+  const A = DATA.anos[curY], m = curM, fechado = m===12, ate = fechado ? 'no ano' : 'até '+MN[m-1];
+  document.querySelectorAll('#years button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.y===curY));
+  $('msel').innerHTML = Array.from({length:A.meses},(x,i)=>`<option value="${i+1}">${capP(MN[i])}${A.parcial===i+1?' (em aberto)':''}</option>`).join(''); $('msel').value = m;
+  montarFiltros();
+  FILTRADOS = A.itens.filter(it => passa(it));
+  const T = zero(); FILTRADOS.forEach(([f,c,p,r]) => { add(T.prev,p); add(T.real,r); });
+  const pp = sumTo(T.prev,m), rr = sumTo(T.real,m), pa = sumTo(T.prev,12), d = rr-pp, rz = ratio(rr,pp);
+  const filtro = resumoFiltro();
+  $('kt').textContent = 'Resumo ' + (fechado ? `de ${curY}` : `até ${MN[m-1]} de ${curY}`) + (filtro ? ' · '+filtro : '');
+  const semPrev = FILTRADOS.reduce((s,[f,c,p,r]) => s + (sumTo(p,12) ? 0 : sumTo(r,m)), 0);
+  const parcial = A.parcial && A.parcial<=m ? A.parcial : null;
+  const st = rz==null ? '' : rz>=100 ? 'good-t' : rz>=95 ? 'warn-t' : 'crit-t';
+  $('kpis').innerHTML = (fechado ? '' : `<div class="kpi"><span class="label">Previsto para ${curY}</span><span class="v">${brl(pa)}</span><span class="c">Total da lei orçamentária no ano</span></div>`)+
+    `<div class="kpi"><span class="label">Previsto ${ate}</span><span class="v">${brl(pp)}</span><span class="c">Cronograma mensal da lei orçamentária</span></div>`+
+    `<div class="kpi r"><span class="label">Realizado ${ate}</span><span class="v">${brl(rr)}</span><span class="c">${semPrev?`Inclui ${short(semPrev)} sem previsão`:'Arrecadação líquida'}${parcial?` · ${MN[parcial-1]} em aberto`:''}</span></div>`+
+    `<div class="kpi"><span class="label">Resultado</span><span class="v ${st}">${signed(brl(d))}</span><span class="c"><b class="${st}">${pct(rz)}</b> do previsto no período</span></div>`;
+  { const pr = ratio(rr,pa), pe = fechado ? null : ratio(pp,pa), w = x => Math.max(0,Math.min(100,x||0));
+    const lado = pe==null ? '' : pe>75 ? 'dir' : pe<25 ? 'esq' : '';
+    $('prog').innerHTML = `<span class="t">Realizado no ano: <b>${pct(pr)}</b> do previsto para ${curY} (${brl(pa)})</span>` +
+      `<div class="pbar${pe!=null?' com':''}" role="img" aria-label="Realizado ${pct(pr)} do previsto no ano${pe!=null?`; esperado até ${MN[m-1]} pelo cronograma: ${pct(pe)}`:''}"><div class="trk"><i style="width:${w(pr)}%"></i></div>` +
+      (pe!=null ? `<span class="mk" style="left:${w(pe)}%"></span><span class="mkl ${lado}" style="left:${w(pe)}%">Esperado até ${MN[m-1]}: <b>${pct(pe)}</b></span>` : '') + `</div>` +
+      (pe!=null ? `<span class="leg"><span><i class="sq"></i>Realizado ${pct(pr)}</span><span><i class="ln"></i>Esperado pelo cronograma mensal ${pct(pe)}</span><span class="${st}">${pr>=pe?'à frente':'atrás'} do esperado em ${dec(Math.abs(Math.round(pr*10)-Math.round(pe*10))/10)} p.p.</span></span>` : ''); }
+  $('ct').textContent = 'Previsto e realizado' + (filtro ? ' · '+filtro : '');
+  $('cinfo').dataset.tip = (modo==='mensal' ? 'Barras com o previsto e o realizado de cada mês. ' : 'Valores acumulados desde janeiro. ') + 'Clique em um mês para ver o que explica a diferença.' + (A.parcial ? ` ${capP(MN[A.parcial-1])} (*) está em aberto: o realizado vai até a última emissão do relatório.` : '');
+  document.querySelectorAll('#rmodo button').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo===modo));
+  grafico(T, A.meses, m-1, A.parcial);
+  /* destaques */
+  $('mini').innerHTML = DEST.map(([n,pre]) => { const o = zero(); A.itens.forEach(it => { if(it[1].startsWith(pre+'.') && passa(it,{receita:true,nat:true})){ add(o.prev,it[2]); add(o.real,it[3]); } });
+    const p = sumTo(o.prev,m), r = sumTo(o.real,m), q = ratio(r,p);
+    return `<button type="button" class="mc" data-p="${pre}" aria-pressed="${SEL.has(pre)}"><span class="n">${n}</span><span class="v">${brl(r)}</span><div class="bar" role="img" aria-label="${pct(q)} do previsto"><i style="width:${Math.max(0,Math.min(120,q||0))/1.2}%"></i><b style="left:${100/1.2}%"></b></div><span class="p">${pct(q)} de ${short(p)} previstos</span></button>`; }).join('');
+  desenharNat(); desenharMes();
+  $('rodape').textContent = `Fontes: relatórios "Receita Realizada por Fonte" de cada mês e previsão orçamentária por fonte e natureza de ${curY}, do sistema contábil. Nomes das naturezas do Quadro das Receitas por Natureza, com acentuação ajustada.`;
+  if($('det').open) desenharDet();
+}
+
+/* tabela por natureza */
+function desenharNat(){
+  const m = curM, mais = $('natmais').getAttribute('aria-pressed')==='true', T = arvore(FILTRADOS), q = $('qnat').value.trim();
+  const np = prefNat(); if(np){ const s = np.split('.'); for(let i=1;i<=s.length;i++) abertos.add(s.slice(0,i).join('.')); }
+  let filtro = null;
+  if(q.length>=2){ const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(), nq = norm(q); filtro = new Set();
+    const walk = (no, anc) => no.kids.forEach(k => { if(norm(k.label).includes(nq) || k.code.includes(q)){ anc.forEach(a=>filtro.add(a)); filtro.add(k.key); } walk(k, anc.concat(k.key)); }); walk(T.raiz, []); }
+  const re = q.length>=2 ? new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig') : null;
+  const out = [];
+  const lin = (no, nv) => no.kids.forEach(k => { if(filtro && !filtro.has(k.key)) return;
+    const pa = sumTo(k.prev,12), pp = sumTo(k.prev,m), rr = sumTo(k.real,m); if(!pa && !rr) return;
+    const open = filtro ? true : abertos.has(k.key), temK = k.kids.length>0, dif = rr-pp;
+    const lab = re ? esc(k.label).replace(re, x=>`<mark>${x}</mark>`) : esc(k.label);
+    out.push(`<tr class="n${Math.min(nv,2)}"><td class="cod">${re ? esc(k.code).replace(re,x=>`<mark>${x}</mark>`) : k.code}</td><td class="nm" style="padding-left:${12+nv*16}px">`+
+      (temK ? `<button type="button" class="tg" data-k="${k.key}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▸</span><span>${lab}</span></button>` : `<span class="tg"><span class="sp"></span><span>${lab}</span></span>`)+
+      `</td><td>${brl(pp)}</td><td>${brl(rr)}</td><td class="${corDif(dif,pp)}">${signed(brl(dif))}</td><td>${pct(ratio(rr,pp))}</td><td class="xtra"${mais?'':' hidden'}>${brl(pa)}</td><td class="xtra"${mais?'':' hidden'}>${pct(ratio(rr,pa))}</td></tr>`);
+    if(temK && open) lin(k, nv+1); });
+  lin(T.raiz, 0);
+  const tp = sumTo(T.raiz.kids.reduce((a,k)=>{ add(a,k.prev); return a; }, new Array(12).fill(0)),12);
+  const t = zero(); T.raiz.kids.forEach(k=>{ add(t.prev,k.prev); add(t.real,k.real); }); const pp = sumTo(t.prev,m), rr = sumTo(t.real,m);
+  const x = mais ? '' : ' hidden';
+  $('tnat').innerHTML = `<thead><tr><th class="cod">Código</th><th class="nm">Natureza</th><th>Previsto até ${M3[m-1].toLowerCase()}</th><th>Realizado</th><th>Diferença</th><th>%</th><th class="xtra"${x}>Previsto no ano</th><th class="xtra"${x}>% do ano</th></tr></thead><tbody>` +
+    (out.length ? out.join('') : `<tr><td colspan="8">Nada encontrado para “${esc(q)}”.</td></tr>`) +
+    (filtro ? '' : `<tr class="tot"><td></td><td>Total</td><td>${brl(pp)}</td><td>${brl(rr)}</td><td>${signed(brl(rr-pp))}</td><td>${pct(ratio(rr,pp))}</td><td class="xtra"${x}>${brl(tp)}</td><td class="xtra"${x}>${pct(ratio(rr,tp))}</td></tr>`) + '</tbody>';
+}
+
+/* tabela mês a mês */
+const LUPA = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
+function desenharMes(){
+  const A = DATA.anos[curY], m = curM, mais = $('mesmais').getAttribute('aria-pressed')==='true', x = mais ? '' : ' hidden';
+  const T = zero(); FILTRADOS.forEach(([f,c,p,r]) => { add(T.prev,p); add(T.real,r); });
+  let a1=0, a2=0;
+  $('tmes').innerHTML = `<thead><tr><th class="left">Mês</th><th>Previsto</th><th>Realizado</th><th>Diferença</th><th>%</th><th class="xtra"${x}>Previsto acumulado</th><th class="xtra"${x}>Realizado acumulado</th><th class="xtra"${x}>% acumulado</th></tr></thead><tbody>` +
+    M3.map((z,i) => { a1 += T.prev[i]; const tem = i<A.meses; if(tem) a2 += T.real[i]; const d = T.real[i]-T.prev[i];
+      return `<tr${i===m-1?' class="sel"':''}><td class="left">${capP(MN[i])}${A.parcial===i+1?' <span class="note">(em aberto)</span>':''}</td><td>${brl(T.prev[i])}</td><td>${tem?brl(T.real[i]):'–'}</td><td class="${tem?corDif(d,T.prev[i]):''}">${tem?`<span class="dif">${signed(brl(d))}<button type="button" class="ib" data-i="${i}" aria-label="Detalhar a diferença de ${MN[i]}" title="Detalhar a diferença de ${MN[i]}">${LUPA}</button></span>`:'–'}</td><td>${tem?pct(ratio(T.real[i],T.prev[i])):'–'}</td><td class="xtra"${x}>${brl(a1)}</td><td class="xtra"${x}>${tem?brl(a2):'–'}</td><td class="xtra"${x}>${tem?pct(ratio(a2,a1)):'–'}</td></tr>`; }).join('') +
+    `<tr class="tot"><td class="left">Total</td><td>${brl(sumTo(T.prev,12))}</td><td>${brl(sumTo(T.real,A.meses))}</td><td>${signed(brl(sumTo(T.real,A.meses)-sumTo(T.prev,A.meses)))}</td><td>${pct(ratio(sumTo(T.real,A.meses),sumTo(T.prev,A.meses)))}</td><td class="xtra"${x}></td><td class="xtra"${x}></td><td class="xtra"${x}></td></tr></tbody>`;
+}
+
+/* detalhamento do mês */
+function abrirDet(i){ mesDet = i; desenharDet(); const d = $('det'); if(d.showModal) d.showModal(); else d.setAttribute('open',''); $('detfecha').focus(); }
+function desenharDet(){
+  const A = DATA.anos[curY], i = mesDet, G = {}; FILTRADOS.forEach(([f,c,p,r]) => { const g = G[c] || (G[c] = {c,p:0,r:0,fs:new Set()}); g.p += p[i]; g.r += r[i]; if(p[i]||r[i]) g.fs.add(f); });
+  const L = Object.values(G).map(x => (x.d = x.r-x.p, x)).filter(x => Math.abs(x.d)>=0.5);
+  const tot = L.reduce((s,x)=>s+x.d,0), neg = L.filter(x=>x.d<0).sort((a,b)=>a.d-b.d), pos = L.filter(x=>x.d>0).sort((a,b)=>b.d-a.d);
+  $('dett').textContent = `O que explica a diferença em ${MN[i]} de ${curY}${A.parcial===i+1?' (mês em aberto)':''}`;
+  $('detres').innerHTML = `Diferença do mês: <strong class="${tot<0?'neg':'pos'}">${signed(brl(tot))}</strong>. Abaixo do previsto: ${neg.length} ${neg.length===1?'item':'itens'} (${brl(neg.reduce((s,x)=>s+x.d,0))}). Acima: ${pos.length} (${signed(brl(pos.reduce((s,x)=>s+x.d,0)))}).`;
+  const nf = f => A.fontes[f] ? String(A.fontes[f]).replace(/\s+/g,' ').trim() : 'sem arrecadação no ano';
+  const tab = (arr, vazio) => `<thead><tr><th>Natureza de receita</th><th>Previsto</th><th>Realizado</th><th>Diferença</th></tr></thead><tbody>` +
+    (arr.length ? arr.slice(0,10).map(x => `<tr><td>${esc(nomeNat(x.c))}<span class="cd">${curtoC(x.c)}${x.fs.size>1?` · ${x.fs.size} fontes`:x.fs.size?` · fonte ${[...x.fs][0]} – ${esc(nf([...x.fs][0]))}`:''}</span></td><td>${brl(x.p)}</td><td>${brl(x.r)}</td><td class="${x.d<0?'neg':'pos'}">${signed(brl(x.d))}</td></tr>`).join('') +
+      (arr.length>10 ? `<tr><td colspan="4" class="note">Mais ${arr.length-10} itens, somando ${signed(brl(arr.slice(10).reduce((s,x)=>s+x.d,0)))}.</td></tr>` : '') : `<tr><td colspan="4">${vazio}</td></tr>`) + '</tbody>';
+  $('detneg').innerHTML = tab(neg, 'Nenhum item abaixo do previsto.'); $('detpos').innerHTML = tab(pos, 'Nenhum item acima do previsto.');
+}
+
+/* ---------- Eventos ---------- */
+function alternar(e, p){ const multi = e.ctrlKey || e.metaKey || TOQUE;
+  if(!p) SEL.clear(); else if(multi) SEL.has(p) ? SEL.delete(p) : SEL.add(p); else if(SEL.size===1 && SEL.has(p)) SEL.clear(); else { SEL.clear(); SEL.add(p); } }
+$('years').innerHTML = YEARS.map(y=>`<button type="button" id="ano-${y}" data-y="${y}" aria-pressed="false">${y}</button>`).join('');
+$('years').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; curY = b.dataset.y; curM = null; curMD = null; curMX = null; curQ = null; clamp(); save(); refresh(); });
+$('msel').addEventListener('change', () => { if(TAB==='divida'||TAB==='limites'){ curQ = +$('msel').value; try { localStorage.setItem('pfc-quad', curQ); } catch(e){} } else if(TAB==='metas'){ curB = +$('msel').value; try { localStorage.setItem('pfc-bim', curB); } catch(e){} } else if(TAB==='rxd'){ curMX = +$('msel').value; saveX(); } else if(TAB==='despesa'){ curMD = +$('msel').value; saveD(); } else { curM = +$('msel').value; save(); } refresh(); });
+$('fchips').addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; alternar(e, b.dataset.p); render(); });
+$('mini').addEventListener('click', e => { const b = e.target.closest('.mc'); if(!b) return; alternar(e, b.dataset.p); render(); });
+['forig','fnat','ffon'].forEach(id => $(id).addEventListener('change', render));
+/* dica do ícone (i): mantém o texto dentro da tela */
+function ajustaDica(e){ const b = e.target.closest && e.target.closest('.info'); if(!b) return;
+  b.style.setProperty('--dx','0px');
+  const cs = getComputedStyle(b,'::after'), w = parseFloat(cs.width) || Math.min(340, innerWidth-32), r = b.getBoundingClientRect(), c = r.left + r.width/2, vw = document.documentElement.clientWidth;
+  let dx = 0; if(c - w/2 < 16) dx = 16 - (c - w/2); else if(c + w/2 > vw - 16) dx = (vw - 16) - (c + w/2);
+  b.style.setProperty('--dx', dx+'px'); }
+document.addEventListener('mouseover', ajustaDica); document.addEventListener('focusin', ajustaDica);
+/* fonte: busca por código ou descrição (usada nas abas Receita e Despesa) */
+const semAc = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+function fazCombo(id, aoMudar, nada){
+  const q = $(id+'q'), l = $(id+'l'), s = $(id), x = $(id+'x'); let at = -1, lista = [];
+  const texto = () => { const o = s.options[s.selectedIndex];
+    q.value = s.value && o ? o.textContent : ''; q.placeholder = s.options[0] ? s.options[0].textContent + ' · digite para buscar' : ''; x.hidden = !s.value; };
+  const abrir = t => { const ps = semAc(t).split(/\s+/).filter(Boolean);
+    lista = [...s.options].map(o => ({v:o.value, t:o.textContent})).filter(o => !ps.length || (o.v && ps.every(p => semAc(o.t).includes(p))));
+    const re = ps.length ? new RegExp('('+ps.map(p=>p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','ig') : null;
+    const hl = z => { if(!re) return esc(z); const n = semAc(z); let out = '', last = 0; n.replace(re, (m, g, off) => { out += esc(z.slice(last, off)) + '<mark>' + esc(z.slice(off, off+m.length)) + '</mark>'; last = off + m.length; return m; }); return out + esc(z.slice(last)); };
+    at = lista.length ? 0 : -1;
+    l.innerHTML = lista.length ? lista.map((o,i) => { const k = o.v ? o.t.indexOf(' – ') : -1; return `<li role="option" id="${id}o${i}" data-i="${i}" aria-selected="${i===at}">${k>0 ? `<span class="k">${hl(o.t.slice(0,k))}</span>${hl(o.t.slice(k+3))}` : hl(o.t)}</li>`; }).join('') : `<li class="nada">${nada ? capP(nada) : 'Nenhuma fonte'} com “${esc(t)}”.</li>`;
+    l.hidden = false; q.setAttribute('aria-expanded','true'); if(at>=0) q.setAttribute('aria-activedescendant', id+'o0'); };
+  const fechar = () => { l.hidden = true; q.setAttribute('aria-expanded','false'); q.removeAttribute('aria-activedescendant'); };
+  const escolher = i => { const o = lista[i]; if(!o) return; s.value = o.v; fechar(); aoMudar(); q.blur(); };
+  q.addEventListener('focus', () => { q.select(); abrir(''); });
+  q.addEventListener('input', () => abrir(q.value));
+  q.addEventListener('keydown', e => {
+    if(e.key==='ArrowDown' || e.key==='ArrowUp'){ e.preventDefault(); if(l.hidden) abrir(q.value); if(!lista.length) return;
+      at = (at + (e.key==='ArrowDown'?1:-1) + lista.length) % lista.length;
+      l.querySelectorAll('li').forEach((li,i) => li.setAttribute('aria-selected', i===at)); $(id+'o'+at).scrollIntoView({block:'nearest'}); q.setAttribute('aria-activedescendant', id+'o'+at); }
+    else if(e.key==='Enter'){ e.preventDefault(); if(at>=0) escolher(at); }
+    else if(e.key==='Escape'){ fechar(); texto(); q.blur(); } });
+  l.addEventListener('mousedown', e => { const li = e.target.closest('li[data-i]'); if(li){ e.preventDefault(); escolher(+li.dataset.i); } });
+  q.addEventListener('blur', () => setTimeout(() => { fechar(); texto(); }, 120));
+  x.addEventListener('click', () => { s.value = ''; aoMudar(); });
+  return {texto};
+}
+COMBO.ffon = fazCombo('ffon', render);
+$('flimpa').addEventListener('click', () => { SEL.clear(); $('forig').value = ''; $('fnat').dataset.chave = ''; $('ffon').value = ''; $('ffon').dataset.chave = ''; render(); });
+$('rmodo').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; modo = b.dataset.modo; save(); render(); });
+$('tnat').addEventListener('click', e => { const b = e.target.closest('button.tg'); if(!b || $('qnat').value.trim().length>=2) return; const k = b.dataset.k; abertos.has(k) ? abertos.delete(k) : abertos.add(k); desenharNat(); });
+let tq; $('qnat').addEventListener('input', () => { clearTimeout(tq); tq = setTimeout(desenharNat, 150); });
+$('abrenat').addEventListener('click', () => { const T = arvore(FILTRADOS); Object.values(T.idx).forEach(n => { if(n.kids.length && n.key.split('.').length<=5) abertos.add(n.key); }); desenharNat(); });
+$('fechanat').addEventListener('click', () => { abertos.clear(); desenharNat(); });
+['natmais','mesmais'].forEach(id => $(id).addEventListener('click', () => { const b = $(id); b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')!=='true'); id==='natmais' ? desenharNat() : desenharMes(); }));
+$('tmes').addEventListener('click', e => { const b = e.target.closest('button.ib'); if(b) abrirDet(+b.dataset.i); });
+$('detfecha').addEventListener('click', () => $('det').close ? $('det').close() : $('det').removeAttribute('open'));
+$('det').addEventListener('click', e => { if(e.target === $('det')) $('det').close(); });
+if(window.matchMedia && matchMedia('(max-width:720px)').matches) $('fbox').open = false;
+
+/* ===================== ABA DESPESA ===================== */
+const DESP = window.__PFD.DESP;
+const DYEARS = Object.keys(DESP.anos).sort();
+const ORG = {'02':'Gabinete do Prefeito','03':'Procuradoria-Geral do Município','04':'Secretaria de Governo','05':'Secretaria de Logística e Compras','06':'Secretaria de Fazenda','07':'Secretaria de Urbanismo e Habitação','08':'Secretaria de Saúde','09':'Secretaria de Educação','10':'Secretaria de Proteção e Bem-Estar Animal','11':'Secretaria de Mobilidade Urbana','12':'Secretaria de Aceleração Econômica e Turismo','13':'Secretaria de Assistência Social, Políticas sobre Drogas e Pessoa Idosa','14':'Secretaria de Cultura','15':'Secretaria de Esportes e Lazer','16':'Secretaria de Políticas Públicas para Mulheres','17':'Secretaria de Compliance e Controladoria','19':'Secretaria de Infraestrutura','20':'Secretaria de Obras Públicas','22':'Secretaria de Gestão de Pessoas','26':'Secretaria de Segurança Municipal','27':'Secretaria de Limpeza Urbana','28':'Secretaria de Assuntos Metropolitanos e Institucionais','29':'Secretaria de Trabalho e Renda','30':'Corpo de Bombeiros','32':'Secretaria de Juventude e Cidadania','33':'Secretaria de Comunicação','34':'Secretaria da Criança e do Adolescente','35':'AMTECH – Agência Maringá de Tecnologia e Inovação','36':'Secretaria da Pessoa com Deficiência'};
+const FUNC = {'01':'Legislativa','02':'Judiciária','03':'Essencial à Justiça','04':'Administração','05':'Defesa Nacional','06':'Segurança Pública','07':'Relações Exteriores','08':'Assistência Social','09':'Previdência Social','10':'Saúde','11':'Trabalho','12':'Educação','13':'Cultura','14':'Direitos da Cidadania','15':'Urbanismo','16':'Habitação','17':'Saneamento','18':'Gestão Ambiental','19':'Ciência e Tecnologia','20':'Agricultura','21':'Organização Agrária','22':'Indústria','23':'Comércio e Serviços','24':'Comunicações','25':'Energia','26':'Transporte','27':'Desporto e Lazer','28':'Encargos Especiais','99':'Reserva de Contingência'};
+const SUBF = {'031':'Ação Legislativa','032':'Controle Externo','061':'Ação Judiciária','062':'Defesa do Interesse Público no Processo Judiciário','091':'Defesa da Ordem Jurídica','092':'Representação Judicial e Extrajudicial','121':'Planejamento e Orçamento','122':'Administração Geral','123':'Administração Financeira','124':'Controle Interno','125':'Normatização e Fiscalização','126':'Tecnologia da Informação','127':'Ordenamento Territorial','128':'Formação de Recursos Humanos','129':'Administração de Receitas','130':'Administração de Concessões','131':'Comunicação Social','181':'Policiamento','182':'Defesa Civil','183':'Informação e Inteligência','241':'Assistência ao Idoso','242':'Assistência ao Portador de Deficiência','243':'Assistência à Criança e ao Adolescente','244':'Assistência Comunitária','245':'Serviços Socioassistenciais','271':'Previdência Básica','272':'Previdência do Regime Estatutário','301':'Atenção Básica','302':'Assistência Hospitalar e Ambulatorial','303':'Suporte Profilático e Terapêutico','304':'Vigilância Sanitária','305':'Vigilância Epidemiológica','306':'Alimentação e Nutrição','331':'Proteção e Benefícios ao Trabalhador','332':'Relações de Trabalho','333':'Empregabilidade','334':'Fomento ao Trabalho','361':'Ensino Fundamental','362':'Ensino Médio','363':'Ensino Profissional','364':'Ensino Superior','365':'Educação Infantil','366':'Educação de Jovens e Adultos','367':'Educação Especial','368':'Educação Básica','391':'Patrimônio Histórico, Artístico e Arqueológico','392':'Difusão Cultural','421':'Custódia e Reintegração Social','422':'Direitos Individuais, Coletivos e Difusos','423':'Assistência aos Povos Indígenas','451':'Infraestrutura Urbana','452':'Serviços Urbanos','453':'Transportes Coletivos Urbanos','481':'Habitação Rural','482':'Habitação Urbana','511':'Saneamento Básico Rural','512':'Saneamento Básico Urbano','541':'Preservação e Conservação Ambiental','542':'Controle Ambiental','543':'Recuperação de Áreas Degradadas','544':'Recursos Hídricos','545':'Meteorologia','571':'Desenvolvimento Científico','572':'Desenvolvimento Tecnológico e Engenharia','573':'Difusão do Conhecimento Científico e Tecnológico','605':'Abastecimento','606':'Extensão Rural','607':'Irrigação','608':'Promoção da Produção Agropecuária','609':'Defesa Agropecuária','661':'Promoção Industrial','662':'Produção Industrial','691':'Promoção Comercial','692':'Comercialização','693':'Comércio Exterior','694':'Serviços Financeiros','695':'Turismo','722':'Telecomunicações','752':'Energia Elétrica','781':'Transporte Aéreo','782':'Transporte Rodoviário','783':'Transporte Ferroviário','784':'Transporte Hidroviário','785':'Transportes Especiais','811':'Desporto de Rendimento','812':'Desporto Comunitário','813':'Lazer','841':'Refinanciamento da Dívida Interna','842':'Refinanciamento da Dívida Externa','843':'Serviço da Dívida Interna','844':'Serviço da Dívida Externa','845':'Outras Transferências','846':'Outros Encargos Especiais','847':'Transferências para a Educação Básica','999':'Reserva de Contingência'};
+const CATD = {'3':'Despesas correntes','4':'Despesas de capital','9':'Reserva de contingência'};
+const GRP = {'3.1':'Pessoal e encargos sociais','3.2':'Juros e encargos da dívida','3.3':'Outras despesas correntes','4.4':'Investimentos','4.5':'Inversões financeiras','4.6':'Amortização da dívida','9.9':'Reserva de contingência'};
+const MODA = {'20':'Transferências à União','22':'Execução orçamentária delegada à União','30':'Transferências a estados e ao Distrito Federal','31':'Transferências a estados e ao DF – fundo a fundo','32':'Execução orçamentária delegada a estados e ao DF','40':'Transferências a municípios','41':'Transferências a municípios – fundo a fundo','42':'Execução orçamentária delegada a municípios','50':'Transferências a instituições privadas sem fins lucrativos','60':'Transferências a instituições privadas com fins lucrativos','67':'Execução de contrato de parceria público-privada','70':'Transferências a instituições multigovernamentais','71':'Transferências a consórcios públicos (contrato de rateio)','72':'Execução orçamentária delegada a consórcios públicos','80':'Transferências ao exterior','90':'Aplicações diretas','91':'Aplicação direta – operações entre órgãos do mesmo ente (intraorçamentária)','93':'Aplicação direta – operações com consórcio do qual o ente participe','99':'A definir'};
+const DGRP = [['Pessoal e encargos sociais','3.1'],['Juros e encargos da dívida','3.2'],['Outras despesas correntes','3.3'],['Investimentos','4.4'],['Inversões financeiras','4.5'],['Amortização da dívida','4.6']];
+const FONTES = Object.assign({}, ...YEARS.map(y => DATA.anos[y].fontes || {}));
+/* nomes informados pela contabilidade para fontes sem arrecadação nos relatórios da receita */
+Object.assign(FONTES, {'1271':'Convênio Construção CAPS-AD III - Minist. Saúde - Novo PAC','1272':'Convênio Construção UBS - Minist. Saúde - Novo PAC','1290':'Convênio Construção UPA Porte I','1294':'Construção de Espaço Esportivo Comunitário - Termo de Compromisso MESP/CAIXA - Novo PAC','1296':'Convênio Estado - SECID - Pavimentação e Drenagem da Av. João Pereira - Fase 1','1297':'Convênio Ministério Portos e Aeroportos - Ampliação e Modernização do Terminal de Passageiros','1298':'Convênio Estado - SECID - Dissipador e Emissário DER','1299':'Construção de Complexo Social da Pessoa Idosa - Resolução Nº 25/2025 - Secretaria de Estado da Mulher, Igualdade Racial e Pessoa Idosa - FMI','1300':'Construção do Centro Dia Sol Nascente - Resolução Nº 25/2025 - Secretaria de Estado da Mulher, Igualdade Racial e Pessoa Idosa - FMI','1358':'Convênio Estado - SECID - Ampliação do Salão Comunitário Parque das Grevíleas','1370':'Convênio SECID Nº 1145/2025 - Aquisição de Veículo Hatch - SECRIA','1372':'Convênio SECID Nº 1065/2025 - Recuperação Ponte Ribeirão Mandacaru','1375':'Convênio SECID Nº 1416/2025 - Aquisição de Veículo Hatch - AMETRO','1397':'Convênio SEIL Nº 096/2025 - Restauração e Duplicação da Avenida Prefeito Sincler Sambatti (Contorno Sul)','1398':'Contrato de Repasse nº 941449/2023/MESP/CAIXA - Recuperação de Salão em Alvenaria - Vila Olímpica','2066':'Apoio Financeiro aos Municípios - AFM (MP 938/2020)','2970':'Vigilância em Saúde - Estado','41992':'Programa FINISA - Fin. de Infraestrutura e ao Saneamento - Teatro PLAZA','1230':'Convênio Itaipu Binacional - Ciclovia Avenida Tuiuti','1262':'Apoio Financeiro para Ações Emergenciais - ênfase em Dengue - Resolução SESA 285/2024','1277':'Emenda de Comissão - PAP - Saúde','1494':'Vigilância em Saúde - Estado','31215':'Lei Paulo Gustavo – L.C. nº 195/2022 - Art. 5º - Audiovisual','31216':'Lei Paulo Gustavo – L.C. nº 195/2022 - Art. 8º - Demais Setores da Cultura','31924':'PPAS II – Serviço Especializado para Pessoas em Situação de Rua – Centro POP','1374':'Convênio SECID Nº 1064/2025 - Aquisição de Veículo Sedan - SEJUC','1384':'Convênio SECID Nº 1363/2025 - Pavimentação de Vias Urbanas - Iguatemi','1396':'Convênio SECID Nº 2260/2025 - Pavimentação de Vias Urbanas/Programa Asfalto Novo, Vida Nova','1406':'Convênio SECID Nº 36/2026 - Aquisição de um Veículo Sedan - SSM','1407':'Convênio SECID Nº 33/2026 - Aquisição de um Veículo Utilitário Tipo Pick Up - SAET','1408':'Convênio SECID Nº 34/2026 - Aquisição de um Veículo Hatch - SECRIANÇA','1422':'Convênio Nº 75/2026 SEAB - Pavimentação Estrada Centenário','1423':'Convênio Nº 82/2026 SEAB - Pavimentação Estrada Paulo Guerra','1428':'Convênio Nº 76/2026 SEAB - Pavimentação Estrada Pitanga','1431':'Convênio SECID Nº 591/2026 - Construção de Estacionamento Vertical no Parque de Exposições','1447':'Convênio SECID Nº 994/2026 – Aquisição de dez containers modulares com implantação','31800':'Índice de Gestão Descentralizada/IGD - Bolsa Família'});
+/* fonte do exercício x superávit: 1xxx/2xxx (4 dígitos) e X1xxx/X2xxx (5 dígitos) são a mesma fonte */
+/* exceções: 1xxxx/2xxxx (ex.: 11045 e 21045) usam o 1º dígito; 99999 é a reserva de contingência, sem superávit */
+const FONTE_FIXA = {'99999':'Reserva de Contingência'};
+/* 4101 e 4102: recursos do exercício das fontes 1101 e 1102; o 4 só marca o gasto com educação integral */
+const FONTE_MARCA = {'4101':'1101','4102':'1102'};
+const fonteExerc = f => FONTE_FIXA[f] ? null : f.length===4 ? (f[0]==='2' ? '1'+f.slice(1) : null) : f.length===5 ? (/^[12]/.test(f) ? (f[0]==='2' ? '1'+f.slice(1) : null) : f[1]==='2' ? f[0]+'1'+f.slice(2) : null) : null;
+const limpaF = s => String(s).replace(/\s+/g,' ').trim();
+const nomeFonte = f => { if(FONTE_FIXA[f]) return FONTE_FIXA[f]; if(FONTE_MARCA[f]) return nomeFonte(FONTE_MARCA[f])+' – Educação Integral'; if(FONTES[f]) return limpaF(FONTES[f]) + (fonteExerc(f) && !/super[aá]vit/i.test(FONTES[f]) ? ' (superávit)' : ''); const e = fonteExerc(f); return e && FONTES[e] ? limpaF(FONTES[e]).replace(/\s*[-–]?\s*Exerc[ií]cio Corren[\wte.…]*$/i,'')+' (superávit)' : 'Fonte '+f; };
+const nomeOrg = o => ORG[o] || 'Órgão '+o;
+/* nomes oficiais das unidades orçamentárias, quando informados */
+const UNID = {"02.010": "Chefia de Gabinete do Prefeito", "03.010": "Gabinete do Procurador-Geral do Município", "03.020": "Fundo Municipal de Defesa do Consumidor - PROCON", "04.010": "Gabinete do Secretário de Governo", "05.010": "Gabinete do Secretário de Logística e Compras", "06.010": "Gabinete do Secretário de Fazenda", "07.010": "Gabinete do Secretário de Urbanismo e Habitação", "07.020": "Fundo de Habitação Municipal - FHM", "08.010": "Fundo Municipal de Saúde - FMS", "09.010": "Gabinete da Secretaria de Educação", "09.020": "Educação Infantil", "09.030": "Ensino Fundamental", "10.010": "Gabinete do Secretário de Proteção e Bem-Estar Animal", "11.010": "Gabinete do Secretário de Mobilidade Urbana", "11.020": "Fundo Municipal de Transportes e Segurança no Trânsito - FMT", "11.030": "Sistema de Estacionamento Rotativo - EstaR", "12.010": "Gabinete do Secretário de Aceleração Econômica e Turismo", "12.020": "Fundo Municipal de Desenvolvimento Econômico - FMDE", "13.010": "Gabinete do Secretário de Assistência Social, Políticas sobre Drogas e Pessoa Idosa", "13.020": "Fundo Municipal de Assistência Social", "13.040": "Fundo Municipal de Promoção aos Direitos do Idoso", "13.050": "Fundo Municipal sobre Drogas", "14.010": "Gabinete do Secretário de Cultura", "14.020": "Fundo Municipal de Cultura", "15.010": "Gabinete do Secretário de Esportes e Lazer", "15.020": "Fundo Municipal de Esporte e Lazer", "16.010": "Gabinete da Secretaria de Políticas Públicas para Mulheres", "16.020": "Fundo Municipal dos Direitos das Mulheres", "17.010": "Gabinete do Secretário de Compliance e Controladoria", "19.010": "Gabinete do Secretário de Infraestrutura", "20.010": "Gabinete do Secretário de Obras Públicas", "22.010": "Gabinete do Secretário de Gestão de Pessoas", "26.010": "Gabinete do Secretário de Segurança Municipal", "26.020": "Fundo Municipal de Transportes e Segurança no Trânsito - FMT", "26.030": "Sistema de Estacionamento Rotativo - EstaR", "27.010": "Gabinete do Secretário de Limpeza Urbana", "28.010": "Gabinete do Secretário de Assuntos Metropolitanos e Institucionais", "29.010": "Gabinete do Secretário Municipal de Trabalho e Renda", "29.020": "Fundo do Trabalho de Maringá - FT/Maringá", "30.010": "Fundo de Reequipamento do Corpo de Bombeiros", "32.010": "Gabinete do Secretário Municipal de Juventude e Cidadania", "32.020": "Fundo Municipal de Políticas de Promoção da Igualdade Racial", "33.010": "Gabinete do Secretário de Comunicação", "34.010": "Gabinete do Secretário Municipal da Criança e do Adolescente", "34.020": "Fundo Municipal dos Direitos da Criança e do Adolescente - FMDCA", "35.010": "Gabinete do Secretário da AMTECH", "35.020": "Fundo Municipal de Ciência, Tecnologia e Inovação de Maringá - FMCTI", "36.010": "Gabinete do Secretário Municipal da Pessoa com Deficiência", "36.020": "Fundo Municipal de Promoção dos Direitos da Pessoa com Deficiência"}; const _unC = {};
+function nomeUnidade(A, u){ const y = Object.keys(DESP.anos).find(k => DESP.anos[k]===A) || '';
+  if(!_unC[y]){ const U = {}; A.itens.forEach(i => { const z = i[0].slice(0,6), o = U[z] || (U[z] = {}); o[i[0]] = (o[i[0]]||0) + (i[4][i[4].length-1]||0); }); _unC[y] = U; }
+  const U = _unC[y]; if(UNID[u]) return UNID[u]; const og = nomeOrg(u.slice(0,2));
+  if(!Object.keys(U).some(z => z!==u && z.slice(0,2)===u.slice(0,2))) return og;
+  const top = Object.entries(U[u]||{}).sort((a,b)=>b[1]-a[1])[0]; return og + (top ? ' (ex.: ' + nomeAcao(A, top[0]) + ')' : ''); }
+let curMD = null, modoD = 'mensal', agrD = 'org'; const SELD = new Set(), abertosD = {org:new Set(), fun:new Set(), nat:new Set(['3','4']), fon:new Set()};
+let DFILT = [], DIDX = new Set();
+try { const b = +localStorage.getItem('pfc-mesd'); if(b>=1 && b<=12) curMD = b; const md = localStorage.getItem('pfc-mododd'); if(md==='mensal'||md==='acumulado') modoD = md; const ag = localStorage.getItem('pfc-agrd'); if(['org','fun','nat','fon'].includes(ag)) agrD = ag; } catch(e){}
+const saveD = () => { try { localStorage.setItem('pfc-mesd', curMD); localStorage.setItem('pfc-mododd', modoD); localStorage.setItem('pfc-agrd', agrD); } catch(e){} };
+const clampD = () => { const A = DESP.anos[curY]; if(!A) return; const n = A.meses; if(!curMD || curMD>n) curMD = (A.parcial===n && n>1) ? n-1 : n; };
+const nomeAcao = (A,p) => A.acoes[p] ? bonito(A.acoes[p]) : 'Ação '+p.slice(-4);
+const nomeEl = (A,n) => A.elnomes[n] ? bonito(A.elnomes[n]) : 'Elemento '+n;
+const nomeSub = (A,c) => A.subnomes[c] ? bonito(A.subnomes[c]) : 'Subelemento '+c;
+const nomeMod = m => MODA[m] || 'Modalidade '+m;
+const cmpCodD = (a,b) => { const x = a.code.split(/[.\s·]+/), y = b.code.split(/[.\s·]+/); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (parseInt(x[i])||0)-(parseInt(y[i])||0); if(d) return d; } return a.code.localeCompare(b.code); };
+
+/* filtros */
+function passaD(it, ign){ const p = it[0].split('.'), org = $('dorg').value, un = $('dun').value, pa = $('dpa').value, nat = $('dnat').value, fon = $('dfon').value;
+  if(org && p[0]!==org) return false;
+  if(un && it[0].slice(0,6)!==un) return false;
+  if(!(ign && ign.pa) && pa && it[0]!==pa) return false;
+  if(nat && !(it[1]+'.').startsWith(nat+'.')) return false;
+  if(!(ign && ign.grupo) && SELD.size && ![...SELD].some(g => it[1].startsWith(g+'.'))) return false;
+  if(!(ign && ign.fonte) && fon && it[2]!==fon) return false;
+  return true; }
+function montarFiltrosD(){
+  const A = DESP.anos[curY], so = $('dorg'), su = $('dun'), sp = $('dpa'), sn = $('dnat'), sx = $('dfon');
+  if(so.dataset.ano !== curY){
+    const orgs = [...new Set(A.itens.map(i=>i[0].slice(0,2)))].sort(), at1 = so.value, at3 = sn.value;
+    so.innerHTML = '<option value="">Todas as secretarias</option>' + orgs.map(o=>`<option value="${o}">${o} – ${esc(nomeOrg(o))}</option>`).join('');
+    const ns = {}; A.itens.forEach(i => { const s = i[1].split('.'); const c = s[0], g = s[0]+'.'+s[1], m = g+'.'+s[2]; ns[c] = ns[c] || {}; ns[c][g] = ns[c][g] || {}; (ns[c][g][m] = ns[c][g][m] || new Set()).add(i[1]); });
+    const ord = o => Object.keys(o).sort((a,b)=>cmpCodD({code:a},{code:b}));
+    sn.innerHTML = '<option value="">Todas as naturezas</option>' + ord(ns).map(c => `<option value="${c}" style="font-weight:600">${c} – ${esc(CATD[c]||'Categoria '+c)}</option>` + ord(ns[c]).map(g => `<option value="${g}"> ${g} – ${esc(GRP[g]||'Grupo '+g)}</option>` + ord(ns[c][g]).map(m => `<option value="${m}">  ${m} – ${esc(nomeMod(m.split('.')[2]))}</option>` + [...ns[c][g][m]].sort((a,b)=>cmpCodD({code:a},{code:b})).map(e => `<option value="${e}">   ${e} – ${esc(nomeEl(A,e))}</option>`).join('')).join('')).join('')).join('');
+    const ok = (s,v) => [...s.options].some(o=>o.value===v);
+    so.value = ok(so,at1)?at1:''; sn.value = ok(sn,at3)?at3:''; so.dataset.ano = curY; }
+  const chUN = curY+'|'+so.value;
+  if(su.dataset.chave !== chUN){ const at = su.value, U = {};
+    A.itens.forEach(i => { const u = i[0].slice(0,6); if(so.value && u.slice(0,2)!==so.value) return; const o = U[u] || (U[u] = {}); o[i[0]] = (o[i[0]]||0) + (i[4][i[4].length-1]||0); });
+    const us = Object.keys(U).sort();
+    const rot = u => nomeUnidade(A, u);
+    su.innerHTML = `<option value="">Todas as unidades (${us.length})</option>` + us.map(u => `<option value="${u}">${u} – ${esc(rot(u))}</option>`).join('');
+    su.value = us.includes(at) ? at : ''; su.dataset.chave = chUN; }
+  const chPA = curY+'|'+so.value+'|'+su.value;
+  if(sp.dataset.chave !== chPA){ const at = sp.value;
+    const ps = [...new Set(A.itens.filter(i => (!so.value || i[0].slice(0,2)===so.value) && (!su.value || i[0].slice(0,6)===su.value)).map(i=>i[0]))].sort((a,b)=>{ const x = a.split('.'), y = b.split('.'); return (x[5]).localeCompare(y[5]) || a.localeCompare(b); });
+    sp.innerHTML = `<option value="">Todos os projetos/atividades (${ps.length})</option>` + ps.map(pr => { const s = pr.split('.'); return `<option value="${pr}">${s[5]} – ${esc(nomeAcao(A,pr))} (${s[0]}.${s[1]})</option>`; }).join('');
+    sp.value = ps.includes(at) ? at : ''; sp.dataset.chave = chPA; }
+  if(COMBO.dpa && document.activeElement!==$('dpaq')) COMBO.dpa.texto();
+  const chave = [curY, so.value, su.value, sp.value, sn.value, [...SELD].sort().join(',')].join('|');
+  if(sx.dataset.chave !== chave){ const at = sx.value;
+    const fs = [...new Set(A.itens.filter(i => passaD(i,{fonte:true})).map(i=>i[2]))].sort((a,b)=>(+a)-(+b));
+    sx.innerHTML = `<option value="">Todas as fontes (${fs.length})</option>` + fs.map(f=>`<option value="${f}">${f} – ${esc(nomeFonte(f))}</option>`).join('');
+    sx.value = fs.includes(at) ? at : ''; sx.dataset.chave = chave; }
+  if(COMBO.dfon && document.activeElement!==$('dfonq')) COMBO.dfon.texto();
+  const ativos = (so.value?1:0) + (su.value?1:0) + (sp.value?1:0) + (sn.value?1:0) + (SELD.size?1:0) + (sx.value?1:0);
+  $('dlimpa').hidden = !ativos; $('dfsum').textContent = ativos ? `Filtros (${ativos})` : 'Filtros';
+}
+function resumoFiltroD(){ const A = DESP.anos[curY], so = $('dorg').value, su = $('dun').value, sp = $('dpa').value, sn = $('dnat').value, sx = $('dfon').value;
+  const gs = DGRP.filter(g=>SELD.has(g[1])).map(g=>g[0]);
+  return [so ? nomeOrg(so) : '', su ? 'unidade '+su : '', sp ? sp.split('.')[5]+' '+nomeAcao(A,sp) : '', sn ? sn+' '+(sn.split('.').length===4 ? nomeEl(A,sn) : sn.split('.').length===3 ? nomeMod(sn.split('.')[2]) : GRP[sn]||CATD[sn]||'') : '', gs.length ? gs.join(' + ') : '', sx ? 'fonte '+sx : ''].filter(Boolean).join(' · '); }
+
+/* totais */
+const zD = () => ({ini:0, atu:new Array(12).fill(0), emp:new Array(12).fill(0), liq:new Array(12).fill(0), pago:new Array(12).fill(0)});
+function somaD(itens, n){ const T = zD(); itens.forEach(it => { T.ini += it[3]; for(let i=0;i<n;i++){ T.atu[i] += it[4][i]; T.emp[i] += it[5][i]; T.liq[i] += it[6][i]; T.pago[i] += it[7][i]; } }); return T; }
+
+/* gráfico */
+function graficoD(T, n, sel, parcial){
+  const el = $('dch');
+  $('dlg').innerHTML = `<span><i class="sw" style="background:var(--prev)"></i>Empenhado</span><span><i class="sw" style="background:var(--s1)"></i>Liquidado</span>`;
+  drawers.dch = function(){
+    const W = Math.max(280, el.clientWidth), H = 280, m = {l:54,r:modoD==='acumulado'?64:12,t:14,b:26};
+    let E = T.emp.slice(0,n), L = T.liq.slice(0,n);
+    if(modoD==='acumulado'){ const ac = a => { let s=0; return a.map(v=>s+=v); }; E = ac(E); L = ac(L); }
+    const {step,max} = eixo(Math.max(1,...E,...L)), bw = (W-m.l-m.r)/12, y = v => H-m.b - Math.max(0,v)/max*(H-m.t-m.b), cx = i => m.l + bw*i + bw/2;
+    let g = '';
+    for(let t=0;t<=max+1;t+=step) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--line)" stroke-width="1"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${tk(t)}</text>`;
+    if(sel!=null) g += `<rect x="${m.l+bw*sel+1}" y="${m.t}" width="${bw-2}" height="${H-m.t-m.b}" rx="6" style="fill:var(--ink);fill-opacity:.05"/>`;
+    if(modoD==='mensal'){
+      const w1 = Math.max(6, Math.min(56, bw*0.74)), w2 = w1*0.52;
+      const barra = (x0,w,h,cor) => { const r = Math.min(4, w/2, h/2); return `<path d="M${x0},${H-m.b} v${-(h-r)} q0,${-r} ${r},${-r} h${w-2*r} q${r},0 ${r},${r} v${h-r} z" style="fill:var(${cor})"/>`; };
+      for(let i=0;i<n;i++){ [[E,w1,'--prev'],[L,w2,'--s1']].forEach(([a,w,c]) => { const h = H-m.b-y(a[i]); if(h>0) g += barra(cx(i)-w/2, w, h, c); }); }
+    } else {
+      [[E,'--prev',3],[L,'--s1',2.5]].forEach(([a,c,sw]) => { g += `<polyline fill="none" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(${c})" points="${a.map((v,i)=>cx(i)+','+y(v)).join(' ')}"/>`; a.forEach((v,i)=> g += `<circle cx="${cx(i)}" cy="${y(v)}" r="${i===sel?4.5:2.5}" style="fill:var(${c});stroke:var(--surface)" stroke-width="1.5"/>`); });
+      if(n){ const ls = [[E,'Emp.'],[L,'Liq.']].map(([a,t])=>({t:t+' '+tk(a[n-1]), y:y(a[n-1])})).sort((a,b)=>a.y-b.y); for(let k=1;k<ls.length;k++) if(ls[k].y-ls[k-1].y<13) ls[k].y = ls[k-1].y+13;
+        ls.forEach(o => g += `<text x="${cx(n-1)+9}" y="${o.y+4}" font-size="11" style="fill:var(--ink-2)">${o.t}</text>`); }
+    }
+    for(let i=0;i<12;i++){ if(W>=520 || i%2===0 || i===11) g += `<text x="${cx(i)}" y="${H-8}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${M3[i]}${parcial===i+1?'*':''}</text>`;
+      g += `<rect data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H}" fill="transparent"/>`; }
+    g += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" style="stroke:var(--line-2)" stroke-width="1"/>`;
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de empenhado e liquidado por mês; os valores estão na tabela Mês a mês">${g}</svg><div class="tip" hidden></div>`;
+    const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { const i = +r.dataset.i; if(i>=n) return;
+      r.addEventListener('mouseenter', () => { tip.innerHTML = `<strong>${capP(MN[i])}${modoD==='acumulado'?' (acumulado)':''}${parcial===i+1?' · em aberto':''}</strong><br>Empenhado: ${brl(E[i])}<br>Liquidado: ${brl(L[i])}`; tip.hidden = false;
+        tip.style.left = Math.min(Math.max(cx(i),110),W-110)+'px'; tip.style.top = (y(Math.max(E[i],L[i]))-8)+'px'; });
+      r.addEventListener('mouseleave', () => tip.hidden = true); });
+  };
+  drawers.dch();
+  if(!drawers.dobs){ drawers.dobs = true; new ResizeObserver(()=>drawers.dch && drawers.dch()).observe(el); }
+}
+
+/* árvore da tabela */
+function arvoreD(A, m){
+  const raiz = {kids:[], map:{}}, idx = {};
+  const no = (pai, key, label, code) => { if(!pai.map[key]){ const n = {key, label, code, ini:0, atu:0, res:0, emp:0, liq:0, pago:0, atuX:0, cX:0, semDot:false, kids:[], map:{}}; pai.map[key] = n; pai.kids.push(n); idx[key] = n; } return pai.map[key]; };
+  const soma = (n, v) => { n.ini += v.ini; n.atu += v.atu; n.res += v.res; if(!v.rc){ n.atuX += v.atu; n.cX += v.emp + v.res; } n.emp += v.emp; n.liq += v.liq; n.pago += v.pago; };
+  const caminho = it => { const p = it[0].split('.'), s = it[1].split('.'), un = p[0]+'.'+p[1], g = s[0]+'.'+s[1];
+    if(agrD==='org') return [[p[0], nomeOrg(p[0]), p[0]], [un, 'Unidade '+un+' – '+nomeUnidade(A,un), un], [it[0], nomeAcao(A,it[0]), un+' · '+p[5]], [it[0]+'|'+it[1], nomeEl(A,it[1]), it[1]]];
+    if(agrD==='fun') return [[p[2], FUNC[p[2]]||'Função '+p[2], p[2]], [p[2]+'.'+p[3], SUBF[p[3]]||'Subfunção '+p[3], p[2]+'.'+p[3]], [p[2]+'.'+p[3]+'|'+it[0], nomeAcao(A,it[0]), un+' · '+p[5]]];
+    if(agrD==='nat') return [[s[0], CATD[s[0]]||'Categoria '+s[0], s[0]], [g, GRP[g]||'Grupo '+g, g], [g+'.'+s[2], nomeMod(s[2]), g+'.'+s[2]], [it[1], nomeEl(A,it[1]), it[1]]];
+    return [[it[2], nomeFonte(it[2]), it[2]], [it[2]+'|'+g, GRP[g]||'Grupo '+g, g], [it[2]+'|'+it[1], nomeEl(A,it[1]), it[1]]]; };
+  DFILT.forEach(it => { const v = {rc:it[1].startsWith('9.') || it[2]==='99999', ini:it[3], atu:it[4][m-1], res:it[8] ? it[8][m-1] : 0, emp:sumTo(it[5],m), liq:sumTo(it[6],m), pago:sumTo(it[7],m)};
+    let pai = raiz; caminho(it).forEach(([k,l,c]) => { pai = no(pai,k,l,c); soma(pai,v); }); });
+  if(agrD==='nat' || agrD==='org') A.subs.forEach(([ix, cod, e, l, p]) => { if(!DIDX.has(ix)) return; const it = A.itens[ix], pk = agrD==='nat' ? it[1] : it[0]+'|'+it[1], pai = idx[pk]; if(!pai) return;
+    const n = no(pai, pk+'|'+cod, nomeSub(A,cod), cod); n.semDot = true; const ve = sumTo(e,m), vl = sumTo(l,m), vp = sumTo(p,m); n.emp += ve; n.liq += vl; n.pago += vp;
+    if(agrD==='org'){ const f = no(n, pk+'|'+cod+'|'+it[2], 'Fonte '+it[2]+' – '+nomeFonte(it[2]), it[2]); f.semDot = true; f.emp += ve; f.liq += vl; f.pago += vp; } });
+  const ord = n => { n.kids.sort(cmpCodD); n.kids.forEach(ord); }; ord(raiz);
+  return {raiz, idx};
+}
+/* execução abaixo do esperado: (empenhado + reservado) / dotação atualizada, comparado com a parte do ano já decorrida */
+const MIN_SOBRA = 10000;
+function statusD(k, m){ if(k.semDot || k.atuX<=0) return null; const pc = k.cX/k.atuX, esp = m/12, sobra = k.atuX - k.cX;
+  const nv = sobra < MIN_SOBRA ? 'ok' : pc < esp*0.5 ? 'baixa' : pc < esp*0.75 ? 'atencao' : 'ok'; return {pc, nv, sobra}; }
+function desenharTabD(){
+  const A = DESP.anos[curY], m = curMD, mais = $('dmais').getAttribute('aria-pressed')==='true', x = mais ? '' : ' hidden', T = arvoreD(A, m), q = $('dq').value.trim(), ab = abertosD[agrD];
+  const soBaixa = $('dbaixa').getAttribute('aria-pressed')==='true';
+  let filtro = null;
+  if(soBaixa){ filtro = new Set(); const walk = (no, anc) => no.kids.forEach(k => { const s = statusD(k, m); if(s && s.nv!=='ok' && !k.kids.some(c => { const sc = statusD(c, m); return sc && sc.nv!=='ok'; })){ anc.forEach(a=>filtro.add(a)); filtro.add(k.key); } walk(k, anc.concat(k.key)); }); walk(T.raiz, []); }
+  if(q.length>=2){ const nq = semAc(q), f2 = new Set();
+    const walk = (no, anc) => no.kids.forEach(k => { if(semAc(k.label).includes(nq) || k.code.includes(q)){ anc.forEach(a=>f2.add(a)); f2.add(k.key); } walk(k, anc.concat(k.key)); }); walk(T.raiz, []);
+    filtro = filtro ? new Set([...f2].filter(z => filtro.has(z))) : f2; }
+  const celSt = k => { const s = statusD(k, m); if(!s) return '<td>–</td>'; const txt = pct(s.pc*100);
+    return s.nv==='baixa' ? `<td><span class="alerta ex" title="Execução baixa: sobra de ${brl(s.sobra)} na dotação">${txt}</span></td>` : s.nv==='atencao' ? `<td><span class="alerta am ex" title="Execução em atenção: sobra de ${brl(s.sobra)} na dotação">${txt}</span></td>` : `<td>${txt}</td>`; };
+  const re = q.length>=2 ? new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig') : null;
+  const mk = s => re ? esc(s).replace(re, z=>`<mark>${z}</mark>`) : esc(s);
+  const t = T.raiz.kids.reduce((a,k)=>{ ['ini','atu','res','emp','liq','pago'].forEach(z=>a[z]+=k[z]); return a; }, {ini:0,atu:0,res:0,emp:0,liq:0,pago:0});
+  const out = [];
+  const lin = (no, nv) => no.kids.forEach(k => { if(filtro && !filtro.has(k.key)) return;
+    if(!k.ini && !k.atu && !k.emp && !k.liq && !k.pago) return;
+    const open = filtro ? true : ab.has(k.key), temK = k.kids.length>0;
+    const vc = v => `<td>${brl(v)}</td>`, vx = v => `<td class="xtra"${x}>${brl(v)}</td>`, tr = '<td>–</td>', trx = `<td class="xtra"${x}>–</td>`;
+    const pa = ratio(k.atu,t.atu), mx = Math.max(...no.kids.map(c=>c.semDot?0:c.atu)), pw = mx>0 ? k.atu/mx*100 : 0;
+    out.push(`<tr class="n${Math.min(nv,4)}"><td class="cod">${mk(k.code)}</td><td class="nm" style="padding-left:${10+nv*14}px">`+
+      (temK ? `<button type="button" class="tg" data-k="${esc(k.key)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▸</span><span>${mk(k.label)}</span></button>` : `<span class="tg"><span class="sp"></span><span>${mk(k.label)}</span></span>`)+
+      `</td>`+(k.semDot?trx:`<td class="xtra"${x} title="${pct(ratio(k.ini,t.ini))} da dotação inicial total">${brl(k.ini)}</td>`)+
+      (k.semDot?tr:`<td class="dbar" title="${pct(pa)} da dotação atualizada total">${brl(k.atu)}<span class="bt"><i style="width:${Math.max(Math.min(pw,100),1.5)}%"></i></span></td>`)+
+      vc(k.emp)+vc(k.liq)+vx(k.pago)+(k.semDot?trx:`<td class="xtra"${x}>${pct(ratio(k.liq,k.atu))}</td>`)+celSt(k)+
+      (k.semDot?trx+trx+trx:vx(k.atu-k.emp)+vx(k.res)+vx(k.atu-k.emp-k.res))+vx(k.emp-k.pago)+'</tr>');
+    if(temK && open) lin(k, nv+1); });
+  lin(T.raiz, 0);
+  const nomeCol = {org:'Secretaria, unidade, ação, elemento, desdobramento e fonte', fun:'Função, subfunção e ação', nat:'Natureza da despesa', fon:'Fonte, grupo e elemento'}[agrD];
+  const xh = n => `<th class="xtra"${x}>${n}</th>`, tx = v => `<td class="xtra"${x}>${brl(v)}</td>`, tc = v => `<td>${brl(v)}</td>`;
+  $('dtab').innerHTML = `<thead><tr><th class="cod">Código</th><th class="nm">${nomeCol}</th>${xh('Dotação inicial')}<th>Dotação atualizada</th><th>Empenhado</th><th>Liquidado</th>${xh('Pago')}${xh('% liquidado')}<th>% comprometido</th>${xh('Saldo a empenhar')}${xh('Reservado')}${xh('Saldo disponível')}${xh('Empenhado a pagar')}</tr></thead><tbody>` +
+    (out.length ? out.join('') : `<tr><td colspan="13">${q.length>=2?`Nada encontrado para “${esc(q)}”.`:soBaixa?'Nenhuma linha com execução abaixo do esperado.':'Nenhuma despesa com estes filtros.'}</td></tr>`) +
+    (filtro ? '' : `<tr class="tot"><td></td><td>Total</td>${tx(t.ini)}${tc(t.atu)}${tc(t.emp)}${tc(t.liq)}${tx(t.pago)}<td class="xtra"${x}>${pct(ratio(t.liq,t.atu))}</td><td>${pct(ratio(t.emp+t.res,t.atu))}</td>${tx(t.atu-t.emp)}${tx(t.res)}${tx(t.atu-t.emp-t.res)}${tx(t.emp-t.pago)}</tr>`) + '</tbody>';
+}
+function desenharMesD(T){
+  const A = DESP.anos[curY], m = curMD, n = A.meses, mais = $('dmesmais').getAttribute('aria-pressed')==='true', x = mais ? '' : ' hidden';
+  let ae=0, al=0, ap=0;
+  $('dmes').innerHTML = `<thead><tr><th class="left">Mês</th><th>Dotação inicial</th><th>Dotação atualizada</th><th>Empenhado</th><th>Liquidado</th><th>Pago</th><th class="xtra"${x}>Empenhado acumulado</th><th class="xtra"${x}>Liquidado acumulado</th><th class="xtra"${x}>Pago acumulado</th><th class="xtra"${x}>% liquidado</th></tr></thead><tbody>` +
+    M3.map((z,i) => { const tem = i<n; if(tem){ ae += T.emp[i]; al += T.liq[i]; ap += T.pago[i]; }
+      return `<tr${i===m-1?' class="sel"':''}><td class="left">${capP(MN[i])}${A.parcial===i+1?' <span class="note">(em aberto)</span>':''}</td>` + (tem ? `<td>${brl(T.ini)}</td><td>${brl(T.atu[i])}</td><td>${brl(T.emp[i])}</td><td>${brl(T.liq[i])}</td><td>${brl(T.pago[i])}</td><td class="xtra"${x}>${brl(ae)}</td><td class="xtra"${x}>${brl(al)}</td><td class="xtra"${x}>${brl(ap)}</td><td class="xtra"${x}>${pct(ratio(al,T.atu[i]))}</td>` : `<td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td class="xtra"${x}>–</td><td class="xtra"${x}>–</td><td class="xtra"${x}>–</td><td class="xtra"${x}>–</td>`) + '</tr>'; }).join('') +
+    `<tr class="tot"><td class="left">Total</td><td>${brl(T.ini)}</td><td>${brl(T.atu[n-1])}</td><td>${brl(sumTo(T.emp,n))}</td><td>${brl(sumTo(T.liq,n))}</td><td>${brl(sumTo(T.pago,n))}</td><td class="xtra"${x}></td><td class="xtra"${x}></td><td class="xtra"${x}></td><td class="xtra"${x}></td></tr></tbody>`;
+}
+
+function renderDesp(){
+  document.querySelectorAll('#years button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.y===curY));
+  const A = DESP.anos[curY];
+  $('dvazio').hidden = !!A; $('dcorpo').hidden = !A;
+  if(!A){ $('msel').innerHTML = '<option>–</option>'; $('msel').disabled = true;
+    $('dvaziot').textContent = `Ainda não há dados de despesa de ${curY}. Disponível: ${DYEARS.join(', ')}.`;
+    $('rodape').textContent = ''; return; }
+  $('msel').disabled = false; clampD();
+  const m = curMD, n = A.meses, fechado = m===12, ate = fechado ? 'no ano' : 'até '+MN[m-1];
+  $('msel').innerHTML = Array.from({length:n},(x,i)=>`<option value="${i+1}">${capP(MN[i])}${A.parcial===i+1?' (em aberto)':''}</option>`).join(''); $('msel').value = m;
+  montarFiltrosD();
+  DFILT = []; DIDX = new Set(); A.itens.forEach((it,i) => { if(passaD(it)){ DFILT.push(it); DIDX.add(i); } });
+  const T = somaD(DFILT, n), atu = T.atu[m-1], emp = sumTo(T.emp,m), liq = sumTo(T.liq,m), pago = sumTo(T.pago,m), filtro = resumoFiltroD();
+  $('dkt').textContent = 'Resumo ' + (fechado ? `de ${curY}` : `até ${MN[m-1]} de ${curY}`) + (filtro ? ' · '+filtro : '');
+  const cred = atu - T.ini;
+  $('dkpis').innerHTML =
+    `<div class="kpi"><span class="label">Dotação inicial</span><span class="v">${brl(T.ini)}</span><span class="c">Lei orçamentária de ${curY}</span></div>`+
+    `<div class="kpi"><span class="label">Dotação atualizada</span><span class="v">${brl(atu)}</span><span class="c">${Math.abs(cred)>=1?`${signed(short(cred))} (${signed(pct(ratio(cred,T.ini)))}) sobre a inicial`:'Sem alteração em relação à inicial'}</span></div>`+
+    `<div class="kpi"><span class="label">Empenhado ${ate}</span><span class="v">${brl(emp)}</span><span class="c"><b>${pct(ratio(emp,atu))}</b> da dotação atualizada</span></div>`+
+    `<div class="kpi r"><span class="label">Liquidado ${ate}</span><span class="v">${brl(liq)}</span><span class="c"><b>${pct(ratio(liq,atu))}</b> da dotação atualizada</span></div>`;
+  { const w = v => Math.max(0, Math.min(100, ratio(v,atu)||0));
+    $('dprog').innerHTML = `<span class="t">Execução da dotação atualizada ${ate} (${brl(atu)})</span>` +
+      `<div class="pbar" role="img" aria-label="Empenhado ${pct(ratio(emp,atu))} e liquidado ${pct(ratio(liq,atu))} da dotação atualizada"><div class="trk stk"><i style="width:${w(emp)}%;background:var(--prev)"></i><i style="width:${w(liq)}%;background:var(--s1)"></i></div></div>` +
+      `<span class="leg"><span><i class="sq e"></i>Empenhado ${pct(ratio(emp,atu))}</span><span><i class="sq"></i>Liquidado ${pct(ratio(liq,atu))}</span><span>Ano decorrido: ${pct(m/12*100,0)}</span></span>`; }
+  $('dct').textContent = 'Empenhado e liquidado' + (filtro ? ' · '+filtro : '');
+  $('dcinfo').dataset.tip = (modoD==='mensal' ? 'Barras sobrepostas com o empenhado (mais larga, clara) e o liquidado (mais estreita, escura) de cada mês.' : 'Valores acumulados desde janeiro.') + ' O empenho de contratos anuais costuma se concentrar no início do ano; o liquidado é o que melhor mostra o ritmo da despesa.';
+  document.querySelectorAll('#dmodo button').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo===modoD));
+  graficoD(T, n, m-1, A.parcial);
+  $('dmini').innerHTML = DGRP.map(([nm,g]) => { const its = A.itens.filter(it => it[1].startsWith(g+'.') && passaD(it,{grupo:true}));
+    const a = its.reduce((s,it)=>s+it[4][m-1],0), l = its.reduce((s,it)=>s+sumTo(it[6],m),0), q = ratio(l,a);
+    if(!a && !l) return '';
+    return `<button type="button" class="mc" data-p="${g}" aria-pressed="${SELD.has(g)}"><span class="n">${nm}</span><span class="v">${brl(l)}</span><div class="bar" role="img" aria-label="${pct(q)} da dotação"><i style="width:${Math.max(0,Math.min(100,q||0))}%"></i></div><span class="p">${pct(q)} de ${short(a)} de dotação</span></button>`; }).join('');
+  document.querySelectorAll('#dagr button').forEach(b => b.setAttribute('aria-pressed', b.dataset.a===agrD));
+  const sn = $('dnat').value; if(agrD==='nat' && sn){ const s = sn.split('.'); for(let i=1;i<=s.length;i++) abertosD.nat.add(s.slice(0,i).join('.')); }
+  desenharTabD(); desenharMesD(T);
+  $('rodape').textContent = `Fontes: "Balancete da despesa" (modelo analítico) do sistema contábil, emitido de janeiro até o fim de cada mês de ${curY}; o valor de cada mês é a diferença entre dois acumulados. Nomes de função e subfunção pela Portaria 42/1999; nomes das secretarias a partir das ações do orçamento. Nomes das fontes de recursos pelos relatórios da receita.`;
+}
+
+/* eventos da despesa */
+COMBO.dfon = fazCombo('dfon', renderDesp);
+['dorg','dun','dnat'].forEach(id => $(id).addEventListener('change', renderDesp));
+COMBO.dpa = fazCombo('dpa', renderDesp, 'nenhum projeto/atividade');
+$('dlimpa').addEventListener('click', () => { SELD.clear(); ['dorg','dun','dpa','dnat','dfon'].forEach(id => $(id).value = ''); $('dun').dataset.chave = ''; $('dfon').dataset.chave = ''; $('dpa').dataset.chave = ''; renderDesp(); });
+$('dmini').addEventListener('click', e => { const b = e.target.closest('.mc'); if(!b) return; const p = b.dataset.p, multi = e.ctrlKey || e.metaKey || TOQUE;
+  if(multi) SELD.has(p) ? SELD.delete(p) : SELD.add(p); else if(SELD.size===1 && SELD.has(p)) SELD.clear(); else { SELD.clear(); SELD.add(p); } renderDesp(); });
+$('dmodo').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; modoD = b.dataset.modo; saveD(); renderDesp(); });
+$('dagr').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; agrD = b.dataset.a; $('dq').value = ''; saveD(); renderDesp(); });
+$('dtab').addEventListener('click', e => { const b = e.target.closest('button.tg'); if(!b || $('dq').value.trim().length>=2) return; const k = b.dataset.k, ab = abertosD[agrD]; ab.has(k) ? ab.delete(k) : ab.add(k); desenharTabD(); });
+let tqd; $('dq').addEventListener('input', () => { clearTimeout(tqd); tqd = setTimeout(desenharTabD, 150); });
+$('dabre').addEventListener('click', () => { const T = arvoreD(DESP.anos[curY], curMD), lim = {org:2, fun:2, nat:3, fon:1}[agrD];
+  const walk = (no, d) => no.kids.forEach(k => { if(k.kids.length && d<lim){ abertosD[agrD].add(k.key); walk(k, d+1); } }); walk(T.raiz, 0); desenharTabD(); });
+$('dfecha').addEventListener('click', () => { abertosD[agrD].clear(); desenharTabD(); });
+$('dmais').addEventListener('click', () => { const b = $('dmais'); b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')!=='true'); desenharTabD(); });
+$('dbaixa').addEventListener('click', () => { const b = $('dbaixa'); b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')!=='true'); desenharTabD(); });
+$('dmesmais').addEventListener('click', () => { const b = $('dmesmais'); b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')!=='true'); renderDesp(); });
+if(window.matchMedia && matchMedia('(max-width:720px)').matches) $('dfbox').open = false;
+/* ===================== FIM DA ABA DESPESA ===================== */
+
+/* ===================== ABA RECEITA × DESPESA ===================== */
+let curMX = null, modoX = 'mensal', ordX = {k:'ar', d:-1}; const abertosX = new Set();
+try { const b = +localStorage.getItem('pfc-mesx'); if(b>=1 && b<=12) curMX = b; const md = localStorage.getItem('pfc-modox'); if(md==='mensal'||md==='acumulado') modoX = md; } catch(e){}
+const saveX = () => { try { localStorage.setItem('pfc-mesx', curMX); localStorage.setItem('pfc-modox', modoX); } catch(e){} };
+const fonteDoExercicio = f => f!=='99999' && !fonteExerc(f) && !FONTE_FIXA[f];
+function infoX(y){ const R = DATA.anos[y], D = DESP.anos[y]; if(!R || !D) return null;
+  const n = Math.min(R.meses, D.meses), par = [R.parcial, D.parcial].filter(p => p && p<=n), parcial = par.length ? Math.min(...par) : null;
+  return {R, D, n, parcial}; }
+function dadosX(I){
+  const F = {}, n = 12;
+  const get = f => F[f] || (F[f] = {f, prev:0, arr:new Array(n).fill(0), emp:new Array(n).fill(0), liq:new Array(n).fill(0), pago:new Array(n).fill(0), atu:new Array(n).fill(0), nat:{}, grp:{}});
+  let sup = {emp:new Array(n).fill(0), liq:new Array(n).fill(0)};
+  I.R.itens.forEach(([f,c,p,r]) => { if(!fonteDoExercicio(f)) return; const o = get(f); o.prev += sumTo(p,12); for(let i=0;i<I.R.meses;i++) o.arr[i] += r[i];
+    const k = curtoC(c); const z = o.nat[k] || (o.nat[k] = {c, arr:new Array(n).fill(0)}); for(let i=0;i<I.R.meses;i++) z.arr[i] += r[i]; });
+  I.D.itens.forEach(it => { const f0 = it[2], f = FONTE_MARCA[f0] || f0;
+    if(!fonteDoExercicio(f)){ if(f!=='99999') for(let i=0;i<I.D.meses;i++){ sup.emp[i] += it[5][i]; sup.liq[i] += it[6][i]; } return; }
+    const o = get(f), s = it[1].split('.'), g = s[0]+'.'+s[1]; if(f0!==f){ o.inc = o.inc || new Set(); o.inc.add(f0); }
+    const z = o.grp[g] || (o.grp[g] = {emp:new Array(n).fill(0), liq:new Array(n).fill(0), pago:new Array(n).fill(0)});
+    for(let i=0;i<I.D.meses;i++){ o.emp[i] += it[5][i]; o.liq[i] += it[6][i]; o.pago[i] += it[7][i]; o.atu[i] += it[4][i]; z.emp[i] += it[5][i]; z.liq[i] += it[6][i]; z.pago[i] += it[7][i]; } });
+  return {F, sup};
+}
+function graficoX(T, n, sel, parcial){
+  const el = $('xch');
+  $('xlg').innerHTML = `<span><i class="sw" style="background:var(--ink-2);height:3px;border-radius:2px"></i>Arrecadado</span><span><i class="sw" style="background:var(--prev)"></i>Empenhado</span><span><i class="sw" style="background:var(--s1)"></i>Liquidado</span>`;
+  drawers.xch = function(){
+    const W = Math.max(280, el.clientWidth), H = 280, m = {l:54,r:modoX==='acumulado'?70:12,t:14,b:26};
+    let A = T.arr.slice(0,n), E = T.emp.slice(0,n), L = T.liq.slice(0,n);
+    if(modoX==='acumulado'){ const ac = a => { let s=0; return a.map(v=>s+=v); }; A = ac(A); E = ac(E); L = ac(L); }
+    const {step,max} = eixo(Math.max(1,...A,...E,...L)), bw = (W-m.l-m.r)/12, y = v => H-m.b - Math.max(0,v)/max*(H-m.t-m.b), cx = i => m.l + bw*i + bw/2;
+    let g = '';
+    for(let t=0;t<=max+1;t+=step) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--line)" stroke-width="1"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${tk(t)}</text>`;
+    if(sel!=null) g += `<rect x="${m.l+bw*sel+1}" y="${m.t}" width="${bw-2}" height="${H-m.t-m.b}" rx="6" style="fill:var(--ink);fill-opacity:.05"/>`;
+    if(modoX==='mensal'){
+      const w1 = Math.max(6, Math.min(56, bw*0.74)), w2 = w1*0.5;
+      const barra = (x0,w,h,cor) => { const r = Math.min(4, w/2, h/2); return `<path d="M${x0},${H-m.b} v${-(h-r)} q0,${-r} ${r},${-r} h${w-2*r} q${r},0 ${r},${r} v${h-r} z" style="fill:var(${cor})"/>`; };
+      for(let i=0;i<n;i++){ [[E,w1,'--prev'],[L,w2,'--s1']].forEach(([a,w,c]) => { const h = H-m.b-y(a[i]); if(h>0) g += barra(cx(i)-w/2, w, h, c); }); }
+      for(let i=0;i<n;i++) g += `<line x1="${cx(i)-w1/2-4}" x2="${cx(i)+w1/2+4}" y1="${y(A[i])}" y2="${y(A[i])}" stroke-width="3" stroke-linecap="round" style="stroke:var(--ink-2)"/>`;
+    } else {
+      [[E,'--prev',3],[L,'--s1',2.5],[A,'--ink-2',2.5]].forEach(([a,c,sw]) => { g += `<polyline fill="none" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(${c})" points="${a.map((v,i)=>cx(i)+','+y(v)).join(' ')}"/>`; a.forEach((v,i)=> g += `<circle cx="${cx(i)}" cy="${y(v)}" r="${i===sel?4.5:2.5}" style="fill:var(${c});stroke:var(--surface)" stroke-width="1.5"/>`); });
+      if(n){ const ls = [[A,'Arrec.'],[E,'Emp.'],[L,'Liq.']].map(([a,t])=>({t:t+' '+tk(a[n-1]), y:y(a[n-1])})).sort((a,b)=>a.y-b.y); for(let k=1;k<ls.length;k++) if(ls[k].y-ls[k-1].y<13) ls[k].y = ls[k-1].y+13;
+        ls.forEach(o => g += `<text x="${cx(n-1)+9}" y="${o.y+4}" font-size="11" style="fill:var(--ink-2)">${o.t}</text>`); }
+    }
+    for(let i=0;i<12;i++){ if(W>=520 || i%2===0 || i===11) g += `<text x="${cx(i)}" y="${H-8}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${M3[i]}${parcial===i+1?'*':''}</text>`;
+      g += `<rect data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H}" fill="transparent"/>`; }
+    g += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" style="stroke:var(--line-2)" stroke-width="1"/>`;
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de arrecadado, empenhado e liquidado por mês, só fontes do exercício">${g}</svg><div class="tip" hidden></div>`;
+    const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { const i = +r.dataset.i; if(i>=n) return;
+      r.addEventListener('mouseenter', () => { tip.innerHTML = `<strong>${capP(MN[i])}${modoX==='acumulado'?' (acumulado)':''}${parcial===i+1?' · em aberto':''}</strong><br>Arrecadado: ${brl(A[i])}<br>Empenhado: ${brl(E[i])}<br>Liquidado: ${brl(L[i])}<br>Arrecadado − liquidado: ${signed(brl(A[i]-L[i]))}`; tip.hidden = false;
+        tip.style.left = Math.min(Math.max(cx(i),120),W-120)+'px'; tip.style.top = (y(Math.max(A[i],E[i],L[i]))-8)+'px'; });
+      r.addEventListener('mouseleave', () => tip.hidden = true); });
+  };
+  drawers.xch();
+  if(!drawers.xobs){ drawers.xobs = true; new ResizeObserver(()=>drawers.xch && drawers.xch()).observe(el); }
+}
+function renderRxd(){
+  document.querySelectorAll('#years button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.y===curY));
+  const I = infoX(curY);
+  $('xvazio').hidden = !!I; $('xcorpo').hidden = !I;
+  if(!I){ $('msel').innerHTML = '<option>–</option>'; $('msel').disabled = true;
+    $('xvaziot').textContent = `Para comparar receita e despesa de ${curY} faltam os dados de ${DATA.anos[curY] ? 'despesa' : 'receita'} desse ano. Disponível: ${YEARS.filter(y=>infoX(y)).join(', ')}.`; $('rodape').textContent = ''; return; }
+  $('msel').disabled = false;
+  if(!curMX || curMX>I.n) curMX = (I.parcial===I.n && I.n>1) ? I.n-1 : I.n;
+  const m = curMX, n = I.n, fechado = m===12, ate = fechado ? 'no ano' : 'até '+MN[m-1];
+  $('msel').innerHTML = Array.from({length:n},(x,i)=>`<option value="${i+1}">${capP(MN[i])}${I.parcial===i+1?' (em aberto)':''}</option>`).join(''); $('msel').value = m;
+  const {F, sup} = dadosX(I), todas = Object.values(F).filter(o => o.prev || sumTo(o.arr,n) || sumTo(o.emp,n) || o.atu[n-1]);
+  /* filtro de fonte */
+  const sx = $('xfon'), chave = curY;
+  if(sx.dataset.chave !== chave){ const at = sx.value, fs = todas.map(o=>o.f).sort((a,b)=>(+a)-(+b));
+    sx.innerHTML = `<option value="">Todas as fontes do exercício (${fs.length})</option>` + fs.map(f=>`<option value="${f}">${f} – ${esc(nomeFonte(f))}</option>`).join('');
+    sx.value = fs.includes(at) ? at : ''; sx.dataset.chave = chave; }
+  if(COMBO.xfon && document.activeElement!==$('xfonq')) COMBO.xfon.texto();
+  const sel = todas.filter(o => !sx.value || o.f===sx.value);
+  const T = {arr:new Array(12).fill(0), emp:new Array(12).fill(0), liq:new Array(12).fill(0), pago:new Array(12).fill(0)};
+  sel.forEach(o => { for(let i=0;i<12;i++){ T.arr[i]+=o.arr[i]; T.emp[i]+=o.emp[i]; T.liq[i]+=o.liq[i]; T.pago[i]+=o.pago[i]; } });
+  const ar = sumTo(T.arr,m), em = sumTo(T.emp,m), li = sumTo(T.liq,m), pg = sumTo(T.pago,m), sd = ar-li;
+  $('xkt').textContent = 'Resumo ' + (fechado ? `de ${curY}` : `até ${MN[m-1]} de ${curY}`) + (sx.value ? ' · fonte '+sx.value+' – '+nomeFonte(sx.value) : ' · fontes do exercício');
+  const parc = I.parcial && I.parcial<=m ? ` · ${MN[I.parcial-1]} em aberto` : '';
+  $('xkpis').innerHTML =
+    `<div class="kpi"><span class="label">Arrecadado ${ate}</span><span class="v">${brl(ar)}</span><span class="c">Receita líquida das fontes do exercício${parc}</span></div>`+
+    `<div class="kpi"><span class="label">Empenhado ${ate}</span><span class="v">${brl(em)}</span><span class="c"><b class="${em>ar?'warn-t':''}">${pct(ratio(em,ar))}</b> do arrecadado</span></div>`+
+    `<div class="kpi r"><span class="label">Liquidado ${ate}</span><span class="v">${brl(li)}</span><span class="c"><b class="${li>ar?'crit-t':''}">${pct(ratio(li,ar))}</b> do arrecadado</span></div>`+
+    `<div class="kpi"><span class="label">Arrecadado − liquidado</span><span class="v ${sd<0?'crit-t':''}">${signed(brl(sd))}</span><span class="c">${sd>=0?'Arrecadação ainda não usada em despesa liquidada':'Liquidado acima do arrecadado'}</span></div>`;
+  { const w = v => Math.max(0, Math.min(100, ratio(v,ar)||0));
+    $('xprog').innerHTML = `<span class="t">Quanto do arrecadado ${ate} já virou despesa (${brl(ar)} = 100%)</span>` +
+      `<div class="pbar" role="img" aria-label="Empenhado ${pct(ratio(em,ar))}, liquidado ${pct(ratio(li,ar))} e pago ${pct(ratio(pg,ar))} do arrecadado"><div class="trk stk"><i style="width:${w(em)}%;background:var(--prev)"></i><i style="width:${w(li)}%;background:var(--liq)"></i><i style="width:${w(pg)}%;background:var(--s1)"></i></div></div>` +
+      `<span class="leg"><span><i class="sq e"></i>Empenhado ${pct(ratio(em,ar))}</span><span><i class="sq l"></i>Liquidado ${pct(ratio(li,ar))}</span><span><i class="sq"></i>Pago ${pct(ratio(pg,ar))}</span></span>`; }
+  document.querySelectorAll('#xmodo button').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo===modoX));
+  graficoX(T, n, m-1, I.parcial);
+  desenharTabX(I, sel, m);
+  const se = sumTo(sup.emp,m), sl = sumTo(sup.liq,m);
+  $('xsup').textContent = `Fora desta comparação ${ate}: despesa paga com superávit de anos anteriores (fontes 2xxx e X2xxx), com ${brl(se)} empenhados e ${brl(sl)} liquidados, e a reserva de contingência (fonte 99999).`;
+  $('rodape').textContent = `Fontes: relatórios "Receita Realizada por Fonte" e "Balancete da despesa" (analítico) de ${curY}, do sistema contábil. Arrecadação líquida de deduções, inclusive da retenção para o FUNDEB. Só fontes do exercício; os dois lados são da Prefeitura, sem a Maringá Previdência.`;
+}
+function desenharTabX(I, sel, m){
+  const mais = $('xmais').getAttribute('aria-pressed')==='true', x = mais ? '' : ' hidden';
+  const L = sel.map(o => ({o, ar:sumTo(o.arr,m), em:sumTo(o.emp,m), li:sumTo(o.liq,m), pg:sumTo(o.pago,m), atu:o.atu[m-1]}));
+  const val = {f:z=>+z.o.f, nm:z=>nomeFonte(z.o.f), ar:z=>z.ar, em:z=>z.em, li:z=>z.li, pg:z=>z.pg, sd:z=>z.ar-z.li, pl:z=>z.ar ? z.li/z.ar : (z.li ? Infinity : -Infinity), pv:z=>z.o.prev, at:z=>z.atu, se:z=>z.ar-z.em}[ordX.k];
+  L.sort((a,b) => { const va = val(a), vb = val(b); const c = typeof va==='string' ? va.localeCompare(vb,'pt-BR') : (va>vb) - (va<vb); return c*ordX.d || (+a.o.f)-(+b.o.f); });
+  const th = (k, txt, cls) => { const on = ordX.k===k; return `<th class="${cls||''}"${cls&&cls.includes('xtra')?x:''} aria-sort="${on?(ordX.d>0?'ascending':'descending'):'none'}"><button type="button" class="srt${on?' on':''}" data-s="${k}">${txt}<span aria-hidden="true">${on?(ordX.d>0?' ▲':' ▼'):' ↕'}</span></button></th>`; };
+  const t = L.reduce((s,z)=>{ s.ar+=z.ar; s.em+=z.em; s.li+=z.li; s.pg+=z.pg; s.prev+=z.o.prev; s.atu+=z.atu; return s; }, {ar:0,em:0,li:0,pg:0,prev:0,atu:0});
+  const cel = z => `<td>${brl(z.ar)}</td><td>${z.em>z.ar+0.5 ? `<span class="alerta am" title="Empenhado acima do arrecadado">${brl(z.em)}</span>` : brl(z.em)}</td><td class="${z.li>z.ar+0.5?'crit-t':''}">${brl(z.li)}</td><td>${brl(z.pg)}</td><td>${z.ar-z.li< -0.5 ? `<span class="alerta" title="Liquidado acima do arrecadado">${signed(brl(z.ar-z.li))}</span>` : signed(brl(z.ar-z.li))}</td><td>${pct(ratio(z.li,z.ar))}</td><td class="xtra"${x}>${brl(z.o.prev)}</td><td class="xtra"${x}>${brl(z.atu)}</td><td class="xtra"${x}>${signed(brl(z.ar-z.em))}</td>`;
+  const out = [];
+  L.forEach(z => { const f = z.o.f, open = abertosX.has(f), temK = Object.keys(z.o.nat).length || Object.keys(z.o.grp).length;
+    out.push(`<tr class="n0${z.ar-z.li< -0.5?' rneg':z.em>z.ar+0.5?' ramb':''}"><td class="cod">${f}</td><td class="nm">${temK ? `<button type="button" class="tg" data-k="${f}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▸</span><span>${esc(nomeFonte(f))}${z.o.inc?`<span class="cd">inclui ${[...z.o.inc].join(', ')} (educação integral)</span>`:''}</span></button>` : `<span class="tg"><span class="sp"></span><span>${esc(nomeFonte(f))}</span></span>`}</td>${cel(z)}</tr>`);
+    if(!open) return;
+    const nats = Object.values(z.o.nat).map(v => ({c:v.c, ar:sumTo(v.arr,m)})).filter(v => Math.abs(v.ar)>=0.5).sort((a,b)=>b.ar-a.ar);
+    out.push(`<tr class="sub-h"><td></td><td colspan="10" style="padding-left:28px;text-align:left">Receitas que entraram na fonte</td></tr>`);
+    out.push(nats.length ? nats.map(v => `<tr><td class="cod">${curtoC(v.c)}</td><td class="nm" style="padding-left:44px">${esc(nomeNat(v.c))}</td><td>${brl(v.ar)}</td><td></td><td></td><td></td><td></td><td></td><td class="xtra"${x}></td><td class="xtra"${x}></td><td class="xtra"${x}></td></tr>`).join('') : `<tr><td></td><td class="nm note" style="padding-left:44px">Sem arrecadação no período</td><td colspan="9"></td></tr>`);
+    const gs = Object.entries(z.o.grp).map(([g,v]) => ({g, em:sumTo(v.emp,m), li:sumTo(v.liq,m), pg:sumTo(v.pago,m)})).filter(v => v.em||v.li||v.pg).sort((a,b)=>cmpCodD({code:a.g},{code:b.g}));
+    out.push(`<tr class="sub-h"><td></td><td colspan="10" style="padding-left:28px;text-align:left">Despesas pagas com a fonte, por grupo</td></tr>`);
+    out.push(gs.length ? gs.map(v => `<tr><td class="cod">${v.g}</td><td class="nm" style="padding-left:44px">${esc(GRP[v.g]||'Grupo '+v.g)}</td><td></td><td>${brl(v.em)}</td><td>${brl(v.li)}</td><td>${brl(v.pg)}</td><td></td><td></td><td class="xtra"${x}></td><td class="xtra"${x}></td><td class="xtra"${x}></td></tr>`).join('') : `<tr><td></td><td class="nm note" style="padding-left:44px">Sem despesa no período</td><td colspan="9"></td></tr>`);
+  });
+  $('xtab').innerHTML = `<thead><tr>${th('f','Fonte','cod')}${th('nm','Nome','nm')}${th('ar','Arrecadado')}${th('em','Empenhado')}${th('li','Liquidado')}${th('pg','Pago')}${th('sd','Saldo (arrec. − liq.)')}${th('pl','% liquidado')}${th('pv','Receita prevista no ano','xtra')}${th('at','Dotação atualizada','xtra')}${th('se','Arrecadado − empenhado','xtra')}</tr></thead><tbody>` +
+    (out.length ? out.join('') : '<tr><td colspan="11">Nenhuma fonte.</td></tr>') +
+    `<tr class="tot"><td></td><td>Total</td><td>${brl(t.ar)}</td><td>${brl(t.em)}</td><td>${brl(t.li)}</td><td>${brl(t.pg)}</td><td>${signed(brl(t.ar-t.li))}</td><td>${pct(ratio(t.li,t.ar))}</td><td class="xtra"${x}>${brl(t.prev)}</td><td class="xtra"${x}>${brl(t.atu)}</td><td class="xtra"${x}>${signed(brl(t.ar-t.em))}</td></tr></tbody>`;
+}
+COMBO.xfon = fazCombo('xfon', renderRxd);
+$('xmodo').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; modoX = b.dataset.modo; saveX(); renderRxd(); });
+$('xmais').addEventListener('click', () => { const b = $('xmais'); b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')!=='true'); renderRxd(); });
+$('xtab').addEventListener('click', e => { const b = e.target.closest('button.srt'); if(!b) return; const k = b.dataset.s; if(ordX.k===k) ordX.d = -ordX.d; else ordX = {k, d: (k==='f'||k==='nm') ? 1 : -1}; renderRxd(); const nb = document.querySelector(`#xtab button.srt[data-s="${k}"]`); if(nb) nb.focus(); });
+$('xtab').addEventListener('click', e => { const b = e.target.closest('button.tg'); if(!b) return; const k = b.dataset.k; abertosX.has(k) ? abertosX.delete(k) : abertosX.add(k); renderRxd(); });
+/* ===================== FIM DA ABA RECEITA × DESPESA ===================== */
+
+/* ===================== ABA DÍVIDA CONSOLIDADA ===================== */
+const DIV = __DIV__;
+const vpct = (a,b) => (b ? (a/b-1)*100 : null);
+let curQ = null; try { const b = +localStorage.getItem('pfc-quad'); if(b>=1 && b<=3) curQ = b; } catch(e){}
+const QN = ['1º quadrimestre (jan–abr)','2º quadrimestre (mai–ago)','3º quadrimestre (set–dez)'], QF = ['abr','ago','dez'];
+const notaLimpa = s => String(s||'').replace(/\s+/g,' ').trim();
+/* série de todos os quadrimestres disponíveis, em ordem */
+function serieDiv(){ const S = []; Object.keys(DIV.anos).sort().forEach((y,i) => { const A = DIV.anos[y]; if(i===0 && A.anterior) S.push({rot:'dez/'+String(+y-1).slice(2), d:A.anterior, y:String(+y-1), q:3});
+  A.quads.forEach(q => S.push({rot:QF[q-1]+'/'+y.slice(2), d:A.q[q], y, q})); }); return S; }
+function graficoDiv(sel){
+  const el = $('vch'), S = serieDiv();
+  $('vlg').innerHTML = `<span><i class="sw" style="background:var(--s1)"></i>Dívida consolidada (DC)</span><span><i class="sw" style="background:var(--prev)"></i>Caixa líquido deduzido</span><span><i class="sw" style="background:var(--warn);height:3px"></i>Dívida consolidada líquida (DCL)</span>`;
+  drawers.vch = function(){
+    const W = Math.max(280, el.clientWidth), H = 300, m = {l:58,r:14,t:16,b:28}, n = S.length;
+    const vals = S.flatMap(s => [s.d.dc, s.d.ded, s.d.dcl]), top = Math.max(1,...vals), bot = Math.min(0,...vals);
+    const st = [1e6,2e6,5e6,1e7,2e7,5e7,1e8,2e8,5e8,1e9].find(s => (top-bot)/s <= 7) || 2e9, max = Math.ceil(top/st)*st, min = Math.floor(bot/st)*st;
+    const y = v => m.t + (max - v)/(max - min)*(H-m.t-m.b), bw = (W-m.l-m.r)/n, cx = i => m.l + bw*i + bw/2;
+    const tkv = v => v===0 ? '0' : (v<0?'−':'') + tk(Math.abs(v));
+    let g = '';
+    for(let t=min;t<=max+1;t+=st) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(${t===0?'--line-2':'--line'})" stroke-width="${t===0?1.5:1}"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${tkv(t)}</text>`;
+    if(sel!=null) g += `<rect x="${m.l+bw*sel+2}" y="${m.t}" width="${bw-4}" height="${H-m.t-m.b}" rx="6" style="fill:var(--ink);fill-opacity:.05"/>`;
+    const b = Math.max(6, Math.min(34, bw*0.3));
+    const barra = (x0,v,cor) => { const y0 = y(0), y1 = y(v), h = Math.abs(y1-y0); return h>0 ? `<rect x="${x0}" y="${Math.min(y0,y1)}" width="${b}" height="${h}" rx="3" style="fill:var(${cor})"/>` : ''; };
+    S.forEach((s,i) => { g += barra(cx(i)-b-1, s.d.dc, '--s1') + barra(cx(i)+1, s.d.ded, '--prev'); });
+    g += `<polyline fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--warn)" points="${S.map((s,i)=>cx(i)+','+y(s.d.dcl)).join(' ')}"/>`;
+    S.forEach((s,i) => { g += `<circle cx="${cx(i)}" cy="${y(s.d.dcl)}" r="${i===sel?5.5:4}" style="fill:var(--warn);stroke:var(--surface)" stroke-width="2"/>`;
+      g += `<text x="${cx(i)}" y="${H-9}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${s.rot}</text>`;
+      g += `<rect data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H}" fill="transparent"/>`; });
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução da dívida consolidada, do caixa deduzido e da dívida consolidada líquida por quadrimestre">${g}</svg><div class="tip" hidden></div>`;
+    const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { const i = +r.dataset.i, s = S[i];
+      r.addEventListener('mouseenter', () => { tip.innerHTML = `<strong>${i===0 && s.q===3 && !DIV.anos[s.y] ? 'Saldo em 31/12/'+s.y : QN[s.q-1]+' de '+s.y}</strong><br>Dívida consolidada: ${brl(s.d.dc)}<br>Caixa líquido deduzido: ${brl(s.d.ded)}<br>Dívida consolidada líquida: ${brl(s.d.dcl)}<br>DCL / RCL ajustada: ${s.d.pdcl!=null?pct(s.d.pdcl):'–'}`; tip.hidden = false;
+        tip.style.left = Math.min(Math.max(cx(i),120),W-120)+'px'; tip.style.top = (Math.min(y(s.d.dc),y(s.d.ded),y(s.d.dcl))-8)+'px'; });
+      r.addEventListener('mouseleave', () => tip.hidden = true); });
+  };
+  drawers.vch();
+  if(!drawers.vobs){ drawers.vobs = true; new ResizeObserver(()=>drawers.vch && drawers.vch()).observe(el); }
+}
+const medidor = (rot, v, lim, alerta, nota) => { const esc_ = Math.max(lim*1.15, v||0), w = x => Math.max(0, Math.min(100, x/esc_*100));
+  const cls = v==null ? '' : v>=lim ? 'crit-t' : alerta!=null && v>=alerta ? 'warn-t' : 'good-t';
+  return `<div class="med"><div class="mt"><span>${rot}</span><b class="${cls}">${v==null?'–':pct(v,2)}</b></div><div class="pbar"><div class="trk"><i style="width:${w(Math.max(0,v||0))}%"></i></div>`+
+    (alerta!=null?`<span class="mk al" style="left:${w(alerta)}%"></span>`:'')+`<span class="mk" style="left:${w(lim)}%"></span></div>`+
+    `<span class="leg"><span><i class="sq"></i>Atual ${v==null?'–':pct(v,2)}</span>${alerta!=null?`<span><i class="ln al"></i>Alerta ${pct(alerta,1)}</span>`:''}<span><i class="ln lm"></i>Limite ${pct(lim,0)}</span></span>${nota?`<span class="note">${nota}</span>`:''}</div>`; };
+function renderDiv(){
+  document.querySelectorAll('#years button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.y===curY));
+  const A = DIV.anos[curY];
+  $('vvazio').hidden = !!A; $('vcorpo').hidden = !A;
+  if(!A){ $('msel').innerHTML = '<option>–</option>'; $('msel').disabled = true; $('vvaziot').textContent = `Ainda não há RGF de ${curY}. Disponível: ${Object.keys(DIV.anos).sort().join(', ')}.`; $('rodape').textContent = ''; return; }
+  $('msel').disabled = false;
+  if(!curQ || !A.quads.includes(curQ)) curQ = A.quads[A.quads.length-1];
+  $('msel').innerHTML = A.quads.map(q => `<option value="${q}">${QN[q-1]}</option>`).join(''); $('msel').value = curQ;
+  const q = curQ, d = A.q[q], an = A.anterior, oc = A.opc[q] || {}, fimAno = '31/12/'+(+curY-1);
+  $('vkt').textContent = `Posição no fim do ${QN[q-1].replace(/ \(.*/,'')} de ${curY}`;
+  const vdc = vpct(d.dc, an.dc);
+  $('vkpis').innerHTML =
+    `<div class="kpi"><span class="label">Dívida consolidada (DC)</span><span class="v">${brl(d.dc)}</span><span class="c"><b>${pct(d.pdc,2)}</b> da RCL ajustada · ${vdc==null?'':`<b class="${vdc<=0?'good-t':'crit-t'}">${vdc>=0?'+':'−'}${dec(Math.abs(vdc))}%</b> desde ${fimAno}`}</span></div>`+
+    `<div class="kpi"><span class="label">Caixa líquido deduzido</span><span class="v">${brl(d.ded)}</span><span class="c">Disponibilidade de caixa, menos restos a pagar processados e depósitos</span></div>`+
+    `<div class="kpi r"><span class="label">Dívida consolidada líquida (DCL)</span><span class="v ${d.dcl<0?'good-t':''}">${brl(d.dcl)}</span><span class="c">${d.dcl<0?'Negativa: o caixa supera a dívida':'Dívida maior que o caixa'} · <b>${pct(d.pdcl,2)}</b> da RCL ajustada</span></div>`+
+    `<div class="kpi"><span class="label">Operações de crédito no ano</span><span class="v">${brl(oc.ate_quad)}</span><span class="c"><b>${pct(oc.pct,2)}</b> da RCL ajustada · ${brl(oc.no_quad)} no quadrimestre</span></div>`;
+  $('vmed').innerHTML =
+    medidor('Dívida consolidada líquida ÷ RCL ajustada', d.pdcl, 120, 108, d.pdcl<0 ? `Valor negativo: o caixa líquido (${short(d.ded)}) é maior que a dívida (${short(d.dc)}). Limite do Senado: 120% (Resolução 40/2001); alerta em 108%.` : 'Limite do Senado: 120% (Resolução 40/2001); alerta em 108%.') +
+    medidor('Operações de crédito no ano ÷ RCL ajustada', oc.pct, 16, 14.4, `Limite do Senado: 16% da RCL ajustada (Resolução 43/2001); alerta em 14,4%. Limite em valor: ${brl(oc.limite)}.`);
+  graficoDiv(serieDiv().findIndex(s => s.y===curY && s.q===q && DIV.anos[s.y]));
+  /* composição */
+  const cols = [{rot:'Saldo em '+fimAno, d:an}].concat(A.quads.map(k => ({rot:'Até o '+QN[k-1].replace(/ \(.*/,'').replace('quadrimestre','quad.'), d:A.q[k], sel:k===q})));
+  const LIN = [['DÍVIDA CONSOLIDADA (DC)','dc',0,1],['Dívida contratual','contr',1],['Empréstimos internos','emp_int',2],['Empréstimos externos','emp_ext',2],['Reestruturação da dívida de estados e municípios','reest',2],['Financiamentos','fin',2],['Parcelamento de tributos','parc_trib',2],['Parcelamento de contribuições previdenciárias','parc_prev',2],['Demais dívidas contratuais','demais',2],['Precatórios vencidos e não pagos (após 05/05/2000)','prec',1],['Dívida mobiliária','mob',1],['Outras dívidas','outras',1],
+    ['DEDUÇÕES: CAIXA LÍQUIDO','ded',0,1],['Disponibilidade de caixa bruta','caixa',1],['(−) Restos a pagar processados','rpp',1],['(−) Depósitos restituíveis e valores vinculados','dep',1],['Demais haveres financeiros','haveres',1],
+    ['DÍVIDA CONSOLIDADA LÍQUIDA (DCL)','dcl',0,1],['Receita corrente líquida ajustada','rcl_aj',1],['% da DC sobre a RCL ajustada','pdc',1,0,1],['% da DCL sobre a RCL ajustada','pdcl',1,0,1]];
+  const val = (o,k,p) => o[k]==null ? '–' : p ? pct(o[k],2) : brl(o[k]);
+  const ultimo = A.q[A.quads[A.quads.length-1]];
+  $('vtab').innerHTML = `<thead><tr><th class="nm">Item</th>${cols.map(c=>`<th${c.sel?' class="csel"':''}>${c.rot}</th>`).join('')}<th>Variação no ano</th></tr></thead><tbody>` +
+    LIN.filter(([r,k,nv,b,p]) => cols.some(c => c.d[k])).map(([r,k,nv,b,p]) => { const v0 = an[k], v1 = A.q[q][k];
+      return `<tr class="${b?'n0':''}"><td class="nm" style="padding-left:${12+nv*16}px">${r}</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${val(c.d,k,p)}</td>`).join('')}<td>${p ? (v0!=null&&v1!=null?`${signed(dec(v1-v0,2))} p.p.`:'–') : (v0!=null&&v1!=null?signed(brl(v1-v0)):'–')}</td></tr>`; }).join('') + '</tbody>';
+  /* fora da DC */
+  const FORA = [['Precatórios posteriores a 05/05/2000 não incluídos na DC','prec_fora'],['Precatórios anteriores a 05/05/2000','prec_ant'],['Passivo atuarial do RPPS','atuarial'],['Restos a pagar não processados','rpnp'],['Antecipação de receita orçamentária (ARO)','aro'],['Dívida contratual de PPP','ppp'],['Apropriação de depósitos judiciais','depjud']];
+  $('vfora').innerHTML = `<thead><tr><th class="nm">Item</th>${cols.map(c=>`<th${c.sel?' class="csel"':''}>${c.rot}</th>`).join('')}</tr></thead><tbody>` +
+    FORA.filter(([r,k]) => cols.some(c => c.d[k])).map(([r,k]) => `<tr><td class="nm">${r}</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${val(c.d,k)}</td>`).join('')}</tr>`).join('') + '</tbody>';
+  /* serviço da dívida e operações de crédito da Prefeitura */
+  const mFim = q*4, D = DESP.anos[curY], R = DATA.anos[curY];
+  if(D && R){ const m = Math.min(mFim, D.meses), mr = Math.min(mFim, R.meses);
+    const ac = {}; D.itens.forEach(it => { const g = it[1].slice(0,3); if(g!=='3.2' && g!=='4.6') return; const k = it[0]; const o = ac[k] || (ac[k] = {k, j:0, a:0}); o[g==='3.2'?'j':'a'] += sumTo(it[6], m); });
+    const L = Object.values(ac).filter(o => Math.abs(o.j)+Math.abs(o.a) >= 0.5).sort((x,y)=>(y.j+y.a)-(x.j+x.a)), tj = L.reduce((s,o)=>s+o.j,0), ta = L.reduce((s,o)=>s+o.a,0);
+    const oper = {}; R.itens.forEach(([f,c,p,r]) => { if(!c.startsWith('2.1.')) return; const k = curtoC(c); const o = oper[k] || (oper[k] = {c, v:0}); o.v += sumTo(r, mr); });
+    const O = Object.values(oper).filter(o => Math.abs(o.v)>=0.5).sort((a,b)=>b.v-a.v), to = O.reduce((s,o)=>s+o.v,0);
+    $('vpref').hidden = false;
+    $('vpt').textContent = `Prefeitura: pagamentos da dívida e operações de crédito recebidas até ${MN[m-1]} de ${curY}`;
+    $('vserv').innerHTML = `<thead><tr><th class="cod">Ação</th><th class="nm">Descrição</th><th>Juros e encargos</th><th>Amortização</th><th>Total liquidado</th></tr></thead><tbody>` +
+      (L.length ? L.map(o => { const p = o.k.split('.'); return `<tr><td class="cod">${p[0]}.${p[1]} · ${p[5]}</td><td class="nm">${esc(nomeAcao(D,o.k))}</td><td>${brl(o.j)}</td><td>${brl(o.a)}</td><td>${brl(o.j+o.a)}</td></tr>`; }).join('') : '<tr><td colspan="5">Sem pagamentos no período.</td></tr>') +
+      `<tr class="tot"><td></td><td>Total</td><td>${brl(tj)}</td><td>${brl(ta)}</td><td>${brl(tj+ta)}</td></tr></tbody>`;
+    $('voper').innerHTML = `<thead><tr><th class="cod">Natureza</th><th class="nm">Operação de crédito</th><th>Arrecadado</th></tr></thead><tbody>` +
+      (O.length ? O.map(o => `<tr><td class="cod">${curtoC(o.c)}</td><td class="nm">${esc(nomeNat(o.c))}</td><td>${brl(o.v)}</td></tr>`).join('') : '<tr><td colspan="3">Sem operações de crédito recebidas no período.</td></tr>') +
+      `<tr class="tot"><td></td><td>Total</td><td>${brl(to)}</td></tr></tbody>`;
+  } else $('vpref').hidden = true;
+  $('vnota').textContent = A.notas[q] ? notaLimpa(A.notas[q]) : '';
+  $('vnotabox').hidden = !A.notas[q];
+  $('rodape').textContent = `Fontes: Relatório de Gestão Fiscal (RGF) de ${curY}, Anexo 2 (Dívida Consolidada Líquida) e Anexo 4 (Operações de Crédito), publicado no Siconfi; valores do Município. Pagamentos e operações de crédito da Prefeitura: balancete da despesa (liquidado nos grupos 3.2 e 4.6) e relatório de receita realizada (natureza 2.1).`;
+}
+/* ===================== FIM DA ABA DÍVIDA ===================== */
+
+/* ===================== ABA METAS FISCAIS ===================== */
+const MET = __MET__;
+const BNL = ['1º bimestre (jan–fev)','2º bimestre (mar–abr)','3º bimestre (mai–jun)','4º bimestre (jul–ago)','5º bimestre (set–out)','6º bimestre (nov–dez)'];
+let curB = null; try { const b = +localStorage.getItem('pfc-bim'); if(b>=1 && b<=6) curB = b; } catch(e){}
+/* linha numérica: meta (traço vermelho), resultado (ponto azul), ano anterior (círculo vazio) */
+function mlinha(v, meta, ant){
+  const xs = [v, meta, 0].concat(ant!=null?[ant]:[]), lo = Math.min(...xs), hi = Math.max(...xs), pad = (hi-lo)*0.08 || 1, a = lo-pad, b = hi+pad, w = x => (x-a)/(b-a)*100;
+  const s0 = Math.min(w(v), w(meta)), s1 = Math.max(w(v), w(meta));
+  return `<div class="mline"><div class="ax"></div><div class="seg${v<meta?' neg':''}" style="left:${s0}%;width:${s1-s0}%"></div><div class="z" style="left:${w(0)}%"></div><div class="zt" style="left:${w(0)}%">0</div>`+
+    `<div class="mm" style="left:${w(meta)}%" title="Meta: ${brl(meta)}"></div>${ant!=null?`<div class="pa" style="left:${w(ant)}%" title="Ano anterior: ${brl(ant)}"></div>`:''}<div class="rv" style="left:${w(v)}%" title="Resultado: ${brl(v)}"></div></div>`;
+}
+function graficoMet(selY, selB){
+  const el = $('mch'), yp = String(+selY-1), A = MET.anos[selY], P = MET.anos[yp];
+  const ser = Y => Y ? BN.map((n,i) => Y.b[i+1] ? Y.b[i+1].prim : null) : [];
+  const S1 = ser(A), S0 = ser(P), meta = A.b[A.bims[A.bims.length-1]].meta_prim;
+  $('mlg').innerHTML = `<span><i class="sw" style="background:var(--s1);height:3px"></i>${selY}</span>${P?`<span><i class="sw" style="background:var(--muted);height:3px"></i>${yp}</span>`:''}<span><i class="sw" style="background:var(--crit);height:3px"></i>Meta de ${selY}: ${short(meta)}</span>`;
+  drawers.mch = function(){
+    const W = Math.max(280, el.clientWidth), H = 280, m = {l:62,r:14,t:16,b:28};
+    const vals = S1.concat(S0).filter(v=>v!=null).concat([meta, 0]), top = Math.max(...vals), bot = Math.min(...vals);
+    const st = [1e7,2e7,5e7,1e8,2e8,5e8,1e9].find(s => (top-bot)/s <= 7) || 2e9, max = Math.ceil(top/st)*st, min = Math.floor(bot/st)*st;
+    const y = v => m.t + (max - v)/(max - min)*(H-m.t-m.b), bw = (W-m.l-m.r)/6, cx = i => m.l + bw*i + bw/2;
+    const tkv = v => v===0 ? '0' : (v<0?'−':'') + tk(Math.abs(v));
+    let g = '';
+    for(let t=min;t<=max+1;t+=st) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(${t===0?'--line-2':'--line'})" stroke-width="${t===0?1.5:1}"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${tkv(t)}</text>`;
+    g += `<rect x="${m.l+bw*(selB-1)+2}" y="${m.t}" width="${bw-4}" height="${H-m.t-m.b}" rx="6" style="fill:var(--ink);fill-opacity:.05"/>`;
+    g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(meta)}" y2="${y(meta)}" style="stroke:var(--crit)" stroke-width="2" stroke-dasharray="6 4"/>`;
+    const linha = (S, cor, w) => { const pts = S.map((v,i)=>v==null?null:cx(i)+','+y(v)).filter(Boolean); return pts.length>1 ? `<polyline fill="none" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(${cor})" points="${pts.join(' ')}"/>` : ''; };
+    g += linha(S0, '--muted', 2) + linha(S1, '--s1', 2.5);
+    S0.forEach((v,i) => { if(v!=null) g += `<circle cx="${cx(i)}" cy="${y(v)}" r="3.5" style="fill:var(--surface);stroke:var(--muted)" stroke-width="2"/>`; });
+    S1.forEach((v,i) => { if(v!=null){ g += `<circle cx="${cx(i)}" cy="${y(v)}" r="${i===selB-1?6:4.5}" style="fill:var(--s1);stroke:var(--surface)" stroke-width="2"/>`; if(i===selB-1) g += `<text x="${cx(i)}" y="${y(v)-12}" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:var(--ink)">${short(v)}</text>`; } });
+    BN.forEach((n,i) => g += `<text x="${cx(i)}" y="${H-9}" text-anchor="middle" font-size="11" style="fill:var(--muted)">até ${n}</text><rect data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H}" fill="transparent"/>`);
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Resultado primário acumulado por bimestre em ${selY} e ${yp}, com a meta anual">${g}</svg><div class="tip" hidden></div>`;
+    const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { const i = +r.dataset.i;
+      r.addEventListener('mouseenter', () => { tip.innerHTML = `<strong>Até ${BN[i]}</strong><br>${selY}: ${S1[i]!=null?brl(S1[i]):'ainda sem dado'}${P?`<br>${yp}: ${S0[i]!=null?brl(S0[i]):'–'}`:''}<br>Meta de ${selY}: ${brl(meta)}${P&&P.b[6]?`<br>Meta de ${yp}: ${brl(P.b[6].meta_prim)}`:''}`; tip.hidden = false;
+        tip.style.left = Math.min(Math.max(cx(i),120),W-120)+'px'; tip.style.top = (Math.min(...[S1[i],S0[i],meta].filter(v=>v!=null).map(y))-8)+'px'; });
+      r.addEventListener('mouseleave', () => tip.hidden = true); });
+  };
+  drawers.mch();
+  if(!drawers.mobs){ drawers.mobs = true; new ResizeObserver(()=>drawers.mch && drawers.mch()).observe(el); }
+}
+function renderMet(){
+  document.querySelectorAll('#years button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.y===curY));
+  const A = MET.anos[curY];
+  $('mvazio').hidden = !!A; $('mcorpo').hidden = !A;
+  if(!A){ $('msel').innerHTML = '<option>–</option>'; $('msel').disabled = true; $('mvaziot').textContent = `Ainda não há RREO de ${curY}. Disponível: ${Object.keys(MET.anos).sort().join(', ')}.`; $('rodape').textContent = ''; return; }
+  $('msel').disabled = false;
+  if(!curB || !A.bims.includes(curB)) curB = A.bims[A.bims.length-1];
+  $('msel').innerHTML = A.bims.map(b => `<option value="${b}">${BNL[b-1]}</option>`).join(''); $('msel').value = curB;
+  const b = curB, d = A.b[b], yp = String(+curY-1), P = MET.anos[yp], p = P && P.b[b] || null, fim = b===6, bl = BNL[b-1].replace(/ \(.*/,'');
+  $('mkt').textContent = `Resultados até o ${bl} de ${curY}`;
+  const rp = d.rec.rpt, dp = d.des.dpt, pagoT = dp[3]+dp[4]+dp[6];
+  const st = (v, meta) => v>=meta ? ['ok', fim?'Meta cumprida':'Acima da meta'] : fim ? ['ex','Meta não cumprida'] : ['at','Abaixo da meta'];
+  const sP = st(d.prim, d.meta_prim), sN = st(d.nom, d.meta_nom);
+  $('mkpis').innerHTML =
+    `<div class="kpi r"><span class="label">Resultado primário</span><span class="v ${d.prim>=0?'good-t':'crit-t'}">${brl(d.prim)}</span><span class="c">${d.prim>=0?'Superávit':'Déficit'} · meta anual de ${brl(d.meta_prim)}</span></div>`+
+    `<div class="kpi"><span class="label">Resultado nominal</span><span class="v">${brl(d.nom)}</span><span class="c">Meta anual de ${brl(d.meta_nom)}</span></div>`+
+    `<div class="kpi"><span class="label">Receitas primárias realizadas</span><span class="v">${brl(rp[1])}</span><span class="c"><b>${pct(ratio(rp[1],rp[0]))}</b> da previsão atualizada de ${short(rp[0])}</span></div>`+
+    `<div class="kpi"><span class="label">Despesas primárias pagas</span><span class="v">${brl(pagoT)}</span><span class="c">Inclui ${short(dp[4]+dp[6])} de restos a pagar pagos</span></div>`;
+  const cardM = (t, v, meta, ant, s, lb, extra) => lcard({t, st:stPill(...s), v:brl(v), u:'até '+BN[b-1]+'/'+curY.slice(2),
+    bar: mlinha(v, meta, ant) + `<div class="lleg"><span><i class="dot"></i>Resultado ${short(v)}</span><span><i class="lm"></i>Meta anual ${short(meta)}</span>${ant!=null?`<span><i class="dot pa"></i>Até ${BN[b-1]}/${yp.slice(2)}: ${short(ant)}</span>`:''}</div>`,
+    x: (v>=meta ? `<b>${brl(v-meta)}</b> acima da meta anual.` : `<b>${brl(meta-v)}</b> abaixo da meta anual.`) + (extra||''), lb});
+  const pf = P && P.b[6];
+  $('mcards').innerHTML =
+    cardM('Resultado primário (sem RPPS)', d.prim, d.meta_prim, p?p.prim:null, sP, 'LRF, art. 4º, §1º, e art. 9º; meta do Anexo de Metas Fiscais da LDO de '+curY+'. RREO, Anexo 6.',
+      !fim && pf ? ` Em ${yp}, o resultado passou de ${short(p?p.prim:null)} até ${BN[b-1]} para ${short(pf.prim)} em dezembro (meta de ${short(pf.meta_prim)}).` : '') +
+    cardM('Resultado nominal (sem RPPS)', d.nom, d.meta_nom, p?p.nom:null, sN, 'Resultado primário + juros recebidos − juros pagos. Positivo significa que a dívida consolidada líquida diminuiu. RREO, Anexo 6.',
+      ` Juros recebidos: ${short(d.jur_at)}; juros pagos: ${short(d.jur_pas)}.`);
+  graficoMet(curY, b);
+  /* ponte */
+  const pon = o => o ? {rp:o.rec.rpt[1], pg:o.des.dpt[3], rpp:o.des.dpt[4], rpnp:o.des.dpt[6], prim:o.prim, ja:o.jur_at, jp:o.jur_pas, nom:o.nom} : null;
+  const c1 = pon(d), c0 = pon(p);
+  const PL = [['Receitas primárias realizadas','rp',''],['(−) Despesas primárias pagas no ano','pg','−'],['(−) Restos a pagar processados pagos','rpp','−'],['(−) Restos a pagar não processados pagos','rpnp','−'],['= Resultado primário','prim','r'],['(+) Juros e encargos recebidos','ja',''],['(−) Juros e encargos pagos','jp','−'],['= Resultado nominal','nom','r']];
+  $('mponte').innerHTML = `<thead><tr><th class="nm">Etapa</th><th class="csel">Até ${BN[b-1]}/${curY.slice(2)}</th>${c0?`<th>Até ${BN[b-1]}/${yp.slice(2)}</th><th>Efeito da variação</th>`:''}</tr></thead><tbody>` +
+    PL.map(([r,k,t]) => { const f = v => t==='−' ? brl(-v) : brl(v); return `<tr class="${t==='r'?'res':''}"><td class="nm">${r}</td><td class="csel">${f(c1[k])}</td>${c0?`<td>${f(c0[k])}</td><td>${signed(brl((t==='−'?-1:1)*(c1[k]-c0[k])))}</td>`:''}</tr>`; }).join('') + '</tbody>';
+  /* receitas */
+  const RL = [['RECEITAS CORRENTES (sem RPPS)','rc',0,1],['Impostos, taxas e contribuições de melhoria','imp',1],['IPTU','iptu',2],['ISS','iss',2],['ITBI','itbi',2],['IRRF','irrf',2],['Outros impostos e taxas','oimp',2],['Contribuições','contr',1],['Receita patrimonial','pat',1],['Aplicações financeiras (fora do primário)','aplic',2],['Outras receitas patrimoniais','opat',2],
+    ['Transferências correntes','tc',1],['Cota-parte do FPM','fpm',2],['Cota-parte do ICMS','icms',2],['Cota-parte do IPVA','ipva',2],['Cota-parte do ITR','itr',2],['Transferências da LC 61/1989','lc61',2],['FUNDEB','fundeb',2],['Outras transferências correntes','otc',2],['Demais receitas correntes','drc',1],
+    ['RECEITAS PRIMÁRIAS CORRENTES','rpc',0,1],['RECEITAS DE CAPITAL (sem RPPS)','rk',0,1],['Operações de crédito (fora do primário)','opc',1],['Alienação de bens','alien',1],['Transferências de capital','tk',1],['Convênios','conv',2],['Outras transferências de capital','otk',2],['Outras receitas de capital','ork',1],['RECEITAS PRIMÁRIAS DE CAPITAL','rpk',0,1]];
+  const tr = (r,nv,bd,cells) => `<tr class="${bd?'n0':''}"><td class="nm" style="padding-left:${12+nv*16}px">${r}</td>${cells}</tr>`;
+  $('mrec').innerHTML = `<thead><tr><th class="nm">Receita</th><th>Previsão atualizada</th><th class="csel">Realizado até ${BN[b-1]}</th><th>% da previsão</th>${p?`<th>Realizado até ${BN[b-1]}/${yp.slice(2)}</th><th>Variação</th>`:''}</tr></thead><tbody>` +
+    RL.filter(([r,k]) => Math.abs(d.rec[k][0])+Math.abs(d.rec[k][1])>=0.5).map(([r,k,nv,bd]) => { const v = d.rec[k], va = p ? p.rec[k][1] : null;
+      return tr(r,nv,bd,`<td>${brl(v[0])}</td><td class="csel">${brl(v[1])}</td><td>${pct(ratio(v[1],v[0]))}</td>${p?`<td>${brl(va)}</td><td>${va?signed(dec((v[1]/va-1)*100))+'%':'–'}</td>`:''}`); }).join('') +
+    `<tr class="tot"><td>Receita primária total (sem RPPS)</td><td>${brl(rp[0])}</td><td class="csel">${brl(rp[1])}</td><td>${pct(ratio(rp[1],rp[0]))}</td>${p?`<td>${brl(p.rec.rpt[1])}</td><td>${signed(dec((rp[1]/p.rec.rpt[1]-1)*100))}%</td>`:''}</tr></tbody>`;
+  /* despesas */
+  const DL = [['DESPESAS CORRENTES (sem RPPS)','dc',0,1],['Pessoal e encargos sociais','pes',1],['Juros e encargos da dívida (fora do primário)','jur',1],['Outras despesas correntes','odc',1],['DESPESAS PRIMÁRIAS CORRENTES','dpc',0,1],['DESPESAS DE CAPITAL (sem RPPS)','dk',0,1],['Investimentos','inv',1],['Inversões financeiras','invf',1],['Amortização da dívida (fora do primário)','amort',1],['DESPESAS PRIMÁRIAS DE CAPITAL','dpk',0,1],['Reserva de contingência','res',0]];
+  $('mdes').innerHTML = `<thead><tr><th class="nm">Despesa</th><th>Dotação atualizada</th><th>Empenhado</th><th>Liquidado</th><th class="csel">Pago</th><th>Restos a pagar pagos</th></tr></thead><tbody>` +
+    DL.filter(([r,k]) => d.des[k].some(x=>Math.abs(x)>=0.5)).map(([r,k,nv,bd]) => { const v = d.des[k]; return tr(r,nv,bd,`<td>${brl(v[0])}</td><td>${brl(v[1])}</td><td>${brl(v[2])}</td><td class="csel">${brl(v[3])}</td><td>${brl(v[4]+v[6])}</td>`); }).join('') +
+    `<tr class="tot"><td>Despesa primária total (sem RPPS)</td><td>${brl(dp[0])}</td><td>${brl(dp[1])}</td><td>${brl(dp[2])}</td><td class="csel">${brl(dp[3])}</td><td>${brl(dp[4]+dp[6])}</td></tr></tbody>`;
+  /* abaixo da linha */
+  const AL = [['Dívida consolidada','dc'],['(−) Disponibilidade de caixa líquida','ded'],['Dívida consolidada líquida','dcl',1]];
+  $('mabaixo').innerHTML = `<thead><tr><th class="nm">Item</th><th>Em 31/12/${yp}</th><th class="csel">Até ${BN[b-1]}/${curY.slice(2)}</th><th>Variação</th></tr></thead><tbody>` +
+    AL.map(([r,k,bd]) => `<tr class="${bd?'n0':''}"><td class="nm">${r}</td><td>${brl(d[k][0])}</td><td class="csel">${brl(d[k][1])}</td><td>${signed(brl(d[k][1]-d[k][0]))}</td></tr>`).join('') +
+    `<tr class="n0"><td class="nm">Resultado nominal abaixo da linha (queda da dívida líquida)</td><td></td><td class="csel">${brl(d.nom_ab)}</td><td></td></tr>` +
+    `<tr><td class="nm" style="padding-left:28px">Ajustes de metodologia (restos a pagar processados e variação cambial)</td><td></td><td class="csel">${signed(brl(d.nom_ab_aj-d.nom_ab))}</td><td></td></tr>` +
+    `<tr><td class="nm" style="padding-left:28px">Resultado nominal ajustado</td><td></td><td class="csel">${brl(d.nom_ab_aj)}</td><td></td></tr>` +
+    `<tr><td class="nm" style="padding-left:28px">Resultado primário abaixo da linha</td><td></td><td class="csel">${brl(d.prim_ab)}</td><td></td></tr>` +
+    `<tr class="tot"><td>Diferença em relação ao cálculo acima da linha (nominal)</td><td></td><td class="csel">${signed(brl(d.nom_ab_aj-d.nom))}</td><td></td></tr></tbody>`;
+  $('mnota').textContent = d.nota || ''; $('mnotabox').hidden = !d.nota;
+  $('rodape').textContent = `Fonte: Relatório Resumido da Execução Orçamentária (RREO) de ${curY}, Anexo 6 (Demonstrativo dos Resultados Primário e Nominal), publicado no Siconfi; valores do Município sem o RPPS. Metas: Anexo de Metas Fiscais da LDO.`;
+}
+/* ===================== FIM DA ABA METAS ===================== */
+
+/* ===================== ABA LIMITES LEGAIS ===================== */
+const LIM = __LIM__;
+const BN = ['fev','abr','jun','ago','out','dez'];
+const stPill = (k, t) => `<span class="lst ${k}">${{ok:'✓',at:'!',ex:'✕',pa:'…'}[k]} ${t}</span>`;
+/* barra com marcadores: marks = [{v, c (lm|pr|al|mn|an), r (rótulo)}] */
+function lbarra(v, marks, escala){
+  const esc_ = escala || Math.max(...marks.map(m=>m.v||0), v||0)*1.12, w = x => Math.max(0, Math.min(100, x/esc_*100));
+  return `<div class="lbar"><div class="trk"><i style="width:${w(Math.max(0,v||0))}%"></i></div>${marks.filter(m=>m.v!=null).map(m=>`<span class="mk ${m.c}" style="left:${w(m.v)}%" title="${esc(m.r)}"></span>`).join('')}</div>`+
+    `<div class="lleg"><span><i class="sq"></i>Apurado ${pct(v,2)}</span>${marks.filter(m=>m.v!=null).map(m=>`<span><i class="${m.c}"></i>${m.r}</span>`).join('')}</div>`;
+}
+const lcard = (o) => `<div class="lcard${o.big?' lbig':''}"><div class="lh"><span class="lt">${o.t}</span>${o.st||''}</div><div class="lv"><b>${o.v}</b><span>${o.u||''}</span></div>${o.bar||''}${o.x?`<p class="lx">${o.x}</p>`:''}${o.lb?`<p class="lb">${o.lb}</p>`:''}</div>`;
+/* status para limite máximo e para mínimo */
+function stMax(v, lim, al, pr){ if(v==null) return ['pa','Sem dado']; if(v>=lim) return ['ex','Acima do limite']; if(pr!=null && v>=pr) return ['ex','Acima do prudencial']; if(al!=null && v>=al) return ['at','Acima do alerta']; return ['ok','Dentro do limite']; }
+function stMin(v, min, fim){ if(v==null) return ['pa','Sem dado']; if(v>=min) return ['ok', fim ? 'Mínimo cumprido' : 'Acima do mínimo']; return fim ? ['ex','Abaixo do mínimo'] : ['pa','Em apuração']; }
+function graficoLim(selY, selQ){
+  const el = $('lch'), S = [];
+  Object.keys(LIM.anos).sort().forEach(y => LIM.anos[y].quads.forEach(q => S.push({rot:QF[q-1]+'/'+y.slice(2), y, q, d:LIM.anos[y].q[q]})));
+  $('llg').innerHTML = `<span><i class="sw" style="background:var(--s1);height:3px"></i>Despesa total com pessoal ÷ RCL ajustada</span><span><i class="sw" style="background:var(--warn);height:3px"></i>Alerta 48,6%</span><span><i class="sw" style="background:#e8811a;height:3px"></i>Prudencial 51,3%</span><span><i class="sw" style="background:var(--crit);height:3px"></i>Máximo 54%</span>`;
+  const sel = S.findIndex(s => s.y===selY && s.q===selQ);
+  drawers.lch = function(){
+    const W = Math.max(280, el.clientWidth), H = 260, m = {l:44,r:14,t:14,b:28}, n = S.length;
+    const lo = Math.floor(Math.min(...S.map(s=>s.d.dtp_p), 48)/2)*2 - 2, hi = 56;
+    const y = v => m.t + (hi - v)/(hi - lo)*(H-m.t-m.b), bw = (W-m.l-m.r)/Math.max(1,n), cx = i => m.l + bw*i + bw/2;
+    let g = '';
+    for(let t=lo; t<=hi; t+=2) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--line)"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end" font-size="11" style="fill:var(--muted)">${t}%</text>`;
+    if(sel>=0) g += `<rect x="${m.l+bw*sel+2}" y="${m.t}" width="${bw-4}" height="${H-m.t-m.b}" rx="6" style="fill:var(--ink);fill-opacity:.05"/>`;
+    [[48.6,'var(--warn)'],[51.3,'#e8811a'],[54,'var(--crit)']].forEach(([v,c]) => g += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" style="stroke:${c}" stroke-width="2" stroke-dasharray="6 4"/>`);
+    g += `<polyline fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--s1)" points="${S.map((s,i)=>cx(i)+','+y(s.d.dtp_p)).join(' ')}"/>`;
+    S.forEach((s,i) => { g += `<circle cx="${cx(i)}" cy="${y(s.d.dtp_p)}" r="${i===sel?6:4.5}" style="fill:var(--s1);stroke:var(--surface)" stroke-width="2"/>`;
+      if(i===sel || i===n-1) g += `<text x="${cx(i)}" y="${y(s.d.dtp_p)-12}" text-anchor="middle" font-size="11.5" font-weight="600" style="fill:var(--ink)">${pct(s.d.dtp_p,2)}</text>`;
+      g += `<text x="${cx(i)}" y="${H-9}" text-anchor="middle" font-size="11" style="fill:var(--muted)">${s.rot}</text><rect data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H}" fill="transparent"/>`; });
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Despesa total com pessoal sobre a receita corrente líquida ajustada, por quadrimestre, com os limites de alerta, prudencial e máximo">${g}</svg><div class="tip" hidden></div>`;
+    const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { const i = +r.dataset.i, s = S[i];
+      r.addEventListener('mouseenter', () => { tip.innerHTML = `<strong>${QN[s.q-1]} de ${s.y}</strong><br>Despesa total com pessoal: ${brl(s.d.dtp)}<br>RCL ajustada: ${brl(s.d.rcl_pes)}<br>Percentual: ${pct(s.d.dtp_p,2)}<br>Margem até o prudencial: ${brl(s.d.dtp_prud - s.d.dtp)}`; tip.hidden = false;
+        tip.style.left = Math.min(Math.max(cx(i),120),W-120)+'px'; tip.style.top = (y(s.d.dtp_p)-8)+'px'; });
+      r.addEventListener('mouseleave', () => tip.hidden = true); });
+  };
+  drawers.lch();
+  if(!drawers.lobs){ drawers.lobs = true; new ResizeObserver(()=>drawers.lch && drawers.lch()).observe(el); }
+}
+function renderLim(){
+  document.querySelectorAll('#years button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.y===curY));
+  const A = LIM.anos[curY];
+  $('lvazio').hidden = !!A; $('lcorpo').hidden = !A;
+  if(!A){ $('msel').innerHTML = '<option>–</option>'; $('msel').disabled = true; $('lvaziot').textContent = `Ainda não há RGF de ${curY}. Disponível: ${Object.keys(LIM.anos).sort().join(', ')}.`; $('rodape').textContent = ''; return; }
+  $('msel').disabled = false;
+  if(!curQ || !A.quads.includes(curQ)) curQ = A.quads[A.quads.length-1];
+  $('msel').innerHTML = A.quads.map(q => `<option value="${q}">${QN[q-1]}</option>`).join(''); $('msel').value = curQ;
+  const q = curQ, d = A.q[q], bq = q*2, b = A.b[bq] || null, Ap = LIM.anos[String(+curY-1)], bp = Ap && Ap.b[bq] || null, fimAno = bq===6;
+  const qn = QN[q-1].replace(/ \(.*/,'');
+  $('lkt').textContent = `Situação no fim do ${qn} de ${curY}`;
+  /* pessoal */
+  const sp = stMax(d.dtp_p, d.dtp_lim_p, d.dtp_al_p, d.dtp_prud_p), margem = d.dtp_prud - d.dtp;
+  $('lpes').innerHTML = lcard({big:1, t:'Despesa total com pessoal do Poder Executivo (últimos 12 meses)', st:stPill(...sp), v:pct(d.dtp_p,2), u:'da receita corrente líquida ajustada',
+    bar:lbarra(d.dtp_p, [{v:d.dtp_al_p,c:'al',r:'Alerta '+pct(d.dtp_al_p,1)},{v:d.dtp_prud_p,c:'pr',r:'Prudencial '+pct(d.dtp_prud_p,1)},{v:d.dtp_lim_p,c:'lm',r:'Máximo '+pct(d.dtp_lim_p,0)}], 60),
+    x:`${brl(d.dtp)} de despesa sobre ${brl(d.rcl_pes)} de RCL ajustada. ${margem>=0?`Margem de <b>${brl(margem)}</b> até o limite prudencial e de ${brl(d.dtp_lim-d.dtp)} até o máximo.`:`Excede o limite prudencial em <b>${brl(-margem)}</b>.`}`,
+    lb:'LRF, art. 20, III, b (máximo de 54%), art. 22 (prudencial, 95% do máximo) e art. 59, §1º, II (alerta, 90% do máximo). RGF, Anexo 1.'});
+  graficoLim(curY, q);
+  /* educação e saúde */
+  const cardMin = (t, k, lb, desc) => { if(!b) return lcard({t, st:stPill('pa','Sem dado'), v:'–', x:`O RREO do ${bq}º bimestre de ${curY} ainda não foi carregado.`}); const v = b[k+'_p'], mn = b[k+'_min'], vp = bp ? bp[k+'_p'] : null, s = stMin(v, mn, fimAno);
+    return lcard({t, st:stPill(...s), v:pct(v,2), u:`até ${BN[bq-1]}/${curY.slice(2)}`,
+      bar:lbarra(v, [{v:mn,c:'mn',r:'Mínimo '+pct(mn,0)}].concat(vp!=null?[{v:vp,c:'an',r:`Até ${BN[bq-1]}/${String(+curY-1).slice(2)}: ${pct(vp,2)}`}]:[]), Math.min(100, Math.max(mn*1.5, v||0, vp||0)*1.08)),
+      x:`${brl(b[k])} aplicados ${desc}.${!fimAno && v<mn ? ` O mínimo vale para o ano: o percentual sobe até dezembro${vp!=null?` (no mesmo bimestre de ${+curY-1}, era ${pct(vp,2)})`:''}.`:''}`, lb}); };
+  $('ledu').innerHTML = cardMin('Manutenção e desenvolvimento do ensino', 'mde', 'CF, art. 212: mínimo de 25% das receitas de impostos e transferências. RREO, Anexo 14 (resumo do Anexo 8).', 'em manutenção e desenvolvimento do ensino') +
+    cardMin('FUNDEB na remuneração dos profissionais', 'fundeb', 'Lei 14.113/2020, art. 26: mínimo de 70% dos recursos do FUNDEB. RREO, Anexo 14.', 'do FUNDEB na remuneração dos profissionais da educação básica') +
+    cardMin('Ações e serviços públicos de saúde', 'asps', 'CF, art. 198, e LC 141/2012, art. 7º: mínimo de 15% das receitas de impostos e transferências. RREO, Anexo 14 (resumo do Anexo 12).', 'em saúde com recursos de impostos');
+  const anos = [curY, String(+curY-1)].filter(y => LIM.anos[y]);
+  const LB = [['Ensino (mínimo 25%)','mde'],['FUNDEB na remuneração (mínimo 70%)','fundeb'],['Saúde (mínimo 15%)','asps']];
+  $('lbim').innerHTML = `<thead><tr><th class="nm">Percentual aplicado até o bimestre</th>${BN.map((n,i)=>`<th${i+1===bq?' class="csel"':''}>Até ${n}</th>`).join('')}</tr></thead><tbody>` +
+    LB.map(([r,k]) => anos.map((y,j) => { const Y = LIM.anos[y]; return `<tr class="${j===0?'n0':''}"><td class="nm" style="padding-left:${12+j*16}px">${j===0?r+' · '+y:y}</td>${BN.map((n,i)=>{ const o = Y.b[i+1], v = o ? o[k+'_p'] : null, mn = o ? o[k+'_min'] : null;
+      return `<td class="${i+1===bq?'csel ':''}${v==null?'fut':''}${y===curY && i===5 && v!=null && v<mn?' crit-t':''}">${v==null?'–':pct(v,2)}</td>`; }).join('')}</tr>`; }).join('')).join('') + '</tbody>';
+  /* endividamento */
+  const cardMax = (t, v, lim, al, val, x, lb, neg) => { const s = stMax(v, lim, al); return lcard({t, st:stPill(...s), v:pct(v,2), u:'da RCL ajustada', bar:lbarra(v, (al!=null?[{v:al,c:'al',r:'Alerta '+pct(al,1)}]:[]).concat([{v:lim,c:'lm',r:'Limite '+pct(lim,0)}]), lim*1.12), x, lb}); };
+  const ro = b && b.dcap ? b.oc_rec/b.dcap*100 : null;
+  $('lend').innerHTML =
+    cardMax('Dívida consolidada líquida', d.dcl_p, d.dcl_lim_p, d.dcl_lim_p*0.9, d.dcl, d.dcl<0 ? `Negativa (${brl(d.dcl)}): o caixa líquido supera a dívida. Limite em valor: ${brl(d.dcl_lim)}.` : `${brl(d.dcl)} de ${brl(d.dcl_lim)} permitidos.`, 'Resolução do Senado 40/2001, art. 3º, II (120%); alerta em 108% (LRF, art. 59, §1º, III). RGF, Anexo 2.') +
+    cardMax('Operações de crédito no ano', d.oc_p, d.oc_lim_p, d.oc_lim_p*0.9, d.oc, `${brl(d.oc)} contratados até o ${qn}, de ${brl(d.oc_lim)} permitidos.`, 'Resolução do Senado 43/2001, art. 7º, I (16%); alerta em 14,4%. RGF, Anexo 4.') +
+    cardMax('Antecipação de receita (ARO)', d.aro_p, d.aro_lim_p, null, d.aro, d.aro ? `${brl(d.aro)} em operações de ARO.` : `Nenhuma operação de ARO. Limite em valor: ${brl(d.aro_lim)}.`, 'Resolução do Senado 43/2001, art. 10 (7%). RGF, Anexo 4.') +
+    cardMax('Garantias concedidas', d.gar_p, d.gar_lim_p, d.gar_lim_p*0.9, d.gar, d.gar ? `${brl(d.gar)} em garantias.` : `Nenhuma garantia concedida. Limite em valor: ${brl(d.gar_lim)}.`, 'Resolução do Senado 43/2001, art. 9º (22%). RGF, Anexo 3.') +
+    (b ? lcard({t:'Regra de ouro', st:stPill(...(ro<=100?['ok','Cumprida']:['ex','Descumprida'])), v:pct(ro,1), u:'das despesas de capital',
+      bar:lbarra(ro, [{v:100,c:'lm',r:'Limite 100%'}], 112), x:`Operações de crédito recebidas (${brl(b.oc_rec)}) frente às despesas de capital líquidas (${brl(b.dcap)}) até ${BN[bq-1]}/${curY.slice(2)}.`, lb:'CF, art. 167, III: as operações de crédito não podem superar as despesas de capital. RREO, Anexo 14.'}) : '') +
+    (d.caixa_rp!=null ? lcard({t:'Caixa após restos a pagar do exercício', st:stPill(...(d.caixa_rp>=0?['ok','Suficiente']:['ex','Insuficiente'])), v:short(d.caixa_rp), u:'de disponibilidade líquida',
+      x:`Disponibilidade de caixa depois de inscritos ${brl(d.rpnp)} em restos a pagar não processados do exercício.`, lb:'LRF, art. 42 e art. 55, III. RGF, Anexo 5 (resumo no Anexo 6).'}) : '');
+  /* resumo */
+  const it = [['Pessoal', pct(d.dtp_p,2), sp]];
+  if(b){ it.push(['Ensino', pct(b.mde_p,2), stMin(b.mde_p,b.mde_min,fimAno)], ['FUNDEB 70%', pct(b.fundeb_p,2), stMin(b.fundeb_p,b.fundeb_min,fimAno)], ['Saúde', pct(b.asps_p,2), stMin(b.asps_p,b.asps_min,fimAno)]); }
+  it.push(['Dívida líquida', pct(d.dcl_p,2), stMax(d.dcl_p,d.dcl_lim_p,d.dcl_lim_p*0.9)], ['Operações de crédito', pct(d.oc_p,2), stMax(d.oc_p,d.oc_lim_p,d.oc_lim_p*0.9)]);
+  if(ro!=null) it.push(['Regra de ouro', pct(ro,1), ro<=100?['ok','Cumprida']:['ex','Descumprida']]);
+  $('lresumo').innerHTML = it.map(([r,v,s]) => `<div class="lr"><span>${r}</span><span style="display:inline-flex;gap:8px;align-items:center"><b>${v}</b>${stPill(s[0], s[0]==='ok'?'OK':s[1])}</span></div>`).join('');
+  /* composição pessoal */
+  const cols = A.quads.map(k => ({rot:'12 meses até '+QF[k-1]+'/'+curY.slice(2), d:A.q[k], sel:k===q}));
+  const PL = [['DESPESA BRUTA COM PESSOAL (I)','bruta',0,1],['Pessoal ativo','ativo',1],['Vencimentos, vantagens e outras variáveis','venc',2],['Obrigações patronais','patr',2],['Pessoal inativo e pensionistas','inat',1],['Aposentadorias, reserva e reformas','apos',2],['Pensões','pens',2],['Terceirização de mão de obra (LRF, art. 18, §1º)','terc',1],['Despesa com pessoal não executada orçamentariamente','naoexec',1],
+    ['(−) DESPESAS NÃO COMPUTADAS (II)','naocomp',0,1],['Indenizações por demissão e incentivos à demissão voluntária','indeniz',1],['Decisão judicial de período anterior','judic',1],['Despesas de exercícios anteriores','dea',1],['Inativos e pensionistas com recursos vinculados','inatvinc',1],['Agentes comunitários de saúde e de combate às endemias','acs',1],['Piso salarial da enfermagem','enferm',1],['Outras deduções','outded',1],
+    ['DESPESA LÍQUIDA COM PESSOAL (III = I − II)','liquida',0,1]];
+  const v0 = (c,k) => c.d.pes[k] ? c.d.pes[k][0] : null;
+  $('lpt').textContent = `Composição da despesa com pessoal · ${curY}`;
+  $('ltab').innerHTML = `<thead><tr><th class="nm">Item</th>${cols.map(c=>`<th${c.sel?' class="csel"':''}>${c.rot}</th>`).join('')}</tr></thead><tbody>` +
+    PL.filter(([r,k]) => cols.some(c => Math.abs(v0(c,k)||0)>=0.5)).map(([r,k,nv,bd]) => `<tr class="${bd?'n0':''}"><td class="nm" style="padding-left:${12+nv*16}px">${r}</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${brl(v0(c,k))}</td>`).join('')}</tr>`).join('') +
+    `<tr><td class="nm" style="padding-left:28px">(+) Restos a pagar não processados de pessoal</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${brl(c.d.pes.liquida[1])}</td>`).join('')}</tr>` +
+    `<tr class="n0"><td class="nm">DESPESA TOTAL COM PESSOAL (DTP)</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${brl(c.d.dtp)}</td>`).join('')}</tr>` +
+    `<tr><td class="nm" style="padding-left:28px">Receita corrente líquida ajustada</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${brl(c.d.rcl_pes)}</td>`).join('')}</tr>` +
+    `<tr class="tot"><td>DTP ÷ RCL ajustada</td>${cols.map(c=>`<td${c.sel?' class="csel"':''}>${pct(c.d.dtp_p,2)}</td>`).join('')}</tr></tbody>`;
+  $('rodape').textContent = `Fontes: Relatório de Gestão Fiscal (RGF) do Poder Executivo de ${curY}, Anexos 1 e 6, e Relatório Resumido da Execução Orçamentária (RREO), Anexo 14, publicados no Siconfi. Educação e saúde: bimestre que termina no mesmo mês do quadrimestre escolhido.`;
+}
+/* ===================== FIM DA ABA LIMITES ===================== */
+
+function refresh(){ $('htag').textContent = TAB==='divida' ? 'Município de Maringá, pelo Relatório de Gestão Fiscal' : TAB==='limites' ? 'Poder Executivo, pelo RGF e pelo RREO' : TAB==='metas' ? 'Município, sem o RPPS, pelo RREO' : 'Prefeitura, sem a Maringá Previdência'; $('mlbl').textContent = (TAB==='divida'||TAB==='limites') ? 'Posição no fim do' : 'Acumulado até'; if(TAB==='divida') renderDiv(); else if(TAB==='limites') renderLim(); else if(TAB==='metas') renderMet(); else if(TAB==='rxd') renderRxd(); else if(TAB==='despesa') renderDesp(); else { $('msel').disabled = false; render(); } }
+function show(){ let k=(location.hash||'#receita').slice(1); if(!document.querySelector('[data-sec="'+k+'"]')) k='receita'; const mudou = TAB!==k; TAB = k;
+  document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==k);
+  document.querySelectorAll('[data-nav]').forEach(a=>{a.classList.toggle('on',a.dataset.nav===k); a.setAttribute('aria-current',a.dataset.nav===k?'page':'false');});
+  if(mudou && inicial) refresh(); }
+let inicial = false; addEventListener('hashchange',show); show(); clamp(); inicial = true; refresh();
+const stick = document.querySelector('.stick');
+addEventListener('scroll', () => { const y = window.scrollY; if(y>140) stick.classList.add('compact'); else if(y<10) stick.classList.remove('compact'); }, {passive:true});
+</script>

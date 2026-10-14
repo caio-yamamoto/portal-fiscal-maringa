@@ -1,0 +1,139 @@
+
+/* Layout: cabeçalho com seletor de ano e abas no topo; cada aba é um painel de leitura rápida — resumo em cima, tabela de conferência embaixo. */
+:root{
+  --bg:#f5f7f5; --surface:#ffffff; --ink:#14201b; --ink-2:#4b5a53; --muted:#7b8983; --line:#dfe5e1; --line-2:#c5cec9;
+  --accent:#1f5c45; --accent-soft:#e3efe9; --on-accent:#ffffff;
+  --s1:#2a78d6; --s2:#eb6834; --track:#e8ecea;
+  --good:#0ca30c; --good-bg:#e6f5e6; --good-ink:#0a6a0a;
+  --warn:#fab219; --warn-bg:#fff3d9; --warn-ink:#7a5200;
+  --crit:#d03b3b; --crit-bg:#fbe7e7; --crit-ink:#9c2323;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1512; --surface:#18201c; --ink:#f1f5f3; --ink-2:#bcc8c2; --muted:#8a9891; --line:#2a352f; --line-2:#3b4841;
+  --accent:#7fcaa8; --accent-soft:#1f3229; --on-accent:#0f1512;
+  --s1:#3987e5; --s2:#d95926; --track:#2a352f;
+  --good:#0ca30c; --good-bg:#12301a; --good-ink:#7fdc7f;
+  --warn:#fab219; --warn-bg:#3a2e0d; --warn-ink:#f7cf73;
+  --crit:#d03b3b; --crit-bg:#3a1717; --crit-ink:#f19a9a; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1512; --surface:#18201c; --ink:#f1f5f3; --ink-2:#bcc8c2; --muted:#8a9891; --line:#2a352f; --line-2:#3b4841;
+  --accent:#7fcaa8; --accent-soft:#1f3229; --on-accent:#0f1512;
+  --s1:#3987e5; --s2:#d95926; --track:#2a352f;
+  --good:#0ca30c; --good-bg:#12301a; --good-ink:#7fdc7f;
+  --warn:#fab219; --warn-bg:#3a2e0d; --warn-ink:#f7cf73;
+  --crit:#d03b3b; --crit-bg:#3a1717; --crit-ink:#f19a9a; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:24px 48px;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.2}
+h1{font-size:1.75rem;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.25rem;font-weight:600}
+h3{font-size:1rem;font-weight:600}
+p{margin:0}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.sub{color:var(--ink-2);font-size:.9rem}
+.note{color:var(--muted);font-size:.8rem}
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+header.top>div:first-child{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 320px}
+.years{display:flex;align-items:center;gap:10px}
+.years .lbl{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{font:600 .9rem var(--body);font-variant-numeric:tabular-nums;padding:8px 16px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line-2)}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.disclaimer{background:var(--accent-soft);color:var(--ink);border-radius:8px;padding:10px 14px;font-size:.84rem}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line-2)}
+nav.tabs a{white-space:nowrap;padding:10px 14px;text-decoration:none;color:var(--ink-2);font-weight:500;border-bottom:3px solid transparent;margin-bottom:-1px}
+nav.tabs a:hover{color:var(--ink)}
+nav.tabs a.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section.tab{display:flex;flex-direction:column;gap:24px}
+.block{display:flex;flex-direction:column;gap:12px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.head>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tile{gap:4px}
+.tile .label{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.big{font-family:var(--display);font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+.big.sm{font-size:1.4rem}
+.tile .ctx{font-size:.82rem;color:var(--ink-2)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:.76rem;font-weight:600;white-space:nowrap}
+.pill.good{background:var(--good-bg);color:var(--good-ink)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.pill.crit{background:var(--crit-bg);color:var(--crit-ink)}
+ul.points{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;max-width:75ch}
+.bar{height:8px;border-radius:4px;background:var(--track);position:relative;min-width:80px}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--s1)}
+.bar b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.tablebox>.note{padding:8px 12px}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{padding:9px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;white-space:normal;min-width:180px}
+thead th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg)}
+td{font-variant-numeric:tabular-nums}
+tr.grp td{font-weight:600;color:var(--ink-2);background:var(--bg);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase}
+tr.tot td{font-weight:600;border-top:2px solid var(--line-2)}
+td.barcell{min-width:130px}
+td.left,th.left{text-align:left}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:260px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--muted) 0 4px,transparent 4px 7px)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:.76rem;padding:6px 9px;border-radius:6px;line-height:1.45;white-space:nowrap;transform:translate(-50%,-100%);z-index:2}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 16px;font-size:.88rem;margin:0}
+.kv dt{color:var(--ink-2)} .kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.prose{max-width:75ch}
+footer{border-top:1px solid var(--line-2);padding-top:16px;display:flex;flex-direction:column;gap:8px;max-width:80ch}
+td.sub2{padding-left:30px;color:var(--ink-2)}
+tr.strong td{font-weight:600}
+tr.subtot td{font-weight:600;border-top:1px solid var(--line-2)}
+.card.hl{background:var(--accent-soft);border-color:transparent}
+#tmes th:first-child,#tmes td:first-child{min-width:170px}
+.controls{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.years{justify-content:flex-end;flex-wrap:wrap}
+.seg button:disabled{opacity:.38;cursor:not-allowed}
+#bims button{padding:8px 11px}
+tr.sel td{background:var(--accent-soft);font-weight:600}
+th.ctr{text-align:center}
+thead tr+tr th:first-child{text-align:right;min-width:0}
+@media (max-width:720px){.controls{align-items:flex-start}.years{justify-content:flex-start}}
+/* Paleta do site da Prefeitura de Maringá: azul #155c98 do cabeçalho, fundo #f7f7f7 e verde do logotipo */
+:root{--bg:#f7f7f7;--surface:#ffffff;--ink:#12263a;--ink-2:#44586c;--muted:#6b7b8d;--line:#dde3ea;--line-2:#c2ccd7;--track:#e6ebf0;
+  --accent:#155c98;--accent-soft:#e4eef7;--on-accent:#ffffff;
+  --band:#155c98;--band-ink:#ffffff;--band-sub:#d6e6f4;--band-line:#6f9cc3;--band-accent:#a8ecd3;--band-on:#ffffff;--band-on-ink:#0b4b84}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--bg:#0d151d;--surface:#152130;--ink:#eef3f8;--ink-2:#b9c6d4;--muted:#8696a8;--line:#243345;--line-2:#34465b;--track:#243345;
+  --accent:#6aa9de;--accent-soft:#17304a;--on-accent:#0d151d;
+  --band:#11426f;--band-ink:#ffffff;--band-sub:#c9dcee;--band-line:#4f7ba3;--band-accent:#8fe0c3;--band-on:#d6e6f4;--band-on-ink:#0b3358} }
+:root[data-theme="dark"]{--bg:#0d151d;--surface:#152130;--ink:#eef3f8;--ink-2:#b9c6d4;--muted:#8696a8;--line:#243345;--line-2:#34465b;--track:#243345;
+  --accent:#6aa9de;--accent-soft:#17304a;--on-accent:#0d151d;
+  --band:#11426f;--band-ink:#ffffff;--band-sub:#c9dcee;--band-line:#4f7ba3;--band-accent:#8fe0c3;--band-on:#d6e6f4;--band-on-ink:#0b3358}
+header.top{background:var(--band);color:var(--band-ink);padding:20px 22px;border-radius:10px}
+header.top .eyebrow{color:var(--band-accent)}
+header.top .sub,header.top .years .lbl{color:var(--band-sub)}
+header.top .seg{background:transparent;border-color:var(--band-line)}
+header.top .seg button{color:var(--band-ink)}
+header.top .seg button+button{border-left-color:var(--band-line)}
+header.top .seg button[aria-pressed="true"]{background:var(--band-on);color:var(--band-on-ink)}
+header.top button:focus-visible{outline-color:var(--band-ink);outline-offset:-3px}
+.stick{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-direction:column;gap:10px;padding-top:10px;margin-top:-10px}
+.stick header.top{transition:padding .15s}
+.stick.compact header.top{padding:10px 18px;align-items:center}
+.stick.compact .eyebrow,.stick.compact header.top .sub{display:none}
+.stick.compact h1{font-size:1.15rem}
+.stick.compact .controls{flex-direction:row;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.stick.compact .seg button{padding:6px 12px}
+.stick.compact #bims button{padding:6px 9px}
+.stick.compact nav.tabs a{padding:7px 12px}
+@media (max-width:720px){.stick.compact header.top>div:first-child,.stick.compact .years .lbl{display:none}.stick.compact header.top{padding:8px 10px}.stick.compact .controls{gap:8px}.stick.compact .seg button{padding:6px 9px}.stick.compact #bims button{padding:6px 8px}}
+@media (prefers-reduced-motion:reduce){.stick header.top{transition:none}}
+.tabstack{display:flex;flex-direction:column;gap:24px}
+#tamt th:first-child,#tamt td:first-child,#tamo th:first-child,#tamo td:first-child{min-width:190px}
