@@ -1,4 +1,4 @@
-# Portal Fiscal de Maringá
+# Portal de Gestão Orçamentária e Fiscal
 
 Painel independente com a execução orçamentária e os indicadores fiscais do Município de Maringá, montado a partir de relatórios do sistema contábil da Prefeitura (Elotech) e dos relatórios publicados no Siconfi. **Não é um site oficial da Prefeitura.**
 
