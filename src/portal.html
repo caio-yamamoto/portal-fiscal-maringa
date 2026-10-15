@@ -7,7 +7,9 @@ __CSS__
 .wrap{max-width:none;padding-inline:clamp(16px,2.5vw,40px);gap:28px}
 header.top{padding:14px 20px;align-items:center}
 header.top h1{font-size:1.35rem}
+header.top .ente{display:block;font-size:.98rem;font-weight:500;color:var(--band-ink);margin-top:1px}
 header.top .tag{font-size:.78rem;color:var(--band-sub)}
+.stick.compact header.top .ente{font-size:.85rem}
 .controls{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 18px}
 .ctl{display:flex;align-items:center;gap:8px}
 .ctl .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--band-sub)}
@@ -261,6 +263,7 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
   <header class="top">
     <div>
       <h1>Portal de Gestão Orçamentária e Fiscal</h1>
+      <span class="ente">Prefeitura de Maringá</span>
       <span class="tag" id="htag">Prefeitura, sem a Maringá Previdência</span>
     </div>
     <div class="controls">
