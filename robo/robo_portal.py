@@ -24,7 +24,7 @@ import time
 from datetime import date
 from pathlib import Path
 
-from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
+from selenium.common.exceptions import NoSuchWindowException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -115,6 +115,7 @@ def baixar_para(driver, nome_relatorio, pasta_destino: Path, nome_final: str) ->
         time.sleep(1)
 
     time.sleep(2)
+    abas_antes = set(driver.window_handles)
     # o card é buscado de novo a cada tentativa, pois a lista pode ter sido redesenhada
     for tentativa in range(3):
         try:
@@ -128,14 +129,15 @@ def baixar_para(driver, nome_relatorio, pasta_destino: Path, nome_final: str) ->
             time.sleep(1)
     print(f"Download do relatório '{nome_relatorio}' iniciado.")
 
-    # se uma aba nova abrir com o arquivo, fecha e volta para a janela do sistema
+    # se o clique abrir uma aba nova com o arquivo, fecha só ela (pode já ter fechado sozinha) e volta
     time.sleep(1)
-    if len(driver.window_handles) > 1:
-        for aba in driver.window_handles:
-            if aba != janela_original:
-                driver.switch_to.window(aba)
-                driver.close()
-        driver.switch_to.window(janela_original)
+    for aba in set(driver.window_handles) - abas_antes:
+        try:
+            driver.switch_to.window(aba)
+            driver.close()
+        except NoSuchWindowException:
+            pass
+    driver.switch_to.window(janela_original)
 
     limite = time.time() + bi.DOWNLOAD_TIMEOUT
     while True:
