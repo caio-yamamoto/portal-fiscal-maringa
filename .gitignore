@@ -8,4 +8,6 @@ robo/automacao_relatorios_bi.py
 robo/perfil_chrome/
 robo/downloads_temp/
 robo/relatorios_baixados/
+robo/logs/
+robo/*.txt
 .env

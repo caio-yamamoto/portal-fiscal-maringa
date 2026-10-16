@@ -38,9 +38,27 @@ Outros comandos:
 
 - `python robo_portal.py --sem-envio` – emite e gera, sem enviar.
 - `python atualizar_portal.py` – só gera, confere e envia (sem abrir o sistema), útil quando os relatórios já foram baixados.
+- `python atualizar_portal.py --forcar` – envia os dados já gerados sem conferir de novo. Use depois que a
+  conferência apontou uma diferença de causa conhecida (ex.: lançamentos feitos durante a emissão, no mês aberto).
 
-## Agendar no Windows
+## Pergunta automática em dias úteis
 
-Agendador de Tarefas → Criar Tarefa Básica → diariamente, por exemplo às 7h, em dias úteis →
-Ação: `python`, argumentos `robo_portal.py`, iniciar em: a pasta `robo`. A tarefa precisa rodar com o usuário
-conectado, porque o Chrome abre na tela (e o login pode ser pedido).
+`iniciar_com_windows.py` mostra a janela "Deseja atualizar o Portal Fiscal agora?" (Sim / Não), só de segunda
+a sexta:
+
+- ao entrar no Windows (na primeira vez do dia), depois que a internet estiver disponível;
+- às 13:10.
+
+Com **Sim**, abre uma janela de terminal com o robô; ao terminar, ela mostra o resumo (enviado, nada mudou,
+diferença na conferência ou erro) e espera um Enter. Com **Não**, ou sem resposta em 30 minutos, nada acontece.
+Cada execução fica registrada em `robo\logs\`.
+
+As duas tarefas do Agendador ("Portal Fiscal - ao entrar no Windows" e "Portal Fiscal - 13h10") são criadas por:
+
+```
+cd portal-fiscal-maringa\robo
+powershell -ExecutionPolicy Bypass -File agendar_no_windows.ps1
+```
+
+Para desativar, abra o Agendador de Tarefas, procure as tarefas "Portal Fiscal" e clique em Desabilitar
+(ou rode `Unregister-ScheduledTask -TaskName "Portal Fiscal*" -Confirm:$false` para removê-las).

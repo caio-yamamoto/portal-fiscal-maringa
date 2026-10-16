@@ -7,7 +7,8 @@ agregados, que são os mesmos exibidos no portal.
 
 Uso:  python atualizar_portal.py             (gera, confere e envia)
       python atualizar_portal.py --sem-envio (gera e confere, sem enviar)
-      python atualizar_portal.py --forcar    (envia mesmo se a conferência apontar diferença)
+      python atualizar_portal.py --forcar    (envia os dados já gerados, sem conferir de novo: use depois que
+                                              a conferência apontou uma diferença de causa conhecida)
 """
 import glob
 import json
@@ -119,7 +120,25 @@ def enviar_github():
     print("Dados enviados. O site é republicado pelo GitHub em cerca de 1 minuto.")
 
 
+def dados_em_dia() -> bool:
+    """True se receita.json e despesa.json são mais novos que todas as planilhas de relatorios_locais."""
+    jsons = [DADOS / "receita.json", DADOS / "despesa.json"]
+    if not all(j.exists() for j in jsons):
+        return False
+    gerado = min(j.stat().st_mtime for j in jsons)
+    return all(p.stat().st_mtime <= gerado for p in RELATORIOS.rglob("*.xlsx"))
+
+
 def main(enviar=True, forcar=False) -> bool:
+    if forcar and enviar:
+        # a conferência já foi feita (e a diferença vista) na execução anterior: só envia
+        if dados_em_dia():
+            print("Enviando os dados já gerados, sem nova conferência (--forcar).")
+        else:
+            print("Há relatórios mais novos que os dados: gerando de novo antes de enviar (sem conferência).")
+            gerar()
+        enviar_github()
+        return True
     gerar()
     problemas = conferir()
     for p in problemas:
