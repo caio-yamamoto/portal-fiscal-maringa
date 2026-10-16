@@ -94,7 +94,7 @@ def main():
         tot = lambda q: round(sum(sum(x[{'emp': 5, 'liq': 6, 'pago': 7}[q]]) for x in L), 2)
         print('%s: %d meses (parcial=%s), %d dotações, %d subelementos; inicial %.2f, atualizada %.2f; empenhado %.2f, liquidado %.2f, pago %.2f' % (
             ano, n, parcial, len(L), len(S), sum(x[3] for x in L), sum(x[4][n-1] for x in L), tot('emp'), tot('liq'), tot('pago')))
-    json.dump(out, open(saida, 'w'), ensure_ascii=False, separators=(',', ':'))
+    json.dump(out, open(saida, 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
     print('gravado', saida, os.path.getsize(saida), 'bytes')
 
 if __name__ == '__main__':

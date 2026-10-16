@@ -33,12 +33,17 @@ Montar localmente: `bash scripts/atualizar.sh` (gera `site/index.html`). No Wind
 `python scripts/montar.py src/portal.html src/base.css dados/receita.json site/index.html dados/despesa.json`
 (o atualizar.sh também envolve o resultado num documento HTML completo, necessário no GitHub Pages).
 
-## Robô (`robo/`) — PRÓXIMO PASSO: testar no computador do usuário
+## Robô (`robo/`) — testado no computador do usuário em 16/10/2026
 
-- `robo/robo_portal.py`: reaproveita as funções do robô do Power BI do usuário (`robo/automacao_relatorios_bi.py`,
-  que NÃO vai para o GitHub). Abre o Chrome com perfil persistente; o login é MANUAL (Cloudflare "Confirme que é
-  humano" — não tentar contornar). Emite, para o mês vigente e o anterior: receita realizada por fonte (mês),
-  balancete analítico (01/01 até o fim do mês) e balancete simplificado (mês). Salva em `relatorios_locais/`.
+- `robo/robo_portal.py`: reaproveita a navegação e o login do robô do Power BI do usuário
+  (`robo/automacao_relatorios_bi.py`, cópia do original em `Desktop\Python\Automacao_Relatorio_BI`, que NÃO vai
+  para o GitHub e NÃO deve ser alterada — correções para o portal vão no `robo_portal.py`). O download pelo painel
+  de Notificações é próprio do `robo_portal.py` (`baixar_para`). Abre o Chrome com perfil persistente; o login é
+  MANUAL (Cloudflare "Confirme que é humano" — não tentar contornar). Emite, para o mês vigente e o anterior:
+  receita realizada por fonte (mês), balancete analítico (01/01 até o fim do mês) e balancete simplificado (mês),
+  os dois balancetes com "Emitir Desdobramento" marcado. Salva em `relatorios_locais/`.
+- Diferença no mês vigente só em liquidado/pago, em horário de expediente, costuma ser lançamento feito entre a
+  emissão do analítico e a do simplificado (o mês está aberto); rodar fora do expediente ou usar `--forcar`.
 - `robo/atualizar_portal.py`: roda `extrair_receita.py` e `extrair_despesa.py`, confere empenhado/liquidado/pago de
   cada mês com o simplificado (tolerância R$ 1) e, se bater, faz commit e push só de `dados/receita.json` e
   `dados/despesa.json`. Se não bater, não envia e explica (causa usual: lançamento retroativo no mês anterior →

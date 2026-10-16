@@ -71,5 +71,5 @@ for a, b in zip(anos, anos[1:]):
     A, B = out['anos'][a], out['anos'][b]
     if 3 in A['q'] and abs(A['q'][3]['dc'] - B['anterior']['dc']) > 1: avisos.append('DC do 3º quad de %s (%.2f) difere do saldo anterior de %s (%.2f)' % (a, A['q'][3]['dc'], b, B['anterior']['dc']))
 for x in avisos: print('AVISO:', x)
-json.dump(out, open(saida, 'w'), ensure_ascii=False, separators=(',', ':'))
+json.dump(out, open(saida, 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
 print('gravado', saida, os.path.getsize(saida))

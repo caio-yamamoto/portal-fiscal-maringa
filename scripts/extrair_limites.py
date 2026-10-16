@@ -60,5 +60,5 @@ for pasta in sorted(glob.glob(os.path.join(raiz, '20??'))):
     out['anos'][ano] = A
     for q in A['quads']: print(ano, 'Q%d' % q, 'DTP %.2f%%' % A['q'][q]['dtp_p'], 'DCL %.2f%%' % A['q'][q]['dcl_p'], 'OC %.2f%%' % A['q'][q]['oc_p'], 'RP', A['q'][q]['rpnp'], A['q'][q]['caixa_rp'])
     for b in A['bims']: x = A['b'][b]; print(ano, 'B%d' % b, 'MDE', x['mde_p'], 'FUNDEB', x['fundeb_p'], 'ASPS', x['asps_p'], 'OC', x['oc_rec'], 'DCAP', x['dcap'])
-json.dump(out, open(saida, 'w'), ensure_ascii=False, separators=(',', ':'))
+json.dump(out, open(saida, 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
 print('gravado', saida, os.path.getsize(saida))

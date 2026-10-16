@@ -46,5 +46,5 @@ for pasta in sorted(glob.glob(os.path.join(raiz, '20??'))):
         A['b'][b] = d; A['bims'].append(b)
         print(ano, 'B%d' % b, 'primário %.0f meta %.0f | nominal %.0f meta %.0f | abaixo %.0f' % (d['prim'], d['meta_prim'], d['nom'], d['meta_nom'], d['nom_ab']))
     out['anos'][ano] = A
-json.dump(out, open(saida, 'w'), ensure_ascii=False, separators=(',', ':'))
+json.dump(out, open(saida, 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
 print('gravado', saida, os.path.getsize(saida))
