@@ -11,7 +11,9 @@ Uso:  python atualizar_portal.py             (gera, confere e envia)
 """
 import glob
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 import warnings
@@ -28,9 +30,28 @@ MESES = {m: i + 1 for i, m in enumerate(["janeiro", "fevereiro", "março", "abri
 TOLERANCIA = 1.00   # R$
 
 
+def localizar_git() -> str:
+    """O Git pode não estar no PATH de um terminal aberto antes da instalação; procura nos locais usuais."""
+    achado = shutil.which("git")
+    if achado:
+        return achado
+    for pasta in (os.environ.get("LOCALAPPDATA", ""), os.environ.get("ProgramFiles", ""), os.environ.get("ProgramFiles(x86)", "")):
+        for sub in ("Programs\\Git\\cmd\\git.exe", "Git\\cmd\\git.exe"):
+            caminho = Path(pasta) / sub
+            if pasta and caminho.exists():
+                return str(caminho)
+    raise RuntimeError("Git não encontrado. Instale o Git (git-scm.com) ou feche e abra o VS Code de novo.")
+
+
+GIT = localizar_git()
+# os scripts filhos imprimem em UTF-8 (senão os acentos chegam quebrados no Windows)
+AMBIENTE = {**os.environ, "PYTHONIOENCODING": "utf-8"}
+
+
 def rodar(*args, cwd=REPO):
     print("$", " ".join(str(a) for a in args))
-    r = subprocess.run([str(a) for a in args], cwd=cwd, text=True, capture_output=True, encoding="utf-8", errors="replace")
+    r = subprocess.run([str(a) for a in args], cwd=cwd, text=True, capture_output=True, encoding="utf-8",
+                       errors="replace", env=AMBIENTE)
     saida = (r.stdout or "") + (r.stderr or "")
     linhas = [l for l in saida.splitlines() if "warn" not in l.lower()]
     print("\n".join(linhas[-12:]))
@@ -88,13 +109,13 @@ def conferir():
 
 
 def enviar_github():
-    rodar("git", "pull", "--rebase", "--autostash", "origin", "main")
-    rodar("git", "add", "dados/receita.json", "dados/despesa.json")
-    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=REPO).returncode == 0:
+    rodar(GIT, "pull", "--rebase", "--autostash", "origin", "main")
+    rodar(GIT, "add", "dados/receita.json", "dados/despesa.json")
+    if subprocess.run([GIT, "diff", "--cached", "--quiet"], cwd=REPO).returncode == 0:
         print("Nada mudou nos dados; nada a enviar.")
         return
-    rodar("git", "commit", "-m", f"Atualiza dados do portal ({datetime.now():%d/%m/%Y %H:%M}) [robô]")
-    rodar("git", "push", "origin", "HEAD:main")
+    rodar(GIT, "commit", "-m", f"Atualiza dados do portal ({datetime.now():%d/%m/%Y %H:%M}) [robô]")
+    rodar(GIT, "push", "origin", "HEAD:main")
     print("Dados enviados. O site é republicado pelo GitHub em cerca de 1 minuto.")
 
 

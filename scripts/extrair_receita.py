@@ -73,7 +73,7 @@ precisa = set()
 for c in usados:
     s = c.rstrip('.').split('.')
     for n in range(1, 13): precisa.add(pad(s[:n]))
-nomes_out = {c: nomes[c] for c in precisa if c in nomes}
+nomes_out = {c: nomes[c] for c in sorted(precisa) if c in nomes}   # ordenado: o arquivo sai igual se nada mudou
 faltam = sorted(c for c in usados if c not in nomes)
 if faltam: avisos.append('naturezas sem nome: %s' % faltam[:5])
 json.dump({'anos': anos, 'nomes': nomes_out}, open(saida, 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
