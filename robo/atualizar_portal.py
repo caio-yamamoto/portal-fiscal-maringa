@@ -86,12 +86,35 @@ def totais_simplificado(arq: Path):
     return mes, ano, tot
 
 
+def meses_recentes(D):
+    """(ano, mês) do mês vigente e do anterior no exercício mais recente: os únicos que o robô reemite.
+    Os meses fechados (já enviados ao SIM-AM) não mudam e não são conferidos de novo."""
+    ano = max(int(a) for a in D["anos"])
+    n = D["anos"][str(ano)]["meses"]
+    return {(ano, m) for m in (n - 1, n) if m >= 1}
+
+
+def mes_ano_do_nome(arq: Path):
+    """Mês e ano pelo nome do arquivo (ex.: ..._-_mar_o_2026_-_simplificado.xlsx), sem abrir a planilha."""
+    m = re.search(r"_-_([a-z_]+)_(\d{4})_-_simplificado", arq.name.lower())
+    if not m:
+        return None
+    nomes = {re.sub(r"[^a-z]", "_", nome): num for nome, num in MESES.items()}
+    return nomes.get(m.group(1)), int(m.group(2))
+
+
 def conferir():
-    """Compara, para cada simplificado disponível do exercício mais recente, o mês gerado com os totais do relatório."""
+    """Compara o mês vigente e o anterior gerados com os totais do balancete simplificado."""
     D = json.loads((DADOS / "despesa.json").read_text(encoding="utf-8"))
+    recentes = meses_recentes(D)
     problemas, conferidos = [], 0
     for arq in sorted(Path(x) for x in glob.glob(str(RELATORIOS / "desp20??" / "*simplificado*.xlsx"))):
+        pelo_nome = mes_ano_do_nome(arq)
+        if pelo_nome and (pelo_nome[1], pelo_nome[0]) not in recentes:
+            continue
         mes, ano, tot = totais_simplificado(arq)
+        if (ano, mes) not in recentes:
+            continue
         A = D["anos"].get(str(ano))
         if not (mes and tot and A) or mes > A["meses"]:
             continue
