@@ -3,7 +3,7 @@ site/
 __pycache__/
 *.pyc
 ~$*
-relatorios_locais/
+relatorios_locais
 robo/automacao_relatorios_bi.py
 robo/perfil_chrome/
 robo/downloads_temp/
