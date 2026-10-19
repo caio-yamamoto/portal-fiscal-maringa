@@ -8,7 +8,6 @@ __CSS__
 header.top{padding:14px 20px;align-items:center}
 header.top h1{font-size:1.35rem}
 header.top .ente{display:block;font-size:.98rem;font-weight:500;color:var(--band-ink);margin-top:1px}
-header.top .tag{font-size:.78rem;color:var(--band-sub)}
 header.top .atu{font-size:.74rem;color:var(--band-sub)}
 .stick.compact header.top .ente{font-size:.85rem}
 .controls{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -16,7 +15,7 @@ header.top .atu{font-size:.74rem;color:var(--band-sub)}
 .ctl .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--band-sub)}
 #msel{font:600 .9rem var(--body);padding:7px 30px 7px 12px;border-radius:8px;border:1px solid var(--band-line);background:var(--band-on);color:var(--band-on-ink);cursor:pointer}
 .stick.compact header.top{padding:8px 16px}
-.stick.compact header.top .tag,.stick.compact header.top .atu{display:none}
+.stick.compact header.top .atu{display:none}
 nav.tabs a.ext{margin-left:auto;color:var(--accent);font-weight:600;position:relative}
 nav.tabs a.ext:hover{text-decoration:underline}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -265,7 +264,6 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
     <div>
       <h1>Portal de Gestão Orçamentária e Fiscal</h1>
       <span class="ente">Prefeitura de Maringá</span>
-      <span class="tag" id="htag">Prefeitura, sem a Maringá Previdência</span>
       <span class="atu" id="hatu"></span>
     </div>
     <div class="controls">
@@ -1499,7 +1497,7 @@ function renderLim(){
 }
 /* ===================== FIM DA ABA LIMITES ===================== */
 
-function refresh(){ $('htag').textContent = TAB==='divida' ? 'Município de Maringá, pelo Relatório de Gestão Fiscal' : TAB==='limites' ? 'Poder Executivo, pelo RGF e pelo RREO' : TAB==='metas' ? 'Município, sem o RPPS, pelo RREO' : 'Prefeitura, sem a Maringá Previdência'; $('mlbl').textContent = (TAB==='divida'||TAB==='limites') ? 'Posição no fim do' : 'Acumulado até'; if(TAB==='divida') renderDiv(); else if(TAB==='limites') renderLim(); else if(TAB==='metas') renderMet(); else if(TAB==='rxd') renderRxd(); else if(TAB==='despesa') renderDesp(); else { $('msel').disabled = false; render(); } }
+function refresh(){ $('mlbl').textContent = (TAB==='divida'||TAB==='limites') ? 'Posição no fim do' : 'Acumulado até'; if(TAB==='divida') renderDiv(); else if(TAB==='limites') renderLim(); else if(TAB==='metas') renderMet(); else if(TAB==='rxd') renderRxd(); else if(TAB==='despesa') renderDesp(); else { $('msel').disabled = false; render(); } }
 function show(){ let k=(location.hash||'#receita').slice(1); if(!document.querySelector('[data-sec="'+k+'"]')) k='receita'; const mudou = TAB!==k; TAB = k;
   document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==k);
   document.querySelectorAll('[data-nav]').forEach(a=>{a.classList.toggle('on',a.dataset.nav===k); a.setAttribute('aria-current',a.dataset.nav===k?'page':'false');});
