@@ -508,7 +508,7 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
   </dialog>
 
   <footer>
-    <p class="note">Painel independente, montado a partir de relatórios do sistema contábil da Prefeitura de Maringá (Elotech). Não é um site oficial da Prefeitura. Valores da Prefeitura, sem a Maringá Previdência.</p>
+    <p class="note">Painel independente, montado a partir de relatórios do sistema contábil da Prefeitura de Maringá (Elotech). Não é um site oficial da Prefeitura.<span id="recorte"> Valores da Prefeitura, sem a Maringá Previdência.</span></p>
     <p class="note" id="rodape"></p>
   </footer>
 </div>
@@ -1497,7 +1497,7 @@ function renderLim(){
 }
 /* ===================== FIM DA ABA LIMITES ===================== */
 
-function refresh(){ $('mlbl').textContent = (TAB==='divida'||TAB==='limites') ? 'Posição no fim do' : 'Acumulado até'; if(TAB==='divida') renderDiv(); else if(TAB==='limites') renderLim(); else if(TAB==='metas') renderMet(); else if(TAB==='rxd') renderRxd(); else if(TAB==='despesa') renderDesp(); else { $('msel').disabled = false; render(); } }
+function refresh(){ $('recorte').hidden = ['divida','limites','metas'].includes(TAB); $('mlbl').textContent = (TAB==='divida'||TAB==='limites') ? 'Posição no fim do' : 'Acumulado até'; if(TAB==='divida') renderDiv(); else if(TAB==='limites') renderLim(); else if(TAB==='metas') renderMet(); else if(TAB==='rxd') renderRxd(); else if(TAB==='despesa') renderDesp(); else { $('msel').disabled = false; render(); } }
 function show(){ let k=(location.hash||'#receita').slice(1); if(!document.querySelector('[data-sec="'+k+'"]')) k='receita'; const mudou = TAB!==k; TAB = k;
   document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==k);
   document.querySelectorAll('[data-nav]').forEach(a=>{a.classList.toggle('on',a.dataset.nav===k); a.setAttribute('aria-current',a.dataset.nav===k?'page':'false');});
