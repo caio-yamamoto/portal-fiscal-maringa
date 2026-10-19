@@ -9,13 +9,14 @@ header.top{padding:14px 20px;align-items:center}
 header.top h1{font-size:1.35rem}
 header.top .ente{display:block;font-size:.98rem;font-weight:500;color:var(--band-ink);margin-top:1px}
 header.top .tag{font-size:.78rem;color:var(--band-sub)}
+header.top .atu{font-size:.74rem;color:var(--band-sub)}
 .stick.compact header.top .ente{font-size:.85rem}
 .controls{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 18px}
 .ctl{display:flex;align-items:center;gap:8px}
 .ctl .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--band-sub)}
 #msel{font:600 .9rem var(--body);padding:7px 30px 7px 12px;border-radius:8px;border:1px solid var(--band-line);background:var(--band-on);color:var(--band-on-ink);cursor:pointer}
 .stick.compact header.top{padding:8px 16px}
-.stick.compact header.top .tag{display:none}
+.stick.compact header.top .tag,.stick.compact header.top .atu{display:none}
 nav.tabs a.ext{margin-left:auto;color:var(--accent);font-weight:600;position:relative}
 nav.tabs a.ext:hover{text-decoration:underline}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -265,6 +266,7 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <h1>Portal de Gestão Orçamentária e Fiscal</h1>
       <span class="ente">Prefeitura de Maringá</span>
       <span class="tag" id="htag">Prefeitura, sem a Maringá Previdência</span>
+      <span class="atu" id="hatu"></span>
     </div>
     <div class="controls">
       <div class="ctl"><span class="lbl" id="yl">Exercício</span><div class="seg" role="group" aria-labelledby="yl" id="years"></div></div>
@@ -526,7 +528,13 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
 const DATA = window.__PFD.DATA;
 const YEARS = Object.keys(DATA.anos).sort(), NOMES = DATA.nomes;
 const $ = id => document.getElementById(id);
-const n0 = new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
+// data e hora (de Brasília) em que o robô emitiu os relatórios de receita e despesa no Elotech
+const ATU = __ATU__;
+if (ATU.relatorios) {
+  const [d, h] = ATU.relatorios.split('T'), [a, m, dd] = d.split('-');
+  $('hatu').textContent = `Receita e despesa: relatórios emitidos em ${dd}/${m}/${a} às ${h.slice(0,5)}`;
+} else $('hatu').remove();
+const n0 =new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
 const brl = v => { if(v==null) return '–'; const r = Math.round(v); return (r<0?'−':'')+'R$ '+n0.format(Math.abs(r)); };
 const dec = (v,d=1) => (v<0?'−':'')+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const mi = v => { if(v==null) return '–'; const r=Math.round(v), a=Math.abs(r), s=r<0?'−':''; return a>=1e9 ? s+'R$ '+dec(a/1e9,2)+' bi' : a>=1e6 ? s+'R$ '+dec(a/1e6,2)+' mi' : a>=1e3 ? s+'R$ '+dec(a/1e3,1)+' mil' : s+'R$ '+dec(a,0); };

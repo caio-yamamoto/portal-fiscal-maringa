@@ -9,6 +9,7 @@ t = open(tpl, encoding='utf8').read().replace('__CSS__', open(css, encoding='utf
 t = t.replace('__DATAGZ__', gz(open(data, 'rb').read()))
 t = t.replace('__DESPGZ__', gz(open(desp, 'rb').read() if desp else b'{"anos":{}}'))
 t = t.replace('__DIV__', ler('divida.json')).replace('__LIM__', ler('limites.json')).replace('__MET__', ler('metas.json'))
+t = t.replace('__ATU__', ler('atualizacao.json'))
 assert '__DATA' not in t and '__DESP' not in t
 open(out, 'w', encoding='utf8').write(t)
 print(out, os.path.getsize(out), 'bytes')

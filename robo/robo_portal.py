@@ -87,7 +87,32 @@ def baixar_para(driver, nome_relatorio, pasta_destino: Path, nome_final: str) ->
       - o antivírus pode manter o arquivo recém-baixado aberto por alguns segundos: tenta mover de novo.
     """
     pasta_destino.mkdir(parents=True, exist_ok=True)
-    arquivos_antes = {p: p.stat().st_mtime for p in DOWNLOADS.glob("*.xlsx")}
+    baixado = baixar_arquivo(driver, nome_relatorio, Path(nome_final).suffix)
+    destino = pasta_destino / nome_final
+
+    def mover():
+        destino.unlink(missing_ok=True)
+        shutil.move(str(baixado), str(destino))
+
+    com_novas_tentativas(mover)
+    print(f"Arquivo salvo como: {destino}")
+    return destino
+
+
+def com_novas_tentativas(acao, tentativas=15):
+    """Executa acao(); se o arquivo estiver preso (antivírus), espera e tenta de novo."""
+    for tentativa in range(tentativas):
+        try:
+            return acao()
+        except PermissionError:
+            if tentativa == tentativas - 1:
+                raise
+            time.sleep(2)
+
+
+def baixar_arquivo(driver, nome_relatorio, extensao=".xlsx") -> Path:
+    """Aguarda o relatório ficar 'Concluído' nas Notificações, clica nele e devolve o arquivo baixado em DOWNLOADS."""
+    arquivos_antes = {p: p.stat().st_mtime for p in DOWNLOADS.glob(f"*{extensao}")}
     janela_original = driver.current_window_handle
 
     print("Abrindo painel de Notificações...")
@@ -143,7 +168,7 @@ def baixar_para(driver, nome_relatorio, pasta_destino: Path, nome_final: str) ->
     while True:
         if time.time() > limite:
             raise TimeoutException(f"O arquivo não chegou em {DOWNLOADS} em {bi.DOWNLOAD_TIMEOUT} segundos.")
-        novos = [p for p in DOWNLOADS.glob("*.xlsx") if arquivos_antes.get(p) != p.stat().st_mtime]
+        novos = [p for p in DOWNLOADS.glob(f"*{extensao}") if arquivos_antes.get(p) != p.stat().st_mtime]
         if novos and not list(DOWNLOADS.glob("*.crdownload")):
             break
         time.sleep(1)
@@ -151,18 +176,7 @@ def baixar_para(driver, nome_relatorio, pasta_destino: Path, nome_final: str) ->
     baixado = max(novos, key=lambda p: p.stat().st_mtime)
     for duplicata in set(novos) - {baixado}:   # às vezes o sistema dispara um download a mais
         duplicata.unlink(missing_ok=True)
-    destino = pasta_destino / nome_final
-    for tentativa in range(15):
-        try:
-            destino.unlink(missing_ok=True)
-            shutil.move(str(baixado), str(destino))
-            break
-        except PermissionError:
-            if tentativa == 14:
-                raise
-            time.sleep(2)
-    print(f"Arquivo salvo como: {destino}")
-    return destino
+    return baixado
 
 
 XPATH_DESDOBRAMENTO = ("//elo-form-label-column[.//label[contains(normalize-space(.), 'Emitir Desdobramento')]]"
@@ -224,12 +238,13 @@ def emitir_receita(driver):
         baixar_para(driver, nome, RELATORIOS / str(inicio.year), arq)
 
 
-def emitir_balancetes(driver):
+def emitir_balancetes(driver, lista_periodos=None):
+    """Balancetes analítico e simplificado de cada período (padrão: periodos())."""
     nome = "Balancete da Despesa"
     bi.abrir_menu_por_busca(driver, "Relatórios")
     bi.filtrar_relatorio(driver, nome)
     bi.selecionar_relatorio_filtrado(driver)
-    for inicio, fim in periodos():
+    for inicio, fim in periodos() if lista_periodos is None else lista_periodos:
         pasta = RELATORIOS / f"desp{inicio.year}"
         base = f"contabil_balancete_despesa_-_{MESES_MINUSC[inicio.month - 1]}_{inicio.year}"
         # analítico acumulado: 01/01 até o fim do mês (o portal calcula cada mês pela diferença)

@@ -87,11 +87,14 @@ def totais_simplificado(arq: Path):
 
 
 def meses_recentes(D):
-    """(ano, mês) do mês vigente e do anterior no exercício mais recente: os únicos que o robô reemite.
-    Os meses fechados (já enviados ao SIM-AM) não mudam e não são conferidos de novo."""
+    """(ano, mês) do mês vigente e do anterior: os únicos que o robô reemite (em janeiro, o anterior é dezembro
+    do exercício anterior). Os meses fechados (já enviados ao SIM-AM) não mudam e não são conferidos de novo."""
     ano = max(int(a) for a in D["anos"])
     n = D["anos"][str(ano)]["meses"]
-    return {(ano, m) for m in (n - 1, n) if m >= 1}
+    recentes = {(ano, m) for m in (n - 1, n) if m >= 1}
+    if n == 1:
+        recentes.add((ano - 1, 12))
+    return recentes
 
 
 def mes_ano_do_nome(arq: Path):
@@ -134,13 +137,24 @@ def conferir():
 
 def enviar_github():
     rodar(GIT, "pull", "--rebase", "--autostash", "origin", "main")
-    rodar(GIT, "add", "dados/receita.json", "dados/despesa.json")
+    # a data de emissão muda a cada nova emissão do robô, mesmo que os valores sejam os mesmos
+    registrar_emissao()
+    rodar(GIT, "add", "dados/receita.json", "dados/despesa.json", "dados/atualizacao.json")
     if subprocess.run([GIT, "diff", "--cached", "--quiet"], cwd=REPO).returncode == 0:
         print("Nada mudou nos dados; nada a enviar.")
         return
     rodar(GIT, "commit", "-m", f"Atualiza dados do portal ({datetime.now():%d/%m/%Y %H:%M}) [robô]")
     rodar(GIT, "push", "origin", "HEAD:main")
     print("Dados enviados. O site é republicado pelo GitHub em cerca de 1 minuto.")
+
+
+def registrar_emissao():
+    """Grava em dados/atualizacao.json quando foi emitida a planilha mais recente de relatorios_locais (horário do
+    download, que o robô preserva ao copiar), exibido no topo do portal."""
+    ultima = max(p.stat().st_mtime for p in RELATORIOS.rglob("*.xlsx"))
+    info = {"relatorios": datetime.fromtimestamp(ultima).isoformat(timespec="minutes")}
+    (DADOS / "atualizacao.json").write_text(json.dumps(info), encoding="utf-8")
+    print("Relatórios emitidos em", info["relatorios"])
 
 
 def dados_em_dia() -> bool:
