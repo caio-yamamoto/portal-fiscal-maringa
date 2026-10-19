@@ -66,6 +66,16 @@ def gerar():
     rodar(PY, REPO / "scripts" / "extrair_despesa.py", RELATORIOS, DADOS / "despesa.json")
 
 
+def atualizar_siconfi():
+    """Busca na API do Siconfi os RGF e RREO novos ou retificados (dívida, metas e limites). Uma falha (API fora do
+    ar, conferência que não bate) só gera um aviso: não impede a atualização da receita e da despesa."""
+    try:
+        rodar(PY, REPO / "scripts" / "siconfi_api.py", DADOS, "--revisar")
+    except RuntimeError:
+        print("AVISO: não foi possível atualizar os dados do Siconfi (dívida, metas e limites) agora; "
+              "eles continuam como estavam.")
+
+
 def totais_simplificado(arq: Path):
     """(mês, ano, {emp, liq, pago}) lidos da linha 'Totais' e do cabeçalho 'Período: Outubro/2026 até ...'."""
     import openpyxl
@@ -139,7 +149,8 @@ def enviar_github():
     rodar(GIT, "pull", "--rebase", "--autostash", "origin", "main")
     # a data de emissão muda a cada nova emissão do robô, mesmo que os valores sejam os mesmos
     registrar_emissao()
-    rodar(GIT, "add", "dados/receita.json", "dados/despesa.json", "dados/atualizacao.json")
+    rodar(GIT, "add", "dados/receita.json", "dados/despesa.json", "dados/atualizacao.json",
+          "dados/divida.json", "dados/limites.json", "dados/metas.json")
     if subprocess.run([GIT, "diff", "--cached", "--quiet"], cwd=REPO).returncode == 0:
         print("Nada mudou nos dados; nada a enviar.")
         return
@@ -167,6 +178,7 @@ def dados_em_dia() -> bool:
 
 
 def main(enviar=True, forcar=False) -> bool:
+    atualizar_siconfi()
     if forcar and enviar:
         # a conferência já foi feita (e a diferença vista) na execução anterior: só envia
         if dados_em_dia():

@@ -42,6 +42,11 @@ Montar localmente: `bash scripts/atualizar.sh` (gera `site/index.html`). No Wind
   MANUAL (Cloudflare "Confirme que é humano" — não tentar contornar). Emite, para o mês vigente e o anterior:
   receita realizada por fonte (mês), balancete analítico (01/01 até o fim do mês) e balancete simplificado (mês),
   os dois balancetes com "Emitir Desdobramento" marcado. Salva em `relatorios_locais/`.
+- Siconfi: `robo/atualizar_portal.py` roda `scripts/siconfi_api.py dados --revisar`, que lê o RGF e o RREO pela API de
+  dados abertos (apidatalake.tesouro.gov.br; a consulta de declarações em .xls tem hCaptcha — não contornar) e
+  acrescenta/atualiza os períodos do exercício atual e do anterior em divida/limites/metas.json, com as mesmas
+  conferências dos extratores. Validado em 19/10/2026: valores idênticos aos das planilhas em todos os períodos de
+  2025 e 2026. A API não traz notas explicativas (períodos novos ficam sem elas). Linhas usadas: `scripts/campos_siconfi.py`.
 - Diferença no mês vigente só em liquidado/pago, em horário de expediente, costuma ser lançamento feito entre a
   emissão do analítico e a do simplificado (o mês está aberto); rodar fora do expediente ou usar `--forcar`.
 - `robo/atualizar_portal.py`: roda `extrair_receita.py` e `extrair_despesa.py`, confere empenhado/liquidado/pago de

@@ -1,6 +1,8 @@
 """Gera divida.json a partir do RGF (Siconfi): Anexo 2 (Dívida Consolidada Líquida) e Anexo 4 (Operações de Crédito).
 Uso: python3 extrair_divida.py <pasta com subpastas por ano contendo SICONFI_RGF_*_QUADRIMESTRAL_n.xls> divida.json"""
 import sys, os, re, glob, json, xlrd
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from campos_siconfi import DK
 raiz, saida = sys.argv[1], sys.argv[2]
 def load(path):
     wb = xlrd.open_workbook(path); res = {}; meta = {}
@@ -19,15 +21,6 @@ def load(path):
         res[s.name] = quads
     res['_meta'] = meta; return res
 def nums(v): return [x for x in v if isinstance(x, float)]
-DK = [('dc','DÍVIDA CONSOLIDADA - DC (I)'),('mob','Dívida Mobiliária'),('contr','Dívida Contratual'),('emp','Empréstimos'),('emp_int','Internos'),('emp_ext','Externos'),
-      ('reest','Reestruturação da Dívida'),('fin','Financiamentos'),('parc','Parcelamento e Renegociação'),('parc_trib','De Tributos'),('parc_prev','De Contribuições Previdenciárias'),
-      ('parc_soc','De Demais Contribuições Sociais'),('parc_fgts','Do FGTS'),('parc_nf','Com Instituição Não Financeira'),
-      ('demais','Demais Dívidas Contratuais'),('prec','Precatórios Posteriores a 05/05/2000 (inclusive) Vencidos'),('outras','Outras Dívidas'),('ded','DEDUÇÕES (II)'),
-      ('caixa','Disponibilidade de Caixa Bruta'),('rpp','(-) Restos a Pagar Processados'),('dep','(-) Depósitos Restituíveis'),('haveres','Demais Haveres Financeiros'),
-      ('dcl','DÍVIDA CONSOLIDADA LÍQUIDA (DCL)'),('rcl','RECEITA CORRENTE LÍQUIDA - RCL (IV)'),('emendas','(-) Transferências Obrigatórias da União'),('rcl_aj','RECEITA CORRENTE LÍQUIDA AJUSTADA'),
-      ('pdc','% da DC sobre'),('pdcl','% da DCL sobre'),('lim','LIMITE DEFINIDO'),('alerta','LIMITE DE ALERTA'),
-      ('prec_ant','Precatórios Anteriores a 05/05/2000'),('prec_fora','Precatórios Posteriores a 05/05/2000 (Não incluídos na DC)'),('atuarial','Passivo Atuarial'),('rpnp','RP Não-Processados'),
-      ('aro','Antecipações de Receita Orçamentária'),('ppp','Dívida Contratual de PPP'),('depjud','Apropriação de Depósitos Judiciais')]
 def col(rows, pre, i):
     for l, v in rows:
         if l.startswith(pre):

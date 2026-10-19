@@ -13,7 +13,7 @@ Coloque os relatórios na pasta `relatorios/`, seguindo esta organização, e en
 | `relatorios/2026/` | Receita realizada por fonte (um arquivo por mês) e a Previsão Orçamentária do ano |
 | `relatorios/quadros/` | Anexo 2 – quadro da receita por natureza (um por mês) |
 | `relatorios/desp2026/` | Balancete da despesa **analítico** (um por mês, emitido de 01/01 até o fim do mês) |
-| `relatorios/rgf/2026/` | RGF e RREO baixados do Siconfi (`SICONFI_RGF_..._QUADRIMESTRAL_n.xls`, `SICONFI_RREO_..._BIMESTRAL_n.xls`) |
+| `relatorios/rgf/2026/` | RGF e RREO baixados do Siconfi (`SICONFI_RGF_..._QUADRIMESTRAL_n.xls`, `SICONFI_RREO_..._BIMESTRAL_n.xls`). Opcional: o robô (`robo/`) já busca os períodos novos pela API do Siconfi (`scripts/siconfi_api.py`) |
 
 Para outro ano, crie as pastas equivalentes (`relatorios/2027/`, `relatorios/desp2027/`, `relatorios/rgf/2027/`).
 

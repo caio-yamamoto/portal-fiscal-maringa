@@ -31,6 +31,8 @@ python robo_portal.py
 - O Chrome abre na tela do sistema. Se pedir login, entre normalmente (usuário, senha e "Confirme que é humano").
 - O robô emite, para o mês vigente e o anterior: receita realizada por fonte, balancete analítico
   (acumulado desde 01/01) e balancete simplificado.
+- Busca no Siconfi (pela API de dados abertos, sem captcha) os RGF e RREO novos ou retificados, que alimentam as abas
+  Dívida consolidada, Metas fiscais e Limites legais. Se a API estiver fora do ar, só aparece um aviso.
 - Em seguida gera os dados, confere com o simplificado e envia ao GitHub. Se a conferência apontar diferença,
   nada é enviado e a mensagem explica o que fazer.
 

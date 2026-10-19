@@ -3,6 +3,7 @@ Uso: python3 extrair_limites.py <pasta rgf com subpastas por ano> limites.json""
 import sys, os, re, glob, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lim_load import load
+from campos_siconfi import PES
 raiz, saida = sys.argv[1], sys.argv[2]
 def nums(v): return [x for x in v if isinstance(x, float)]
 def achar(rows, pre, i=0):
@@ -10,11 +11,6 @@ def achar(rows, pre, i=0):
         if l.startswith(pre) and nums(v):
             n = nums(v); return n[i] if len(n) > i else None
     return None
-PES = [('bruta','DESPESA BRUTA COM PESSOAL'),('ativo','Pessoal Ativo'),('venc','Vencimentos, Vantagens'),('patr','Obrigações Patronais'),('inat','Pessoal Inativo e Pensionistas'),
-       ('apos','Aposentadorias'),('pens','Pensões'),('terc','Outras Despesas de Pessoal decorrentes de Contratos de Terceirização'),('naoexec','Despesa com Pessoal não Executada'),
-       ('naocomp','DESPESAS NÃO COMPUTADAS'),('indeniz','Indenizações por Demissão'),('judic','Decorrentes de Decisão Judicial'),('dea','Despesas de Exercícios Anteriores'),
-       ('inatvinc','Inativos e Pensionistas com Recursos Vinculados'),('acs','Agentes Comunitários'),('enferm','Parcela dedutível referente ao piso'),('outded','Outras Deduções Constitucionais'),
-       ('liquida','DESPESA LÍQUIDA COM PESSOAL')]
 def pos(rows, pre):
     """valor total 12 meses (a) e RPNP (b): colunas 12 e 13 da linha."""
     for l, v in rows:

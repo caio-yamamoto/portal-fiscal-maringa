@@ -3,6 +3,7 @@ Uso: python3 extrair_metas.py <pasta com subpastas por ano> metas.json"""
 import sys, os, re, glob, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lim_load import load
+from campos_siconfi import REC, DES
 raiz, saida = sys.argv[1], sys.argv[2]
 def vals(v, n): return [(x if isinstance(x, float) else 0.0) for x in (v + [None]*n)[:n]]
 def get(rows, pre, n=1):
@@ -11,14 +12,6 @@ def get(rows, pre, n=1):
     for l, v in rows:
         if l.startswith(pre): return vals(v, n)
     return [0.0]*n
-REC = [('rc','RECEITAS CORRENTES (EXCETO FONTES RPPS)',0),('imp','Impostos, Taxas e Contribuições de Melhoria',1),('iptu','IPTU',2),('iss','ISS',2),('itbi','ITBI',2),('irrf','IRRF',2),('oimp','Outros Impostos',2),
-       ('contr','Contribuições',1),('pat','Receita Patrimonial',1),('aplic','Aplicações Financeiras',2),('opat','Outras Receitas Patrimoniais',2),('tc','Transferências Correntes',1),('fpm','Cota-Parte do FPM',2),('icms','Cota-Parte do ICMS',2),
-       ('ipva','Cota-Parte do IPVA',2),('itr','Cota-Parte do ITR',2),('lc61','Transferências da LC',2),('fundeb','Transferências do FUNDEB',2),('otc','Outras Transferências Correntes',2),('drc','Demais Receitas Correntes',1),
-       ('rpc','RECEITAS PRIMÁRIAS CORRENTES (EXCETO',0),('rk','RECEITAS DE CAPITAL (EXCETO',0),('opc','Operações de Crédito',1),('alien','Alienação de Bens',1),('tk','Transferências de Capital',1),('conv','Convênios',2),('otk','Outras Transferências de Capital',2),('ork','Outras Receitas de Capital',1),
-       ('rpk','RECEITAS PRIMÁRIAS DE CAPITAL (EXCETO',0),('rpt','RECEITA PRIMÁRIA TOTAL (EXCETO',0),('rpt_rpps','RECEITA PRIMÁRIA TOTAL (XVI)',0)]
-DES = [('dc','DESPESAS CORRENTES (EXCETO FONTES RPPS)',0),('pes','Pessoal e Encargos Sociais',1),('jur','Juros e Encargos da Dívida',1),('odc','Outras Despesas Correntes',1),('dpc','DESPESAS PRIMÁRIAS CORRENTES (EXCETO',0),
-       ('dk','DESPESAS DE CAPITAL (EXCETO',0),('inv','Investimentos',1),('invf','Inversões Financeiras',1),('amort','Amortização da Dívida',1),('dpk','DESPESAS PRIMÁRIAS DE CAPITAL (EXCETO',0),('res','RESERVA DE CONTINGÊNCIA',0),
-       ('dpt','DESPESA PRIMÁRIA TOTAL (EXCETO',0),('dpt_rpps','DESPESA PRIMÁRIA TOTAL (XXXII)',0)]
 out = {'anos': {}}
 for pasta in sorted(glob.glob(os.path.join(raiz, '20??'))):
     ano = os.path.basename(pasta); A = {'bims': [], 'b': {}}
