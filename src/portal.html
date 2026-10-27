@@ -605,12 +605,18 @@ const curtoC = c => { const s = c.replace(/\.$/,'').split('.'); while(s.length>5
 
 /* ---------- Estado ---------- */
 let curY = YEARS[YEARS.length-1], curM = null, modo = 'mensal', mesDet = null;
+/* período escolhido pelo usuário (mês/quadrimestre/bimestre): vale ao trocar de exercício e fica guardado só
+   enquanto a aba do navegador estiver aberta (sessionStorage); ao voltar ao site, começa no período mais recente */
+const ESC = {m:null, md:null, mx:null, q:null, b:null}, ESCK = {m:'pfc-mes', md:'pfc-mesd', mx:'pfc-mesx', q:'pfc-quad', b:'pfc-bim'}, ESCMAX = {m:12, md:12, mx:12, q:3, b:6};
+try { ['pfc-ano', ...Object.values(ESCK)].forEach(k => localStorage.removeItem(k)); } catch(e){}
+try { Object.keys(ESC).forEach(k => { const v = +sessionStorage.getItem(ESCK[k]); if(v>=1 && v<=ESCMAX[k]) ESC[k] = v; }); } catch(e){}
+const escolhe = (k,v) => { ESC[k] = v; try { sessionStorage.setItem(ESCK[k], v); } catch(e){} };
 const SEL = new Set(); let FILTRADOS = [], NATALL = null, natAno = null, TAB = 'receita'; const COMBO = {};
 const abertos = new Set(['1','2']);
 const TOQUE = !!(window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches);
-try { const s = localStorage.getItem('pfc-ano'); if(s && DATA.anos[s]) curY = s; const b = +localStorage.getItem('pfc-mes'); if(b>=1 && b<=12) curM = b; const md = localStorage.getItem('pfc-modo'); if(md==='mensal'||md==='acumulado') modo = md; } catch(e){}
+try { const s = sessionStorage.getItem('pfc-ano'); if(s && DATA.anos[s]) curY = s; curM = ESC.m; const md = localStorage.getItem('pfc-modo'); if(md==='mensal'||md==='acumulado') modo = md; } catch(e){}
 const clamp = () => { const A = DATA.anos[curY], n = A.meses; if(!curM || curM>n) curM = (A.parcial===n && n>1) ? n-1 : n; };
-const save = () => { try { localStorage.setItem('pfc-ano', curY); localStorage.setItem('pfc-mes', curM); localStorage.setItem('pfc-modo', modo); } catch(e){} };
+const save = () => { try { sessionStorage.setItem('pfc-ano', curY); localStorage.setItem('pfc-modo', modo); } catch(e){} };
 
 /* ---------- Árvore por natureza ---------- */
 function novoNo(key, label, code){ return {key, label, code, prev:new Array(12).fill(0), real:new Array(12).fill(0), kids:[], map:{}}; }
@@ -910,8 +916,8 @@ $('exarea').addEventListener('click', e => {
 function alternar(e, p){ const multi = e.ctrlKey || e.metaKey || TOQUE;
   if(!p) SEL.clear(); else if(multi) SEL.has(p) ? SEL.delete(p) : SEL.add(p); else if(SEL.size===1 && SEL.has(p)) SEL.clear(); else { SEL.clear(); SEL.add(p); } }
 $('years').innerHTML = YEARS.map(y=>`<button type="button" id="ano-${y}" data-y="${y}" aria-pressed="false">${y}</button>`).join('');
-$('years').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; curY = b.dataset.y; curM = null; curMD = null; curMX = null; curQ = null; clamp(); save(); refresh(); });
-$('msel').addEventListener('change', () => { if(TAB==='divida'||TAB==='limites'){ curQ = +$('msel').value; try { localStorage.setItem('pfc-quad', curQ); } catch(e){} } else if(TAB==='metas'){ curB = +$('msel').value; try { localStorage.setItem('pfc-bim', curB); } catch(e){} } else if(TAB==='rxd'){ curMX = +$('msel').value; saveX(); } else if(TAB==='despesa'){ curMD = +$('msel').value; saveD(); } else { curM = +$('msel').value; save(); } refresh(); });
+$('years').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; curY = b.dataset.y; curM = ESC.m; curMD = ESC.md; curMX = ESC.mx; curQ = ESC.q; curB = ESC.b; clamp(); save(); refresh(); });
+$('msel').addEventListener('change', () => { if(TAB==='divida'||TAB==='limites'){ curQ = +$('msel').value; escolhe('q', curQ); } else if(TAB==='metas'){ curB = +$('msel').value; escolhe('b', curB); } else if(TAB==='rxd'){ curMX = +$('msel').value; escolhe('mx', curMX); saveX(); } else if(TAB==='despesa'){ curMD = +$('msel').value; escolhe('md', curMD); saveD(); } else { curM = +$('msel').value; escolhe('m', curM); save(); } refresh(); });
 $('fchips').addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; alternar(e, b.dataset.p); render(); });
 $('mini').addEventListener('click', e => { const b = e.target.closest('.mc'); if(!b) return; alternar(e, b.dataset.p); render(); });
 ['forig','fnat','ffon'].forEach(id => $(id).addEventListener('change', render));
@@ -994,8 +1000,8 @@ function nomeUnidade(A, u){ const y = Object.keys(DESP.anos).find(k => DESP.anos
   const top = Object.entries(U[u]||{}).sort((a,b)=>b[1]-a[1])[0]; return og + (top ? ' (ex.: ' + nomeAcao(A, top[0]) + ')' : ''); }
 let curMD = null, modoD = 'mensal', agrD = 'org'; const SELD = new Set(), abertosD = {org:new Set(), fun:new Set(), nat:new Set(['3','4']), fon:new Set()};
 let DFILT = [], DIDX = new Set();
-try { const b = +localStorage.getItem('pfc-mesd'); if(b>=1 && b<=12) curMD = b; const md = localStorage.getItem('pfc-mododd'); if(md==='mensal'||md==='acumulado') modoD = md; const ag = localStorage.getItem('pfc-agrd'); if(['org','fun','nat','fon'].includes(ag)) agrD = ag; } catch(e){}
-const saveD = () => { try { localStorage.setItem('pfc-mesd', curMD); localStorage.setItem('pfc-mododd', modoD); localStorage.setItem('pfc-agrd', agrD); } catch(e){} };
+try { curMD = ESC.md; const md = localStorage.getItem('pfc-mododd'); if(md==='mensal'||md==='acumulado') modoD = md; const ag = localStorage.getItem('pfc-agrd'); if(['org','fun','nat','fon'].includes(ag)) agrD = ag; } catch(e){}
+const saveD = () => { try { localStorage.setItem('pfc-mododd', modoD); localStorage.setItem('pfc-agrd', agrD); } catch(e){} };
 const clampD = () => { const A = DESP.anos[curY]; if(!A) return; const n = A.meses; if(!curMD || curMD>n) curMD = (A.parcial===n && n>1) ? n-1 : n; };
 const nomeAcao = (A,p) => A.acoes[p] ? bonito(A.acoes[p]) : 'Ação '+p.slice(-4);
 const nomeEl = (A,n) => A.elnomes[n] ? bonito(A.elnomes[n]) : 'Elemento '+n;
@@ -1211,8 +1217,8 @@ if(window.matchMedia && matchMedia('(max-width:720px)').matches) $('dfbox').open
 
 /* ===================== ABA RECEITA × DESPESA ===================== */
 let curMX = null, modoX = 'mensal', ordX = {k:'ar', d:-1}; const abertosX = new Set();
-try { const b = +localStorage.getItem('pfc-mesx'); if(b>=1 && b<=12) curMX = b; const md = localStorage.getItem('pfc-modox'); if(md==='mensal'||md==='acumulado') modoX = md; } catch(e){}
-const saveX = () => { try { localStorage.setItem('pfc-mesx', curMX); localStorage.setItem('pfc-modox', modoX); } catch(e){} };
+try { curMX = ESC.mx; const md = localStorage.getItem('pfc-modox'); if(md==='mensal'||md==='acumulado') modoX = md; } catch(e){}
+const saveX = () => { try { localStorage.setItem('pfc-modox', modoX); } catch(e){} };
 const fonteDoExercicio = f => f!=='99999' && !fonteExerc(f) && !FONTE_FIXA[f];
 function infoX(y){ const R = DATA.anos[y], D = DESP.anos[y]; if(!R || !D) return null;
   const n = Math.min(R.meses, D.meses), par = [R.parcial, D.parcial].filter(p => p && p<=n), parcial = par.length ? Math.min(...par) : null;
@@ -1336,7 +1342,7 @@ $('xtab').addEventListener('click', e => { const b = e.target.closest('button.tg
 /* ===================== ABA DÍVIDA CONSOLIDADA ===================== */
 const DIV = __DIV__;
 const vpct = (a,b) => (b ? (a/b-1)*100 : null);
-let curQ = null; try { const b = +localStorage.getItem('pfc-quad'); if(b>=1 && b<=3) curQ = b; } catch(e){}
+let curQ = ESC.q;
 const QN = ['1º quadrimestre (jan–abr)','2º quadrimestre (mai–ago)','3º quadrimestre (set–dez)'], QF = ['abr','ago','dez'];
 const notaLimpa = s => String(s||'').replace(/\s+/g,' ').trim();
 /* série de todos os quadrimestres disponíveis, em ordem */
@@ -1435,7 +1441,7 @@ function renderDiv(){
 /* ===================== ABA METAS FISCAIS ===================== */
 const MET = __MET__;
 const BNL = ['1º bimestre (jan–fev)','2º bimestre (mar–abr)','3º bimestre (mai–jun)','4º bimestre (jul–ago)','5º bimestre (set–out)','6º bimestre (nov–dez)'];
-let curB = null; try { const b = +localStorage.getItem('pfc-bim'); if(b>=1 && b<=6) curB = b; } catch(e){}
+let curB = ESC.b;
 /* linha numérica: meta (traço vermelho), resultado (ponto azul), ano anterior (círculo vazio) */
 function mlinha(v, meta, ant){
   const xs = [v, meta, 0].concat(ant!=null?[ant]:[]), lo = Math.min(...xs), hi = Math.max(...xs), pad = (hi-lo)*0.08 || 1, a = lo-pad, b = hi+pad, w = x => (x-a)/(b-a)*100;
