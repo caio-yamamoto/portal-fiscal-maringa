@@ -205,6 +205,31 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
 .tablebox.rolagem{max-height:min(65vh,620px);overflow:auto;overscroll-behavior:contain}
 .tablebox.rolagem thead th{position:sticky;top:0;z-index:2;box-shadow:inset 0 -1px 0 var(--line-2)}
 .tablebox.rolagem tr.tot td{position:sticky;bottom:0;z-index:1;background:var(--surface);box-shadow:inset 0 2px 0 var(--line-2)}
+/* excesso de arrecadação (aba Receita) */
+#exsec .bloco{display:flex;flex-direction:column;gap:10px;min-width:0}
+#exsec .bloco + .bloco{margin-top:18px}
+#exsec .bloco-h{display:flex;align-items:baseline;gap:8px 14px;flex-wrap:wrap}
+#exsec .bloco-h h3{font-size:1rem}
+#exsec .bloco-h .note{flex:1 1 320px}
+#exsec .bloco-h .seg2{margin-left:auto}
+#exsec .lead{max-width:80ch;color:var(--ink-2);font-size:.9rem}
+#exsec .cont{font-size:.8rem;color:var(--muted)}
+#exsec table{width:100%;font-size:.86rem}
+#exsec th{white-space:nowrap}
+#exsec th button.so{all:unset;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+#exsec th button.so:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+#exsec th button.so .s{color:var(--muted);font-size:.7rem;width:.7em}
+#exsec td.nm{text-align:left;white-space:normal;min-width:220px}
+#exsec td.fo{text-align:left;white-space:normal;min-width:180px;font-size:.8rem;color:var(--ink-2)}
+#exsec tr.sub td{font-size:.8rem;background:var(--bg)}
+#exsec tr.sub td.nm{padding-left:38px}
+#exsec tr.sub.resto td{color:var(--ink-2);font-style:italic}
+#exsec .fcod{font-variant-numeric:tabular-nums;font-weight:650;margin-right:6px}
+#exsec td.mut{color:var(--muted)}
+#exsec td.vazio{padding:18px;color:var(--muted);text-align:left}
+#exsec .tablebox.rolagem{max-height:min(55vh,460px)}
+#exsec .tablebox.rolagem.curta{max-height:min(40vh,320px)}
+#exsec .tablebox.rolagem tr.tot td{box-shadow:inset 0 2px 0 var(--line-2),0 10px 0 var(--surface)}
 .dcorpo{display:flex;flex-direction:column;gap:32px}
 .dcorpo[hidden]{display:none}
 :root{--liq:#5f93c9}
@@ -325,6 +350,16 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="sec-h"><h2>Mês a mês</h2><button type="button" class="info" data-tip="A lupa ao lado da diferença abre o detalhamento do mês: quais naturezas de receita ficaram acima ou abaixo do previsto." aria-label="Sobre a tabela mês a mês">i</button>
         <div class="right"><button type="button" class="btn" id="mesmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tablebox"><table class="clean" id="tmes"></table></div>
+    </div>
+
+    <div class="sec" id="exsec">
+      <div class="sec-h"><h2 id="ext">Excesso de arrecadação</h2><button type="button" class="info" id="exinfo" aria-label="Como ler estes números">i</button>
+        <div class="right"><div class="seg2" id="exbase" role="group" aria-label="Comparar com"><button type="button" data-b="ano" aria-pressed="true">Previsto no ano</button><button type="button" data-b="mes" aria-pressed="false">Previsto até o mês</button></div>
+        <div class="seg2" id="exvis" role="group" aria-label="Visão"><button type="button" data-v="fonte" aria-pressed="true">Por fonte</button><button type="button" data-v="nat" aria-pressed="false">Por natureza</button><button type="button" data-v="sem" aria-pressed="false">Sem previsão</button></div></div></div>
+      <div class="kpis" id="exkpis"></div>
+      <p class="lead" id="exlead"></p>
+      <div class="tools"><input type="search" id="exq" placeholder="Buscar por natureza, código ou fonte" aria-label="Buscar no excesso de arrecadação" autocomplete="off" spellcheck="false"><span class="cont" id="excont"></span></div>
+      <div id="exarea"></div>
     </div>
   </section>
 
@@ -703,7 +738,7 @@ function render(){
   $('mini').innerHTML = DEST.map(([n,pre]) => { const o = zero(); A.itens.forEach(it => { if(it[1].startsWith(pre+'.') && passa(it,{receita:true,nat:true})){ add(o.prev,it[2]); add(o.real,it[3]); } });
     const p = sumTo(o.prev,m), r = sumTo(o.real,m), q = ratio(r,p);
     return `<button type="button" class="mc" data-p="${pre}" aria-pressed="${SEL.has(pre)}"><span class="n">${n}</span><span class="v">${brl(r)}</span><div class="bar" role="img" aria-label="${pct(q)} do previsto"><i style="width:${Math.max(0,Math.min(120,q||0))/1.2}%"></i><b style="left:${100/1.2}%"></b></div><span class="p">${pct(q)} de ${short(p)} previstos</span></button>`; }).join('');
-  desenharNat(); desenharMes();
+  desenharNat(); desenharMes(); desenharExc();
   $('rodape').textContent = `Fontes: relatórios "Receita Realizada por Fonte" de cada mês e previsão orçamentária por fonte e natureza de ${curY}, do sistema contábil. Nomes das naturezas do Quadro das Receitas por Natureza, com acentuação ajustada.`;
   if($('det').open) desenharDet();
 }
@@ -760,6 +795,112 @@ function desenharDet(){
       (arr.length>10 ? `<tr><td colspan="4" class="note">Mais ${arr.length-10} itens, somando ${signed(brl(arr.slice(10).reduce((s,x)=>s+x.d,0)))}.</td></tr>` : '') : `<tr><td colspan="4">${vazio}</td></tr>`) + '</tbody>';
   $('detneg').innerHTML = tab(neg, 'Nenhum item abaixo do previsto.'); $('detpos').innerHTML = tab(pos, 'Nenhum item acima do previsto.');
 }
+
+/* ---------- Excesso de arrecadação ---------- */
+let exBase = 'ano', exVis = 'fonte', exQ = '', exFilt = 'acima', exManter = false; const exAbertos = new Set();
+const EXORD = {prev:{k:'ac',d:-1}, nprev:{k:'r',d:-1}, nat:{k:'d',d:-1}, sem:{k:'r',d:-1}};
+try { const v = localStorage.getItem('pfc-exvis'); if(['fonte','nat','sem'].includes(v)) exVis = v; const b = localStorage.getItem('pfc-exbase'); if(b==='ano'||b==='mes') exBase = b; const f = localStorage.getItem('pfc-exfilt'); if(f==='acima'||f==='saldo') exFilt = f; } catch(e){}
+const exSalvar = () => { try { localStorage.setItem('pfc-exvis', exVis); localStorage.setItem('pfc-exbase', exBase); localStorage.setItem('pfc-exfilt', exFilt); } catch(e){} };
+const exNorm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const exCls = d => d>=0.5 ? 'pos' : d<=-0.5 ? 'neg' : 'mut';
+function exCalc(itens, m, base){
+  const F = {}, nat = [], sem = [];
+  itens.forEach(([f,c,p,r]) => {
+    const pa = sumTo(p,12), pb = base==='ano' ? pa : sumTo(p,m), rr = sumTo(r,m), d = rr-pb;
+    const o = F[f] || (F[f] = {f, pa:0, p:0, r:0, ac:0, ab:0, its:[]});
+    o.pa += pa; o.p += pb; o.r += rr; o.its.push({c, p:pb, r:rr, d, sp:pa===0});
+    if(d>=0.5) o.ac += d; else if(d<=-0.5) o.ab += d;
+    if(pa===0){ if(Math.abs(rr)>=0.5) sem.push({f, c, r:rr, fp:false}); }
+    else if(d>=0.5) nat.push({f, c, p:pb, r:rr, d, x:ratio(rr,pb)});
+  });
+  const fon = Object.values(F).map(o => Object.assign(o, {d:o.r-o.p, x:ratio(o.r,o.p)}));
+  const prev = fon.filter(o => o.pa>=0.5), nprev = fon.filter(o => o.pa<0.5 && Math.abs(o.r)>=0.5);
+  const fp = new Set(prev.map(o=>o.f)); sem.forEach(s => s.fp = fp.has(s.f));
+  return {prev, nprev, nat, sem};
+}
+const exPassa = (f,c) => { if(!exQ) return true; const t = exNorm(exQ); return (c && (exNorm(nomeNat(c)).includes(t) || c.includes(exQ) || curtoC(c).includes(exQ))) || f.includes(exQ) || exNorm(nomeFonte(f)).includes(t); };
+const exPassaF = o => !exQ || exPassa(o.f) || o.its.some(i => exPassa(o.f, i.c));
+const exOrdena = (arr, t) => { const {k,d} = EXORD[t]; return arr.sort((a,b) => { const A = a[k], B = b[k];
+  if(typeof A==='string' || typeof B==='string') return String(A).localeCompare(String(B),'pt-BR',{numeric:true})*d; return ((A??-Infinity)-(B??-Infinity))*d; }); };
+const exTh = (t, k, rot, c='') => { const o = EXORD[t], on = o.k===k; return `<th class="${c}"${on?` aria-sort="${o.d<0?'descending':'ascending'}"`:''}><button type="button" class="so" data-t="${t}" data-k="${k}">${rot}<span class="s" aria-hidden="true">${on?(o.d<0?'▼':'▲'):''}</span></button></th>`; };
+const exTg = (f, ab) => `<button type="button" class="tg" data-f="${f}" aria-expanded="${ab}"><span class="ar" aria-hidden="true">▸</span><span><span class="fcod">${f}</span>${esc(nomeFonte(f))}</span></button>`;
+const exTabela = (head, body, id, curta) => `<div class="tablebox rolagem${curta?' curta':''}" data-id="${id}"><table class="clean">${head}<tbody>${body}</tbody></table></div>`;
+const exVazio = (txt, cols) => `<tr><td class="vazio" colspan="${cols}">${txt}${exQ?' para esta busca':''}.</td></tr>`;
+function desenharExc(){
+  const A = DATA.anos[curY], m = curM, fechado = m===12, base = fechado ? 'ano' : exBase;
+  const ate = fechado ? `de ${curY}` : `até ${MN[m-1]}${A.parcial===m?' (em aberto)':''}`, rotP = base==='ano' ? 'Previsto no ano' : `Previsto até ${MN[m-1]}`;
+  const filtro = resumoFiltro();
+  $('ext').textContent = 'Excesso de arrecadação' + (filtro ? ' · '+filtro : '');
+  $('exbase').hidden = fechado;
+  [...$('exbase').children].forEach(b => b.setAttribute('aria-pressed', b.dataset.b===base));
+  [...$('exvis').children].forEach(b => b.setAttribute('aria-pressed', b.dataset.v===exVis));
+  const C = exCalc(FILTRADOS, m, base);
+  const comAc = C.prev.filter(o => o.ac>=0.5), comSaldo = C.prev.filter(o => o.d>=0.5);
+  const somaNat = C.nat.reduce((s,o)=>s+o.d,0), somaSaldo = comSaldo.reduce((s,o)=>s+o.d,0), somaNP = C.nprev.reduce((s,o)=>s+o.r,0);
+  const semFP = C.sem.filter(s => s.fp), somaSemFP = semFP.reduce((s,o)=>s+o.r,0);
+  $('exkpis').innerHTML =
+    `<div class="kpi r"><span class="label">Receitas acima do previsto</span><span class="v pos">${signed(brl(somaNat))}</span><span class="c"><b>${C.nat.length}</b> receitas previstas na LOA, em <b>${new Set(C.nat.map(o=>o.f)).size}</b> fontes</span></div>`+
+    `<div class="kpi"><span class="label">Fontes previstas com saldo positivo</span><span class="v">${comSaldo.length} de ${C.prev.length}</span><span class="c">Somam <b class="pos">${signed(brl(somaSaldo))}</b> acima do previsto${base==='ano'?' para o ano':` até ${MN[m-1]}`}</span></div>`+
+    `<div class="kpi"><span class="label">Fontes sem previsão na LOA</span><span class="v">${brl(somaNP)}</span><span class="c">Arrecadados em <b>${C.nprev.length}</b> fontes que entraram durante o ano</span></div>`+
+    `<div class="kpi"><span class="label">Sem previsão em fontes previstas</span><span class="v">${brl(somaSemFP)}</span><span class="c"><b>${semFP.length}</b> receitas novas dentro de fontes que já estavam na LOA</span></div>`;
+  $('exinfo').dataset.tip = (base==='ano'
+    ? `Compara o arrecadado ${ate} com o previsto para o ano inteiro: mostra o que já passou da previsão anual.${fechado?'':' Em "Previsto até o mês", a comparação é com o cronograma mensal.'}`
+    : `Compara o arrecadado ${ate} com o previsto no cronograma mensal até o mesmo mês: mostra também o que está acima do ritmo previsto, mesmo sem ter passado do total do ano.`)
+    + ' Excesso da fonte: realizado menos previsto, receita por receita (Lei 4.320/1964, art. 43, § 3º; LRF, art. 8º, parágrafo único). Previsão inicial da LOA; não considera os créditos já abertos por excesso. Os filtros do topo valem para esta seção.';
+  let h = '', nRes = 0;
+  if(exVis==='fonte'){
+    $('exlead').textContent = 'Fontes separadas entre as que estavam previstas na LOA e as que entraram durante o ano. Clique na fonte para ver as receitas acima do previsto.';
+    const LP = exOrdena((exFilt==='saldo' ? comSaldo : comAc).filter(exPassaF), 'prev'); nRes += LP.length;
+    let b = '', tAc = 0, tAb = 0, tP = 0, tR = 0;
+    LP.forEach(o => { const ab = exAbertos.has(o.f); tAc += o.ac; tAb += o.ab; tP += o.p; tR += o.r;
+      b += `<tr><td class="nm">${exTg(o.f, ab)}</td><td>${brl(o.p)}</td><td>${brl(o.r)}</td><td class="pos">${signed(brl(o.ac))}</td><td class="${exCls(o.ab)}">${brl(o.ab)}</td><td class="${exCls(o.d)}">${signed(brl(o.d))}</td><td>${pct(o.x)}</td></tr>`;
+      if(ab){ const Ac = o.its.filter(i => i.d>=0.5).sort((x,y)=>y.d-x.d), Re = o.its.filter(i => i.d<0.5 && (Math.abs(i.p)>=0.5 || Math.abs(i.r)>=0.5));
+        Ac.forEach(i => { b += `<tr class="sub"><td class="nm">${esc(nomeNat(i.c))}<span class="cd">${curtoC(i.c)}${i.sp?' · sem previsão na LOA':''}</span></td><td>${brl(i.p)}</td><td>${brl(i.r)}</td><td class="pos">${signed(brl(i.d))}</td><td></td><td></td><td>${i.p?pct(ratio(i.r,i.p)):'–'}</td></tr>`; });
+        if(Re.length){ const rp = Re.reduce((s,i)=>s+i.p,0), rr = Re.reduce((s,i)=>s+i.r,0);
+          b += `<tr class="sub resto"><td class="nm">Demais ${Re.length} ${Re.length===1?'receita':'receitas'} da fonte, no previsto ou abaixo</td><td>${brl(rp)}</td><td>${brl(rr)}</td><td></td><td class="${exCls(rr-rp)}">${brl(rr-rp)}</td><td></td><td>${pct(ratio(rr,rp))}</td></tr>`; } }
+    });
+    b += LP.length ? `<tr class="tot"><td class="left">Total (${LP.length} ${LP.length===1?'fonte':'fontes'})</td><td>${brl(tP)}</td><td>${brl(tR)}</td><td class="pos">${signed(brl(tAc))}</td><td class="${exCls(tAb)}">${brl(tAb)}</td><td class="${exCls(tR-tP)}">${signed(brl(tR-tP))}</td><td>${pct(ratio(tR,tP))}</td></tr>` : exVazio('Nenhuma fonte prevista com receita acima do previsto', 7);
+    h += `<div class="bloco"><div class="bloco-h"><h3>Fontes previstas na LOA</h3><span class="note">${exFilt==='saldo'?'Só as fontes cujo realizado total já passou do previsto.':'Todas as fontes com pelo menos uma receita acima do previsto, mesmo que a fonte, no total, ainda esteja abaixo.'}</span>`+
+      `<div class="seg2" id="exfilt" role="group" aria-label="Quais fontes previstas mostrar"><button type="button" data-x="acima" aria-pressed="${exFilt==='acima'}">Com receitas acima do previsto</button><button type="button" data-x="saldo" aria-pressed="${exFilt==='saldo'}">Só com saldo positivo</button></div></div>`+
+      exTabela(`<thead><tr>${exTh('prev','f','Fonte','left')}${exTh('prev','p',rotP)}${exTh('prev','r','Realizado')}${exTh('prev','ac','Receitas acima')}${exTh('prev','ab','Receitas abaixo')}${exTh('prev','d','Saldo da fonte')}${exTh('prev','x','% do previsto')}</tr></thead>`, b, 'prev') + '</div>';
+    const LN = exOrdena(C.nprev.filter(exPassaF).map(o => Object.assign(o, {n:o.its.filter(i=>Math.abs(i.r)>=0.5).length})), 'nprev'); nRes += LN.length;
+    b = ''; let tN = 0;
+    LN.forEach(o => { const ab = exAbertos.has(o.f); tN += o.r;
+      b += `<tr><td class="nm">${exTg(o.f, ab)}</td><td>${o.n}</td><td class="${o.r<0?'neg':''}">${brl(o.r)}</td></tr>`;
+      if(ab) o.its.filter(i => Math.abs(i.r)>=0.5).sort((x,y)=>y.r-x.r).forEach(i => { b += `<tr class="sub"><td class="nm">${esc(nomeNat(i.c))}<span class="cd">${curtoC(i.c)}</span></td><td></td><td class="${i.r<0?'neg':''}">${brl(i.r)}</td></tr>`; });
+    });
+    b += LN.length ? `<tr class="tot"><td class="left">Total (${LN.length} ${LN.length===1?'fonte':'fontes'})</td><td></td><td>${brl(tN)}</td></tr>` : exVazio('Nenhuma fonte sem previsão', 3);
+    h += `<div class="bloco"><div class="bloco-h"><h3>Fontes sem previsão na LOA</h3><span class="note">Fontes criadas durante o ano, em geral convênios e emendas. Todo o valor arrecadado é excesso em relação à LOA.</span></div>`+
+      exTabela(`<thead><tr>${exTh('nprev','f','Fonte','left')}${exTh('nprev','n','Receitas')}${exTh('nprev','r','Realizado')}</tr></thead>`, b, 'nprev', true) + '</div>';
+  } else if(exVis==='nat'){
+    $('exlead').textContent = 'Naturezas de receita previstas na LOA, com a fonte, cujo realizado já passou do previsto. Inclui as receitas de fontes que, no total, ainda estão abaixo do previsto, como a fonte 1000.';
+    const L = exOrdena(C.nat.filter(o => exPassa(o.f,o.c)).map(o => Object.assign(o, {nm:nomeNat(o.c)})), 'nat'); nRes = L.length;
+    let b = '', t = 0;
+    L.forEach(o => { t += o.d; b += `<tr><td class="nm">${esc(o.nm)}<span class="cd">${curtoC(o.c)}</span></td><td class="fo"><span class="fcod">${o.f}</span>${esc(nomeFonte(o.f))}</td><td>${brl(o.p)}</td><td>${brl(o.r)}</td><td class="pos">${signed(brl(o.d))}</td><td>${pct(o.x)}</td></tr>`; });
+    b += L.length ? `<tr class="tot"><td class="left">Total (${L.length} ${L.length===1?'receita':'receitas'})</td><td></td><td></td><td></td><td class="pos">${signed(brl(t))}</td><td></td></tr>` : exVazio('Nenhuma receita acima do previsto', 6);
+    h = exTabela(`<thead><tr>${exTh('nat','nm','Natureza','left')}${exTh('nat','f','Fonte','left')}${exTh('nat','p',rotP)}${exTh('nat','r','Realizado')}${exTh('nat','d','Excesso')}${exTh('nat','x','% do previsto')}</tr></thead>`, b, 'nat');
+  } else {
+    $('exlead').textContent = 'Receitas arrecadadas sem valor previsto na LOA, tanto em fontes novas quanto em fontes que já estavam previstas. Valores negativos são deduções ou estornos.';
+    const L = exOrdena(C.sem.filter(o => exPassa(o.f,o.c)).map(o => Object.assign(o, {nm:nomeNat(o.c), tf:o.fp?'Prevista':'Nova'})), 'sem'); nRes = L.length;
+    let b = '', t = 0;
+    L.forEach(o => { t += o.r; b += `<tr><td class="nm">${esc(o.nm)}<span class="cd">${curtoC(o.c)}</span></td><td class="fo"><span class="fcod">${o.f}</span>${esc(nomeFonte(o.f))}</td><td class="left note">${o.fp?'Prevista na LOA':'Sem previsão'}</td><td class="${o.r<0?'neg':''}">${brl(o.r)}</td></tr>`; });
+    b += L.length ? `<tr class="tot"><td class="left">Total (${L.length} ${L.length===1?'receita':'receitas'})</td><td></td><td></td><td>${brl(t)}</td></tr>` : exVazio('Nenhuma receita sem previsão', 4);
+    h = exTabela(`<thead><tr>${exTh('sem','nm','Natureza','left')}${exTh('sem','f','Fonte','left')}${exTh('sem','tf','Fonte na LOA','left')}${exTh('sem','r','Realizado')}</tr></thead>`, b, 'sem');
+  }
+  const rol = {}; document.querySelectorAll('#exarea .tablebox[data-id]').forEach(el => rol[el.dataset.id] = el.scrollTop);
+  $('exarea').innerHTML = h;
+  if(exManter) document.querySelectorAll('#exarea .tablebox[data-id]').forEach(el => { if(rol[el.dataset.id]) el.scrollTop = rol[el.dataset.id]; });
+  exManter = false;
+  $('excont').textContent = exQ ? `${nRes} ${nRes===1?'resultado':'resultados'}` : '';
+}
+$('exbase').addEventListener('click', e => { const b = e.target.closest('button[data-b]'); if(!b) return; exBase = b.dataset.b; exSalvar(); desenharExc(); });
+$('exvis').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if(!b) return; exVis = b.dataset.v; exSalvar(); desenharExc(); });
+{ let tq; $('exq').addEventListener('input', e => { clearTimeout(tq); tq = setTimeout(() => { exQ = e.target.value.trim(); desenharExc(); }, 150); }); }
+$('exarea').addEventListener('click', e => {
+  const fb = e.target.closest('#exfilt button[data-x]'); if(fb){ exFilt = fb.dataset.x; exSalvar(); desenharExc(); return; }
+  const s = e.target.closest('button.so'); if(s){ const o = EXORD[s.dataset.t], k = s.dataset.k; if(o.k===k) o.d = -o.d; else { o.k = k; o.d = ['f','nm','tf'].includes(k) ? 1 : -1; } desenharExc(); return; }
+  const t = e.target.closest('button.tg[data-f]'); if(t){ const f = t.dataset.f; exAbertos.has(f) ? exAbertos.delete(f) : exAbertos.add(f); exManter = true; desenharExc(); const nb = document.querySelector(`#exarea button.tg[data-f="${f}"]`); if(nb) nb.focus(); }
+});
 
 /* ---------- Eventos ---------- */
 function alternar(e, p){ const multi = e.ctrlKey || e.metaKey || TOQUE;
