@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import warnings
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
@@ -62,8 +63,15 @@ def rodar(*args, cwd=REPO):
 
 
 def gerar():
-    rodar(PY, REPO / "scripts" / "extrair_receita.py", RELATORIOS, RELATORIOS / "quadros", DADOS / "receita.json")
-    rodar(PY, REPO / "scripts" / "extrair_despesa.py", RELATORIOS, DADOS / "despesa.json")
+    """Receita e despesa são independentes: os dois extratores rodam ao mesmo tempo."""
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        tarefas = [
+            ex.submit(rodar, PY, REPO / "scripts" / "extrair_receita.py", RELATORIOS, RELATORIOS / "quadros",
+                      DADOS / "receita.json"),
+            ex.submit(rodar, PY, REPO / "scripts" / "extrair_despesa.py", RELATORIOS, DADOS / "despesa.json"),
+        ]
+        for t in tarefas:
+            t.result()   # repassa o erro de qualquer um dos dois
     # créditos adicionais por excesso de arrecadação (Demonstrativo de Crédito Adicional), se houver planilha
     # uma planilha com problema só gera aviso: não impede a atualização da receita e da despesa
     if any((RELATORIOS / "creditos").glob("*.xlsx")):
@@ -186,8 +194,11 @@ def dados_em_dia() -> bool:
     return all(p.stat().st_mtime <= gerado for p in RELATORIOS.rglob("*.xlsx"))
 
 
-def main(enviar=True, forcar=False) -> bool:
-    atualizar_siconfi()
+def main(enviar=True, forcar=False, conferencia=True, siconfi=True) -> bool:
+    """conferencia=False gera e envia sem comparar com o balancete simplificado; siconfi=False não busca o Siconfi
+    (o robo_unificado.py faz as duas coisas: busca o Siconfi enquanto emite os relatórios)."""
+    if siconfi:
+        atualizar_siconfi()
     if forcar and enviar:
         # a conferência já foi feita (e a diferença vista) na execução anterior: só envia
         if dados_em_dia():
@@ -198,7 +209,7 @@ def main(enviar=True, forcar=False) -> bool:
         enviar_github()
         return True
     gerar()
-    problemas = conferir()
+    problemas = conferir() if conferencia else []
     for p in problemas:
         print("ATENÇÃO:", p)
     if problemas and not forcar:

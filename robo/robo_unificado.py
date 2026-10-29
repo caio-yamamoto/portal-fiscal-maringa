@@ -1,7 +1,8 @@
 """
 Robô unificado: numa única sessão do Chrome, emite no sistema contábil (Elotech) os relatórios do robô do
 Power BI (automacao_relatorios_bi.py) e os do robô do portal (robo_portal.py), e no fim atualiza o portal
-(atualizar_portal.py: gera os dados, confere com o balancete simplificado e envia ao GitHub).
+(atualizar_portal.py: gera os dados e envia ao GitHub, sem a conferência com o balancete simplificado, que o
+usuário faz depois comparando os PDFs emitidos com o Power BI e o portal).
 
 Relatórios emitidos, para o mês vigente e o anterior:
   - Receita Realizada por Fonte (XLSX): emitida UMA vez e salva nas duas pastas
@@ -12,7 +13,9 @@ Relatórios emitidos, para o mês vigente e o anterior:
   - Balancetes da Despesa do Power BI (como em gerar_relatorios_balancete_despesa)
       -> XLSX simplificado de cada mês, XLSX e PDF analíticos de 01/01 ao fim do mês vigente
   - Balancetes da Despesa do portal (como em robo_portal.emitir_balancetes, com "Emitir Desdobramento")
-      -> analítico acumulado e simplificado de cada mês, em relatorios_locais/desp<ano>/
+      -> só o analítico acumulado de cada mês, em relatorios_locais/desp<ano>/ (sem o simplificado)
+  - Demonstrativo de Crédito Adicional do portal (excesso de arrecadação), de 01/01 ao fim do mês vigente
+      -> relatorios_locais/creditos/credito_adicional_excesso_<ano>-<mm>.xlsx (uma falha só gera aviso)
 
 Em janeiro, o mês anterior é dezembro do exercício anterior, que o sistema só emite logado naquele exercício:
 o robô emite primeiro os relatórios do exercício vigente e depois troca o sistema para 12/<ano anterior>
@@ -31,6 +34,7 @@ import calendar
 import re
 import shutil
 import sys
+import threading
 import time
 import traceback
 from datetime import date
@@ -46,7 +50,7 @@ import robo_portal as portal
 
 MESES = bi.MESES_PT                                      # JANEIRO, FEVEREIRO, MARÇO...
 
-falhas = {"bi": [], "portal": []}
+falhas = {"bi": [], "portal": [], "creditos": []}   # "creditos": só aviso, não impede o portal
 
 
 def salvar(baixado: Path, destinos):
@@ -178,7 +182,9 @@ def emitir_exercicio(driver, periodos, com_bi, com_portal, vigente):
               lambda d: balancetes_bi(d, periodos, com_analiticos=vigente), driver)
     if com_portal:
         etapa("Balancetes da Despesa - portal" + rotulo, ["portal"],
-              lambda d: portal.emitir_balancetes(d, periodos), driver)
+              lambda d: portal.emitir_balancetes(d, periodos, com_simplificado=False), driver)
+        if vigente:
+            etapa("Demonstrativo de Crédito Adicional - portal", ["creditos"], portal.emitir_creditos, driver)
 
 
 def main():
@@ -195,6 +201,11 @@ def main():
     portal.DOWNLOADS.mkdir(parents=True, exist_ok=True)
     for arquivo in list(portal.DOWNLOADS.glob("*.xlsx")) + list(portal.DOWNLOADS.glob("*.pdf")):
         arquivo.unlink(missing_ok=True)   # sobras de uma execução interrompida
+
+    # o Siconfi não depende dos relatórios do sistema: é consultado em paralelo, enquanto o Chrome trabalha
+    siconfi = threading.Thread(target=atualizar_portal.atualizar_siconfi, daemon=True) if com_portal else None
+    if siconfi:
+        siconfi.start()
 
     driver = bi.criar_driver(diretorio_download=portal.DOWNLOADS)
     try:
@@ -221,6 +232,8 @@ def main():
                 print("  -", falha)
         else:
             print(f"{titulo}: todos os relatórios salvos.")
+    for falha in falhas["creditos"]:
+        print("AVISO (os créditos do portal continuam como estavam):", falha)
 
     ok = not falhas["bi"]
     if com_portal:
@@ -230,7 +243,8 @@ def main():
             ok = False
         else:
             print("\nRelatórios emitidos. Atualizando os dados do portal...\n")
-            ok = atualizar_portal.main(enviar=enviar) and ok
+            siconfi.join()
+            ok = atualizar_portal.main(enviar=enviar, conferencia=False, siconfi=False) and ok
     sys.exit(0 if ok else 1)
 
 

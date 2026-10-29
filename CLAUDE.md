@@ -12,7 +12,7 @@ Responda sempre em português do Brasil. O usuário é contador público (orçam
 |---|---|---|
 | Receita | Elotech: "Receita Realizada por Fonte" (mensal, xlsx) + Previsão Orçamentária do ano + Anexo 2 (quadro da receita por natureza, só para nomes) | Prefeitura, sem a Maringá Previdência |
 | Despesa | Elotech: "Balancete da Despesa" ANALÍTICO de 01/01 até o fim de cada mês (xlsx); cada mês = acumulado do mês − acumulado do anterior. O reservado é posição (estoque). | Prefeitura |
-| Receita: Excesso de arrecadação | receita acima + Elotech "Demonstrativo de Crédito Adicional" (tipo de recurso: excesso de arrecadação, de 01/01 até o fim do mês, xlsx em `relatorios_locais/creditos/`) → `scripts/extrair_creditos.py` → `dados/creditos.json` (decretos com fonte, natureza e valor da receita usada como recurso; o portal considera os lançados até o mês escolhido). Ainda não emitido pelo robô: a planilha é salva manualmente. Projeção do ano (decisão do usuário, conservadora): realizado até o último mês fechado + meses restantes do ano anterior, só nas receitas com a mesma fonte e natureza nos dois anos. | Prefeitura |
+| Receita: Excesso de arrecadação | receita acima + Elotech "Demonstrativo de Crédito Adicional" (tipo de recurso: excesso de arrecadação, de 01/01 até o fim do mês, xlsx em `relatorios_locais/creditos/`) → `scripts/extrair_creditos.py` → `dados/creditos.json` (decretos com fonte, natureza e valor da receita usada como recurso; o portal considera os lançados até o mês escolhido). Emitido pelo robô (`robo_portal.emitir_creditos`, só o mês vigente) como `credito_adicional_excesso_AAAA-MM.xlsx`; uma falha só gera aviso. Projeção do ano (decisão do usuário, conservadora): realizado até o último mês fechado + meses restantes do ano anterior, só nas receitas com a mesma fonte e natureza nos dois anos. | Prefeitura |
 | Receita × Despesa | receita e despesa acima, por fonte de recursos | Prefeitura |
 | Dívida consolidada | Siconfi: RGF Anexos 2 e 4 | Município |
 | Metas fiscais | Siconfi: RREO Anexo 6 | Município, sem RPPS |
@@ -54,6 +54,9 @@ Montar localmente: `bash scripts/atualizar.sh` (gera `site/index.html`). No Wind
   cada mês com o simplificado (tolerância R$ 1) e, se bater, faz commit e push só de `dados/receita.json` e
   `dados/despesa.json`. Se não bater, não envia e explica (causa usual: lançamento retroativo no mês anterior →
   reemitir o analítico do mês anterior).
+- `robo/robo_unificado.py` NÃO emite o simplificado do portal nem faz essa conferência (deixava a atualização
+  lenta): emite só o analítico e envia direto (`atualizar_portal.main(conferencia=False)`). O usuário confere
+  depois os PDFs emitidos com o Power BI e o portal. O simplificado do Power BI continua sendo emitido.
 - Pontos a verificar no primeiro teste: seletores do Elotech (vêm do robô do BI e funcionam lá); nomes dos
   arquivos; troca de exercício em janeiro (o mês anterior é de outro ano e hoje fica de fora); tempo do
   `extrair_despesa.py` na primeira execução (lê todos os balancetes; depois usa cache em `cache_desp/`).

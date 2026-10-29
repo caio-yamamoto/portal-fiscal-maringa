@@ -14,10 +14,14 @@ Relatórios emitidos, para o mês vigente e o anterior (o anterior pega lançame
       -> relatorios_locais/desp<ano>/contabil_balancete_despesa_-_<mês>_<ano>_-_analitico.xlsx
   - Balancete da Despesa SIMPLIFICADO (XLSX), do dia 1º ao fim do mês (só para conferência)
       -> relatorios_locais/desp<ano>/contabil_balancete_despesa_-_<mês>_<ano>_-_simplificado.xlsx
+E, só para o mês vigente:
+  - Demonstrativo de Crédito Adicional (XLSX), tipo de recurso "Excesso de arrecadação", de 01/01 ao fim do mês
+      -> relatorios_locais/creditos/credito_adicional_excesso_<ano>-<mm>.xlsx (uma falha aqui só gera aviso)
 
 Uso:  python robo_portal.py            (emite, gera os dados e envia ao GitHub)
       python robo_portal.py --sem-envio (emite e gera os dados, mas não envia)
 """
+import calendar
 import shutil
 import sys
 import time
@@ -27,7 +31,7 @@ from pathlib import Path
 from selenium.common.exceptions import NoSuchWindowException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select, WebDriverWait
 
 import automacao_relatorios_bi as bi
 import atualizar_portal
@@ -238,8 +242,8 @@ def emitir_receita(driver):
         baixar_para(driver, nome, RELATORIOS / str(inicio.year), arq)
 
 
-def emitir_balancetes(driver, lista_periodos=None):
-    """Balancetes analítico e simplificado de cada período (padrão: periodos())."""
+def emitir_balancetes(driver, lista_periodos=None, com_simplificado=True):
+    """Balancetes analítico e (se com_simplificado) simplificado de cada período (padrão: periodos())."""
     nome = "Balancete da Despesa"
     bi.abrir_menu_por_busca(driver, "Relatórios")
     bi.filtrar_relatorio(driver, nome)
@@ -254,6 +258,8 @@ def emitir_balancetes(driver, lista_periodos=None):
         emitir_desdobramento(driver, True)
         bi.gerar_relatorio(driver, formato="xlsx")
         baixar_para(driver, nome, pasta, base + "_-_analitico.xlsx")
+        if not com_simplificado:
+            continue
         # simplificado do mês: usado só para conferir os totais
         print(f"\n=== Balancete da despesa simplificado - {inicio:%m/%Y} ===")
         bi.preencher_periodo_relatorio(driver, inicio, fim)
@@ -261,6 +267,37 @@ def emitir_balancetes(driver, lista_periodos=None):
         emitir_desdobramento(driver, True)
         bi.gerar_relatorio(driver, formato="xlsx")
         baixar_para(driver, nome, pasta, base + "_-_simplificado.xlsx")
+
+
+def selecionar_tipo_recurso(driver, texto="Excesso de arrecadação"):
+    """Seleciona o 'Tipo de recurso' do Demonstrativo de Crédito Adicional (select #tipoRecursoCreditoAdicional)."""
+    campo = WebDriverWait(driver, bi.WAIT_TIMEOUT).until(
+        EC.presence_of_element_located((By.ID, "tipoRecursoCreditoAdicional")))
+    select = Select(campo)
+    alvo = texto.lower()
+    opcao = next((o for o in select.options if o.text.strip().lower() == alvo), None) \
+        or next((o for o in select.options if alvo.split()[0] in o.text.lower()), None)
+    if opcao is None:
+        raise RuntimeError(f"Opção '{texto}' não encontrada no Tipo de recurso: {[o.text for o in select.options]}")
+    select.select_by_visible_text(opcao.text)
+    time.sleep(0.3)
+    print(f"Tipo de recurso selecionado: {opcao.text.strip()}")
+
+
+def emitir_creditos(driver):
+    """Demonstrativo de Crédito Adicional por excesso de arrecadação, de 01/01 ao fim do mês vigente
+    (coluna 'Suplementado por excesso' da seção Excesso de arrecadação, aba Receita)."""
+    nome = "Demonstrativo de Crédito Adicional"
+    mes, ano = bi.obter_mes_ano_vigente()
+    inicio, fim = date(ano, 1, 1), date(ano, mes, calendar.monthrange(ano, mes)[1])
+    bi.abrir_menu_por_busca(driver, "Relatórios")
+    bi.filtrar_relatorio(driver, nome)
+    bi.selecionar_relatorio_filtrado(driver)
+    print(f"\n=== {nome} (excesso de arrecadação) - {inicio:%d/%m/%Y} a {fim:%d/%m/%Y} ===")
+    bi.preencher_periodo_relatorio(driver, inicio, fim)
+    selecionar_tipo_recurso(driver)
+    bi.gerar_relatorio(driver, formato="xlsx")
+    baixar_para(driver, nome, RELATORIOS / "creditos", f"credito_adicional_excesso_{ano}-{mes:02d}.xlsx")
 
 
 def main():
@@ -271,6 +308,10 @@ def main():
         abrir_contabilidade(driver)
         emitir_receita(driver)
         emitir_balancetes(driver)
+        try:
+            emitir_creditos(driver)
+        except Exception as erro:   # opcional: sem ele, os créditos continuam como estavam
+            print(f"AVISO: não foi possível emitir o Demonstrativo de Crédito Adicional: {erro}")
         time.sleep(3)
     finally:
         bi.fechar_driver(driver)
