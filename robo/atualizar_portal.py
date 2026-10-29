@@ -64,6 +64,9 @@ def rodar(*args, cwd=REPO):
 def gerar():
     rodar(PY, REPO / "scripts" / "extrair_receita.py", RELATORIOS, RELATORIOS / "quadros", DADOS / "receita.json")
     rodar(PY, REPO / "scripts" / "extrair_despesa.py", RELATORIOS, DADOS / "despesa.json")
+    # créditos adicionais por excesso de arrecadação (Demonstrativo de Crédito Adicional), se houver planilha
+    if any((RELATORIOS / "creditos").glob("*.xlsx")):
+        rodar(PY, REPO / "scripts" / "extrair_creditos.py", RELATORIOS / "creditos", DADOS / "creditos.json")
 
 
 def atualizar_siconfi():
@@ -151,6 +154,8 @@ def enviar_github():
     registrar_emissao()
     rodar(GIT, "add", "dados/receita.json", "dados/despesa.json", "dados/atualizacao.json",
           "dados/divida.json", "dados/limites.json", "dados/metas.json")
+    if (DADOS / "creditos.json").exists():
+        rodar(GIT, "add", "dados/creditos.json")
     if subprocess.run([GIT, "diff", "--cached", "--quiet"], cwd=REPO).returncode == 0:
         print("Nada mudou nos dados; nada a enviar.")
         return
