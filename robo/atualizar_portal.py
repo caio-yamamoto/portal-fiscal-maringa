@@ -65,8 +65,12 @@ def gerar():
     rodar(PY, REPO / "scripts" / "extrair_receita.py", RELATORIOS, RELATORIOS / "quadros", DADOS / "receita.json")
     rodar(PY, REPO / "scripts" / "extrair_despesa.py", RELATORIOS, DADOS / "despesa.json")
     # créditos adicionais por excesso de arrecadação (Demonstrativo de Crédito Adicional), se houver planilha
+    # uma planilha com problema só gera aviso: não impede a atualização da receita e da despesa
     if any((RELATORIOS / "creditos").glob("*.xlsx")):
-        rodar(PY, REPO / "scripts" / "extrair_creditos.py", RELATORIOS / "creditos", DADOS / "creditos.json")
+        try:
+            rodar(PY, REPO / "scripts" / "extrair_creditos.py", RELATORIOS / "creditos", DADOS / "creditos.json")
+        except RuntimeError:
+            print("AVISO: a planilha de créditos adicionais não passou na conferência; os créditos continuam como estavam.")
 
 
 def atualizar_siconfi():
