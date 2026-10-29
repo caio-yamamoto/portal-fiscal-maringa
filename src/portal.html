@@ -634,18 +634,18 @@ const curtoC = c => { const s = c.replace(/\.$/,'').split('.'); while(s.length>5
 
 /* ---------- Estado ---------- */
 let curY = YEARS[YEARS.length-1], curM = null, modo = 'mensal', mesDet = null;
-/* período escolhido pelo usuário (mês/quadrimestre/bimestre): vale ao trocar de exercício e fica guardado só
-   enquanto a aba do navegador estiver aberta (sessionStorage); ao voltar ao site, começa no período mais recente */
+/* período escolhido pelo usuário (mês/quadrimestre/bimestre): vale ao trocar de exercício, só na página aberta;
+   ao abrir ou atualizar a página, começa no exercício e no período mais recentes (o mês em aberto, se houver) */
 const ESC = {m:null, md:null, mx:null, q:null, b:null}, ESCK = {m:'pfc-mes', md:'pfc-mesd', mx:'pfc-mesx', q:'pfc-quad', b:'pfc-bim'}, ESCMAX = {m:12, md:12, mx:12, q:3, b:6};
 try { ['pfc-ano', ...Object.values(ESCK)].forEach(k => localStorage.removeItem(k)); } catch(e){}
-try { Object.keys(ESC).forEach(k => { const v = +sessionStorage.getItem(ESCK[k]); if(v>=1 && v<=ESCMAX[k]) ESC[k] = v; }); } catch(e){}
-const escolhe = (k,v) => { ESC[k] = v; try { sessionStorage.setItem(ESCK[k], v); } catch(e){} };
+try { ['pfc-ano', ...Object.values(ESCK)].forEach(k => sessionStorage.removeItem(k)); } catch(e){}
+const escolhe = (k,v) => { ESC[k] = v; };
 const SEL = new Set(); let FILTRADOS = [], NATALL = null, natAno = null, TAB = 'receita'; const COMBO = {};
 const abertos = new Set(['1','2']);
 const TOQUE = !!(window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches);
-try { const s = sessionStorage.getItem('pfc-ano'); if(s && DATA.anos[s]) curY = s; curM = ESC.m; const md = localStorage.getItem('pfc-modo'); if(md==='mensal'||md==='acumulado') modo = md; } catch(e){}
-const clamp = () => { const A = DATA.anos[curY], n = A.meses; if(!curM || curM>n) curM = (A.parcial===n && n>1) ? n-1 : n; };
-const save = () => { try { sessionStorage.setItem('pfc-ano', curY); localStorage.setItem('pfc-modo', modo); } catch(e){} };
+try { curM = ESC.m; const md = localStorage.getItem('pfc-modo'); if(md==='mensal'||md==='acumulado') modo = md; } catch(e){}
+const clamp = () => { const A = DATA.anos[curY], n = A.meses; if(!curM || curM>n) curM = n; };
+const save = () => { try { localStorage.setItem('pfc-modo', modo); } catch(e){} };
 
 /* ---------- Árvore por natureza ---------- */
 function novoNo(key, label, code){ return {key, label, code, prev:new Array(12).fill(0), real:new Array(12).fill(0), kids:[], map:{}}; }
@@ -1072,7 +1072,7 @@ let curMD = null, modoD = 'mensal', agrD = 'org'; const SELD = new Set(), aberto
 let DFILT = [], DIDX = new Set();
 try { curMD = ESC.md; const md = localStorage.getItem('pfc-mododd'); if(md==='mensal'||md==='acumulado') modoD = md; const ag = localStorage.getItem('pfc-agrd'); if(['org','fun','nat','fon'].includes(ag)) agrD = ag; } catch(e){}
 const saveD = () => { try { localStorage.setItem('pfc-mododd', modoD); localStorage.setItem('pfc-agrd', agrD); } catch(e){} };
-const clampD = () => { const A = DESP.anos[curY]; if(!A) return; const n = A.meses; if(!curMD || curMD>n) curMD = (A.parcial===n && n>1) ? n-1 : n; };
+const clampD = () => { const A = DESP.anos[curY]; if(!A) return; const n = A.meses; if(!curMD || curMD>n) curMD = n; };
 const nomeAcao = (A,p) => A.acoes[p] ? bonito(A.acoes[p]) : 'Ação '+p.slice(-4);
 const nomeEl = (A,n) => A.elnomes[n] ? bonito(A.elnomes[n]) : 'Elemento '+n;
 const nomeSub = (A,c) => A.subnomes[c] ? bonito(A.subnomes[c]) : 'Subelemento '+c;
@@ -1348,7 +1348,7 @@ function renderRxd(){
   if(!I){ $('msel').innerHTML = '<option>–</option>'; $('msel').disabled = true;
     $('xvaziot').textContent = `Para comparar receita e despesa de ${curY} faltam os dados de ${DATA.anos[curY] ? 'despesa' : 'receita'} desse ano. Disponível: ${YEARS.filter(y=>infoX(y)).join(', ')}.`; $('rodape').textContent = ''; return; }
   $('msel').disabled = false;
-  if(!curMX || curMX>I.n) curMX = (I.parcial===I.n && I.n>1) ? I.n-1 : I.n;
+  if(!curMX || curMX>I.n) curMX = I.n;
   const m = curMX, n = I.n, fechado = m===12, ate = fechado ? 'no ano' : 'até '+MN[m-1];
   $('msel').innerHTML = Array.from({length:n},(x,i)=>`<option value="${i+1}">${capP(MN[i])}${I.parcial===i+1?' (em aberto)':''}</option>`).join(''); $('msel').value = m;
   const {F, sup} = dadosX(I), todas = Object.values(F).filter(o => o.prev || sumTo(o.arr,n) || sumTo(o.emp,n) || o.atu[n-1]);
