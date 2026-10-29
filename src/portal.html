@@ -165,6 +165,10 @@ dialog#det[open]{display:flex;flex-direction:column;gap:14px}
 .cd{display:block;font-size:.72rem;color:var(--muted)}
 
 footer{max-width:100ch}
+.rodbox summary{cursor:pointer;font-size:.8rem;color:var(--muted);width:max-content;max-width:100%}
+.rodbox summary:hover{color:var(--ink-2)}
+.rodbox[open]{display:flex;flex-direction:column;gap:8px}
+.rodbox[open] summary{margin-bottom:2px}
 .ord{display:inline-flex;align-items:center;gap:6px}.ord select{font:500 .82rem var(--body);padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink)}
 #xtab td.nm{min-width:280px}
 button.srt{all:unset;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;white-space:nowrap}
@@ -568,8 +572,10 @@ nav.subtabs button:focus-visible{outline:2px solid var(--accent);outline-offset:
   </dialog>
 
   <footer>
+    <details class="rodbox"><summary>Sobre os dados e as fontes</summary>
     <p class="note">Painel independente, montado a partir de relatórios do sistema contábil da Prefeitura de Maringá (Elotech). Não é um site oficial da Prefeitura.<span id="recorte"> Valores da Prefeitura, sem a Maringá Previdência.</span></p>
     <p class="note" id="rodape"></p>
+    </details>
   </footer>
 </div>
 
