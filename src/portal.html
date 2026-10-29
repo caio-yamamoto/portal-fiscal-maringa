@@ -299,6 +299,7 @@ nav.subtabs button[aria-selected="true"]{background:var(--accent);border-color:v
 nav.subtabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sec.subfora{display:none!important}
 @media (max-width:600px){nav.subtabs button{white-space:normal;text-align:left}nav.subtabs::before{flex-basis:100%}}
+header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
 </style>
 
 <div class="wrap">
@@ -312,6 +313,7 @@ nav.subtabs button:focus-visible{outline:2px solid var(--accent);outline-offset:
     <div class="controls">
       <div class="ctl"><span class="lbl" id="yl">Exercício</span><div class="seg" role="group" aria-labelledby="yl" id="years"></div></div>
       <label class="ctl"><span class="lbl" id="mlbl">Acumulado até</span><select id="msel" aria-label="Acumulado até o mês"></select></label>
+      <div class="ctl"><span class="lbl" id="tml">Tema</span><div class="seg tema" role="group" aria-labelledby="tml" id="tema"><button type="button" data-t="auto" title="Segue o tema do computador ou celular">Automático</button><button type="button" data-t="light">Claro</button><button type="button" data-t="dark">Escuro</button></div></div>
     </div>
   </header>
   <nav class="tabs" aria-label="Seções">
@@ -981,6 +983,14 @@ function mostrarSubs(){ document.querySelectorAll('nav.subtabs').forEach(nav => 
 document.querySelectorAll('nav.subtabs').forEach(nav => nav.addEventListener('click', e => { const b = e.target.closest('button[data-s]'); if(!b) return;
   SUB[nav.dataset.aba] = b.dataset.s; try { localStorage.setItem('pfc-sub', JSON.stringify(SUB)); } catch(e){} mostrarSubs(); refresh(); }));
 mostrarSubs();
+
+
+/* ---------- Tema (claro, escuro ou automático): escolha guardada no navegador ---------- */
+function aplicarTema(t){ const r = document.documentElement; if(t==='light'||t==='dark') r.setAttribute('data-theme', t); else r.removeAttribute('data-theme');
+  document.querySelectorAll('#tema button').forEach(b => b.setAttribute('aria-pressed', b.dataset.t===(t||'auto'))); }
+let TEMA = 'auto'; try { TEMA = localStorage.getItem('pfc-tema') || 'auto'; } catch(e){}
+aplicarTema(TEMA);
+$('tema').addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if(!b) return; TEMA = b.dataset.t; try { localStorage.setItem('pfc-tema', TEMA); } catch(e){} aplicarTema(TEMA); });
 
 /* ---------- Eventos ---------- */
 function alternar(e, p){ const multi = e.ctrlKey || e.metaKey || TOQUE;
