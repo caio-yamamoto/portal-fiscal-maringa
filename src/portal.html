@@ -285,6 +285,15 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
 .lleg i.dot{width:11px;height:11px;border-radius:50%;background:var(--s1)} .lleg i.dot.pa{background:var(--surface);border:2px solid var(--muted);width:9px;height:9px}
 #mponte tr.res td{font-weight:650;border-top:2px solid var(--line-2)}
 @media (prefers-reduced-motion:reduce){.tg .ar{transition:none}}
+
+/* sub-abas */
+nav.subtabs{display:flex;gap:6px;flex-wrap:wrap;padding:4px;border:1px solid var(--line);border-radius:10px;background:var(--surface);align-self:flex-start;max-width:100%}
+nav.subtabs button{font:600 .86rem var(--body);padding:8px 14px;border:0;border-radius:7px;background:transparent;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+nav.subtabs button:hover{color:var(--ink);background:var(--bg)}
+nav.subtabs button[aria-selected="true"]{background:var(--accent);color:var(--on-accent)}
+nav.subtabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sec.subfora{display:none!important}
+@media (max-width:600px){nav.subtabs button{white-space:normal;text-align:left}}
 </style>
 
 <div class="wrap">
@@ -331,32 +340,34 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="prog" id="prog"></div>
     </div>
 
-    <div class="sec">
+    <nav class="subtabs" data-aba="receita" role="tablist" aria-label="Seções"><button type="button" role="tab" data-s="geral">Visão geral</button><button type="button" role="tab" data-s="nat">Por natureza</button><button type="button" role="tab" data-s="mes">Mês a mês</button><button type="button" role="tab" data-s="exc">Excesso de arrecadação</button></nav>
+
+    <div class="sec" data-sub="geral">
       <div class="sec-h"><h2 id="ct">Previsto e realizado</h2><button type="button" class="info" id="cinfo" aria-label="Sobre o gráfico">i</button>
         <div class="right"><div class="seg2" id="rmodo" role="group" aria-label="Modo do gráfico"><button type="button" data-modo="mensal" aria-pressed="true">Mensal</button><button type="button" data-modo="acumulado" aria-pressed="false">Acumulado</button></div></div></div>
       <div class="legend" id="lg"></div>
       <div class="chart" id="ch"></div>
     </div>
 
-    <div class="sec">
+    <div class="sec" data-sub="geral">
       <div class="sec-h"><h2>Principais tributos e transferências</h2><button type="button" class="info" data-tip="Clique em um item para filtrar a página por ele. A barra mostra o realizado sobre o previsto no período. As transferências estão líquidas da retenção para o FUNDEB." aria-label="Sobre os principais tributos">i</button></div>
       <div class="mini" id="mini"></div>
     </div>
 
-    <div class="sec">
+    <div class="sec" data-sub="nat">
       <div class="sec-h"><h2>Por natureza de receita</h2><button type="button" class="info" data-tip="Clique em uma linha para abrir os níveis abaixo dela. A busca procura por nome ou código." aria-label="Sobre a tabela por natureza">i</button>
         <div class="right"><button type="button" class="btn" id="natmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tools"><input type="search" id="qnat" placeholder="Buscar natureza: IPTU, multas, 1.7.2…" aria-label="Buscar natureza de receita"><button class="btn" type="button" id="abrenat">Abrir tudo</button><button class="btn" type="button" id="fechanat">Recolher</button></div>
       <div class="tablebox"><table class="clean tree" id="tnat"></table></div>
     </div>
 
-    <div class="sec">
+    <div class="sec" data-sub="mes">
       <div class="sec-h"><h2>Mês a mês</h2><button type="button" class="info" data-tip="A lupa ao lado da diferença abre o detalhamento do mês: quais naturezas de receita ficaram acima ou abaixo do previsto." aria-label="Sobre a tabela mês a mês">i</button>
         <div class="right"><button type="button" class="btn" id="mesmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tablebox"><table class="clean" id="tmes"></table></div>
     </div>
 
-    <div class="sec" id="exsec">
+    <div class="sec" data-sub="exc" id="exsec">
       <div class="sec-h"><h2 id="ext">Excesso de arrecadação</h2><button type="button" class="info" id="exinfo" aria-label="Como ler estes números">i</button>
         <div class="right"><div class="seg2" id="exbase" role="group" aria-label="Comparar"><button type="button" data-b="ano" aria-pressed="true">Previsto no ano</button><button type="button" data-b="mes" aria-pressed="false">Previsto até o mês</button></div>
         <div class="seg2" id="exvis" role="group" aria-label="Visão"><button type="button" data-v="fonte" aria-pressed="true">Por fonte</button><button type="button" data-v="nat" aria-pressed="false">Por natureza</button><button type="button" data-v="sem" aria-pressed="false">Sem previsão</button></div></div></div>
@@ -390,26 +401,28 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="prog" id="dprog"></div>
     </div>
 
-    <div class="sec">
+    <nav class="subtabs" data-aba="despesa" role="tablist" aria-label="Seções"><button type="button" role="tab" data-s="geral">Visão geral</button><button type="button" role="tab" data-s="exec">Execução por secretaria, função, natureza e fonte</button><button type="button" role="tab" data-s="mes">Mês a mês</button></nav>
+
+    <div class="sec" data-sub="geral">
       <div class="sec-h"><h2 id="dct">Empenhado e liquidado</h2><button type="button" class="info" id="dcinfo" aria-label="Sobre o gráfico">i</button>
         <div class="right"><div class="seg2" id="dmodo" role="group" aria-label="Modo do gráfico"><button type="button" data-modo="mensal" aria-pressed="true">Mensal</button><button type="button" data-modo="acumulado" aria-pressed="false">Acumulado</button></div></div></div>
       <div class="legend" id="dlg"></div>
       <div class="chart" id="dch"></div>
     </div>
 
-    <div class="sec">
+    <div class="sec" data-sub="geral">
       <div class="sec-h"><h2>Por grupo de despesa</h2><button type="button" class="info" data-tip="Clique em um grupo para filtrar a página por ele; segure Ctrl (ou ⌘ no Mac) para somar mais de um. O valor é o liquidado e a barra mostra o liquidado sobre a dotação atualizada." aria-label="Sobre os grupos de despesa">i</button></div>
       <div class="mini" id="dmini"></div>
     </div>
 
-    <div class="sec">
+    <div class="sec" data-sub="exec">
       <div class="sec-h"><h2>Execução por</h2><div class="seg2" id="dagr" role="group" aria-label="Agrupar a tabela por"><button type="button" data-a="org">Secretaria</button><button type="button" data-a="fun">Função</button><button type="button" data-a="nat">Natureza</button><button type="button" data-a="fon">Fonte</button></div><button type="button" class="info" data-tip="Clique em uma linha para abrir os níveis abaixo dela. Secretaria abre em unidade orçamentária, projeto/atividade, elemento, desdobramento/subdesdobramento e fonte de recursos; Função abre em subfunções e ações; Natureza abre em grupo, modalidade, elemento e subelemento; Fonte abre em grupo e elemento. % comprometido = (empenhado + reservado) ÷ dotação atualizada, comparado com a parte do ano já decorrida. Em vermelho, execução baixa: menos da metade do esperado para o período. Em amarelo, atenção: entre metade e três quartos do esperado. Só são marcadas as linhas com sobra de pelo menos R$ 10 mil; a reserva de contingência não entra. O botão Só execução abaixo do esperado mostra apenas essas linhas. No subelemento não há dotação: o orçamento é fixado por elemento. A barrinha sob a dotação atualizada compara a linha com a maior do mesmo nível; passe o mouse para ver o percentual do total. Em Mais colunas aparecem dotação inicial, pago, % liquidado e os saldos; o saldo a empenhar se divide em reservado (já comprometido em reserva de dotação) e saldo disponível." aria-label="Sobre a tabela de execução">i</button>
         <div class="right"><button type="button" class="btn" id="dbaixa" aria-pressed="false">Só execução abaixo do esperado</button><button type="button" class="btn" id="dmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tools"><input type="search" id="dq" placeholder="Buscar por nome ou código" aria-label="Buscar na tabela de execução"><button class="btn" type="button" id="dabre">Abrir tudo</button><button class="btn" type="button" id="dfecha">Recolher</button></div>
       <div class="tablebox rolagem" id="dtabbox"><table class="clean tree" id="dtab"></table></div>
     </div>
 
-    <div class="sec">
+    <div class="sec" data-sub="mes">
       <div class="sec-h"><h2>Mês a mês</h2><button type="button" class="info" data-tip="Valores de cada mês. A dotação inicial é a da lei orçamentária; a atualizada é a posição no fim do mês; com Mais colunas aparecem os acumulados desde janeiro." aria-label="Sobre a tabela mês a mês">i</button>
         <div class="right"><button type="button" class="btn" id="dmesmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tablebox"><table class="clean" id="dmes"></table></div>
@@ -428,13 +441,15 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="prog" id="xprog"></div>
       <p class="note" id="xsup"></p>
     </div>
-    <div class="sec">
+    <nav class="subtabs" data-aba="rxd" role="tablist" aria-label="Seções"><button type="button" role="tab" data-s="graf">Evolução no ano</button><button type="button" role="tab" data-s="fonte">Por fonte de recursos</button></nav>
+
+    <div class="sec" data-sub="graf">
       <div class="sec-h"><h2>Arrecadado, empenhado e liquidado</h2><button type="button" class="info" data-tip="No modo Mensal, o traço escuro é o arrecadado no mês; a barra larga é o empenhado e a estreita, o liquidado. No Acumulado, as três linhas somam desde janeiro." aria-label="Sobre o gráfico">i</button>
         <div class="right"><div class="seg2" id="xmodo" role="group" aria-label="Modo do gráfico"><button type="button" data-modo="mensal" aria-pressed="true">Mensal</button><button type="button" data-modo="acumulado" aria-pressed="false">Acumulado</button></div></div></div>
       <div class="legend" id="xlg"></div>
       <div class="chart" id="xch"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="fonte">
       <div class="sec-h"><h2>Por fonte de recursos</h2><button type="button" class="info" data-tip="Clique no título de uma coluna para ordenar; clique de novo para inverter a ordem. Clique em uma fonte para ver as receitas que entraram nela e os grupos de despesa pagos com ela. Destaque amarelo (▲ no empenhado): empenhado acima do arrecadado. Destaque vermelho (▼ no saldo): liquidado acima do arrecadado, o caso mais grave. Ordene pelo Empenhado ou pelo Saldo para agrupar essas fontes." aria-label="Sobre a tabela por fonte">i</button>
         <div class="right"><button type="button" class="btn" id="xmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tablebox rolagem"><table class="clean tree" id="xtab"></table></div>
@@ -448,24 +463,26 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="sec-h"><h2 id="vkt">Dívida consolidada</h2><button type="button" class="info" data-tip="Valores do Município, como exige a Lei de Responsabilidade Fiscal, tirados do Relatório de Gestão Fiscal (RGF). A dívida consolidada líquida é a dívida menos o caixa disponível; quando o caixa é maior que a dívida, ela fica negativa. O seletor de mês, nesta aba, escolhe o quadrimestre." aria-label="Como ler estes números">i</button></div>
       <div class="kpis" id="vkpis"></div>
     </div>
-    <div class="sec">
+    <nav class="subtabs" data-aba="divida" role="tablist" aria-label="Seções"><button type="button" role="tab" data-s="lim">Limites e evolução</button><button type="button" role="tab" data-s="comp">Composição</button><button type="button" role="tab" data-s="pref">Prefeitura: pagamentos e operações de crédito</button></nav>
+
+    <div class="sec" data-sub="lim">
       <div class="sec-h"><h2>Limites de endividamento</h2><button type="button" class="info" data-tip="Os percentuais são calculados sobre a receita corrente líquida ajustada (sem as emendas individuais da União), como no RGF." aria-label="Sobre os limites">i</button></div>
       <div class="meds" id="vmed"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="lim">
       <div class="sec-h"><h2>Evolução por quadrimestre</h2><button type="button" class="info" data-tip="Barras: dívida consolidada e caixa líquido deduzido. Linha: dívida consolidada líquida (dívida menos caixa); abaixo de zero, o caixa supera a dívida." aria-label="Sobre o gráfico">i</button></div>
       <div class="legend" id="vlg"></div>
       <div class="chart" id="vch"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="comp">
       <div class="sec-h"><h2>Composição da dívida</h2><button type="button" class="info" data-tip="Saldo no fim do exercício anterior e no fim de cada quadrimestre do ano. A coluna destacada é o quadrimestre escolhido; a variação no ano compara esse quadrimestre com o saldo do fim do exercício anterior." aria-label="Sobre a composição">i</button></div>
       <div class="tablebox"><table class="clean" id="vtab"></table></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="comp">
       <div class="sec-h"><h2>Outros compromissos fora da dívida consolidada</h2><button type="button" class="info" data-tip="Valores informados no RGF que não entram no cálculo da dívida consolidada, como o passivo atuarial do regime próprio de previdência e os restos a pagar não processados." aria-label="Sobre outros compromissos">i</button></div>
       <div class="tablebox"><table class="clean" id="vfora"></table></div>
     </div>
-    <div class="sec" id="vpref">
+    <div class="sec" data-sub="pref" id="vpref">
       <div class="sec-h"><h2 id="vpt">Prefeitura: pagamentos da dívida e operações de crédito</h2><button type="button" class="info" data-tip="Dados da Prefeitura, sem a Maringá Previdência: despesa liquidada nos grupos Juros e encargos da dívida (3.2) e Amortização da dívida (4.6), por ação, e receitas de operações de crédito (natureza 2.1) arrecadadas, até o fim do quadrimestre escolhido." aria-label="Sobre pagamentos e operações">i</button></div>
       <div class="grid2">
         <div class="tablebox"><table class="clean" id="vserv"></table></div>
@@ -482,28 +499,30 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="sec-h"><h2 id="mkt">Metas fiscais</h2><button type="button" class="info" data-tip="Resultados primário e nominal do Município, sem o regime próprio de previdência (RPPS), comparados com as metas fixadas no Anexo de Metas Fiscais da Lei de Diretrizes Orçamentárias (LDO). Fonte: RREO, Anexo 6, publicado no Siconfi. O seletor do topo, nesta aba, escolhe o bimestre; os valores são acumulados desde janeiro." aria-label="Como ler estes números">i</button></div>
       <div class="kpis" id="mkpis"></div>
     </div>
-    <div class="sec">
+    <nav class="subtabs" data-aba="metas" role="tablist" aria-label="Seções"><button type="button" role="tab" data-s="cump">Cumprimento das metas</button><button type="button" role="tab" data-s="calc">Como se chega ao resultado</button><button type="button" role="tab" data-s="rd">Receitas e despesas primárias</button><button type="button" role="tab" data-s="abaixo">Cálculo abaixo da linha</button></nav>
+
+    <div class="sec" data-sub="cump">
       <div class="sec-h"><h2>Cumprimento das metas</h2><button type="button" class="info" data-tip="Resultado primário: receitas primárias menos despesas primárias pagas (incluindo restos a pagar pagos). Mostra se as receitas do ano cobrem as despesas sem contar juros e dívida. Resultado nominal: primário mais os juros recebidos, menos os juros pagos; também equivale à redução da dívida consolidada líquida. As metas são anuais e são mínimos: um valor negativo significa que a LDO admite déficit. A meta é verificada no fim do ano; durante o ano o resultado costuma cair, porque a arrecadação se concentra nos primeiros meses (IPTU)." aria-label="Sobre as metas">i</button></div>
       <div class="lgrid" id="mcards"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="cump">
       <div class="sec-h"><h2>Resultado primário ao longo do ano</h2><button type="button" class="info" data-tip="Resultado primário acumulado até cada bimestre, no ano escolhido e no anterior. A linha tracejada é a meta anual do ano escolhido." aria-label="Sobre o gráfico">i</button></div>
       <div class="legend" id="mlg"></div>
       <div class="chart" id="mch"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="calc">
       <div class="sec-h"><h2>Como se chega ao resultado</h2><button type="button" class="info" data-tip="Passo a passo do cálculo acima da linha (pelas receitas e despesas), no ano escolhido e no mesmo bimestre do ano anterior." aria-label="Sobre o cálculo">i</button></div>
       <div class="tablebox"><table class="clean" id="mponte"></table></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="rd">
       <div class="sec-h"><h2>Receitas primárias</h2><button type="button" class="info" data-tip="Receitas que entram no resultado primário, sem as do RPPS. Ficam de fora as receitas financeiras: rendimentos de aplicações, operações de crédito e alienação de investimentos." aria-label="Sobre as receitas primárias">i</button></div>
       <div class="tablebox"><table class="clean" id="mrec"></table></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="rd">
       <div class="sec-h"><h2>Despesas primárias</h2><button type="button" class="info" data-tip="Despesas que entram no resultado primário, sem as do RPPS. Ficam de fora os juros e a amortização da dívida e a concessão de empréstimos. Para o resultado conta o que foi pago, inclusive restos a pagar de anos anteriores." aria-label="Sobre as despesas primárias">i</button></div>
       <div class="tablebox"><table class="clean" id="mdes"></table></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="abaixo">
       <div class="sec-h"><h2>Cálculo abaixo da linha</h2><button type="button" class="info" data-tip="Outra forma de medir o resultado nominal: a variação da dívida consolidada líquida entre 31 de dezembro do ano anterior e o fim do bimestre. Se a dívida líquida cai, o resultado é positivo. As diferenças em relação ao cálculo acima da linha vêm de ajustes de metodologia, explicados na nota do RREO." aria-label="Sobre o cálculo abaixo da linha">i</button></div>
       <div class="tablebox"><table class="clean" id="mabaixo"></table></div>
     </div>
@@ -517,22 +536,24 @@ table.clean td.pt{color:var(--muted);padding-left:4px;font-size:.8rem}table.clea
       <div class="sec-h"><h2 id="lkt">Limites legais</h2><button type="button" class="info" data-tip="Limites e mínimos exigidos pela Constituição, pela Lei de Responsabilidade Fiscal e por resoluções do Senado, tirados do Relatório de Gestão Fiscal (RGF) e do Relatório Resumido da Execução Orçamentária (RREO) do Poder Executivo, publicados no Siconfi. O seletor do topo, nesta aba, escolhe o quadrimestre; educação e saúde usam o bimestre que termina no mesmo mês." aria-label="Como ler estes números">i</button></div>
       <div class="lresumo" id="lresumo"></div>
     </div>
-    <div class="sec">
+    <nav class="subtabs" data-aba="limites" role="tablist" aria-label="Seções"><button type="button" role="tab" data-s="pes">Despesa com pessoal</button><button type="button" role="tab" data-s="edu">Educação e saúde</button><button type="button" role="tab" data-s="end">Endividamento e operações de crédito</button></nav>
+
+    <div class="sec" data-sub="pes">
       <div class="sec-h"><h2>Despesa com pessoal</h2><button type="button" class="info" data-tip="Despesa total com pessoal dos últimos 12 meses, dividida pela receita corrente líquida ajustada. Para o Poder Executivo municipal, o limite máximo é 54% (LRF, art. 20, III, b). Acima de 48,6% (alerta), o Tribunal de Contas emite alerta; acima de 51,3% (prudencial), ficam vedados reajustes, criação de cargos, novas contratações e horas extras." aria-label="Sobre a despesa com pessoal">i</button></div>
       <div class="lgrid" id="lpes"></div>
       <div class="legend" id="llg"></div>
       <div class="chart" id="lch"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="edu">
       <div class="sec-h"><h2>Educação e saúde</h2><button type="button" class="info" data-tip="Mínimos constitucionais anuais sobre as receitas de impostos e transferências: 25% em manutenção e desenvolvimento do ensino (CF, art. 212) e 15% em ações e serviços públicos de saúde (LC 141/2012). Do FUNDEB, ao menos 70% devem ir para a remuneração dos profissionais da educação básica (Lei 14.113/2020). O percentual cresce ao longo do ano e só é verificado no fechamento do exercício; o marcador cinza mostra o mesmo bimestre do ano anterior." aria-label="Sobre educação e saúde">i</button></div>
       <div class="lgrid" id="ledu"></div>
       <div class="tablebox"><table class="clean" id="lbim"></table></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="end">
       <div class="sec-h"><h2>Endividamento e operações de crédito</h2><button type="button" class="info" data-tip="Limites do Senado sobre a receita corrente líquida ajustada: dívida consolidada líquida até 120% (Resolução 40/2001), operações de crédito no ano até 16% e antecipação de receita (ARO) até 7% (Resolução 43/2001), garantias até 22%. Regra de ouro: as operações de crédito não podem superar as despesas de capital (CF, art. 167, III)." aria-label="Sobre endividamento">i</button></div>
       <div class="lgrid" id="lend"></div>
     </div>
-    <div class="sec">
+    <div class="sec" data-sub="pes">
       <div class="sec-h"><h2 id="lpt">Composição da despesa com pessoal</h2><button type="button" class="info" data-tip="Valores dos 12 meses que terminam no fim de cada quadrimestre, como no Anexo 1 do RGF. Despesas não computadas são as que a LRF manda excluir (art. 19, §1º), como indenizações por demissão, decisões judiciais de períodos anteriores e inativos pagos com recursos vinculados. A coluna destacada é o quadrimestre escolhido." aria-label="Sobre a composição">i</button></div>
       <div class="tablebox"><table class="clean" id="ltab"></table></div>
     </div>
@@ -943,6 +964,17 @@ $('exarea').addEventListener('click', e => {
   const t = e.target.closest('button.tg[data-f]'); if(t){ const f = t.dataset.f; exAbertos.has(f) ? exAbertos.delete(f) : exAbertos.add(f); exManter = true; desenharExc(); const nb = document.querySelector(`#exarea button.tg[data-f="${f}"]`); if(nb) nb.focus(); }
 });
 
+
+/* ---------- Sub-abas: cada aba mostra uma seção por vez; o resumo fica fixo ---------- */
+const SUB = {}; try { Object.assign(SUB, JSON.parse(localStorage.getItem('pfc-sub') || '{}')); } catch(e){}
+function mostrarSubs(){ document.querySelectorAll('nav.subtabs').forEach(nav => { const aba = nav.dataset.aba, ks = [...nav.querySelectorAll('button')].map(b => b.dataset.s);
+  if(!ks.includes(SUB[aba])) SUB[aba] = ks[0];
+  nav.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.s===SUB[aba]));
+  nav.closest('section').querySelectorAll('.sec[data-sub]').forEach(el => el.classList.toggle('subfora', el.dataset.sub!==SUB[aba])); }); }
+document.querySelectorAll('nav.subtabs').forEach(nav => nav.addEventListener('click', e => { const b = e.target.closest('button[data-s]'); if(!b) return;
+  SUB[nav.dataset.aba] = b.dataset.s; try { localStorage.setItem('pfc-sub', JSON.stringify(SUB)); } catch(e){} mostrarSubs(); refresh(); }));
+mostrarSubs();
+
 /* ---------- Eventos ---------- */
 function alternar(e, p){ const multi = e.ctrlKey || e.metaKey || TOQUE;
   if(!p) SEL.clear(); else if(multi) SEL.has(p) ? SEL.delete(p) : SEL.add(p); else if(SEL.size===1 && SEL.has(p)) SEL.clear(); else { SEL.clear(); SEL.add(p); } }
@@ -1165,19 +1197,20 @@ function desenharTabD(){
     const open = filtro ? true : ab.has(k.key), temK = k.kids.length>0;
     const vc = v => `<td>${brl(v)}</td>`, vx = v => `<td class="xtra"${x}>${brl(v)}</td>`, tr = '<td>–</td>', trx = `<td class="xtra"${x}>–</td>`;
     const pa = ratio(k.atu,t.atu), mx = Math.max(...no.kids.map(c=>c.semDot?0:c.atu)), pw = mx>0 ? k.atu/mx*100 : 0;
+    const mxi = Math.max(...no.kids.map(c=>c.semDot?0:c.ini)), pwi = mxi>0 ? k.ini/mxi*100 : 0;
     out.push(`<tr class="n${Math.min(nv,4)}"><td class="cod">${mk(k.code)}</td><td class="nm" style="padding-left:${10+nv*14}px">`+
       (temK ? `<button type="button" class="tg" data-k="${esc(k.key)}" aria-expanded="${open}"><span class="ar" aria-hidden="true">▸</span><span>${mk(k.label)}</span></button>` : `<span class="tg"><span class="sp"></span><span>${mk(k.label)}</span></span>`)+
-      `</td>`+(k.semDot?trx:`<td class="xtra"${x} title="${pct(ratio(k.ini,t.ini))} da dotação inicial total">${brl(k.ini)}</td>`)+
+      `</td>`+(k.semDot?tr:`<td class="dbar" title="${pct(ratio(k.ini,t.ini))} da dotação inicial total">${brl(k.ini)}<span class="bt"><i style="width:${k.ini>0?Math.max(Math.min(pwi,100),1.5):0}%"></i></span></td>`)+
       (k.semDot?tr:`<td class="dbar" title="${pct(pa)} da dotação atualizada total">${brl(k.atu)}<span class="bt"><i style="width:${Math.max(Math.min(pw,100),1.5)}%"></i></span></td>`)+
       vc(k.emp)+vc(k.liq)+vx(k.pago)+(k.semDot?trx:`<td class="xtra"${x}>${pct(ratio(k.liq,k.atu))}</td>`)+celSt(k)+
-      (k.semDot?trx+trx+trx:vx(k.atu-k.emp)+vx(k.res)+vx(k.atu-k.emp-k.res))+vx(k.emp-k.pago)+'</tr>');
+      (k.semDot?trx+trx+tr:vx(k.atu-k.emp)+vx(k.res)+`<td class="${k.atu-k.emp-k.res<-0.5?'neg':''}">${brl(k.atu-k.emp-k.res)}</td>`)+vx(k.emp-k.pago)+'</tr>');
     if(temK && open) lin(k, nv+1); });
   lin(T.raiz, 0);
   const nomeCol = {org:'Secretaria, unidade, ação, elemento, desdobramento e fonte', fun:'Função, subfunção e ação', nat:'Natureza da despesa', fon:'Fonte, grupo e elemento'}[agrD];
   const xh = n => `<th class="xtra"${x}>${n}</th>`, tx = v => `<td class="xtra"${x}>${brl(v)}</td>`, tc = v => `<td>${brl(v)}</td>`;
-  $('dtab').innerHTML = `<thead><tr><th class="cod">Código</th><th class="nm">${nomeCol}</th>${xh('Dotação inicial')}<th>Dotação atualizada</th><th>Empenhado</th><th>Liquidado</th>${xh('Pago')}${xh('% liquidado')}<th>% comprometido</th>${xh('Saldo a empenhar')}${xh('Reservado')}${xh('Saldo disponível')}${xh('Empenhado a pagar')}</tr></thead><tbody>` +
+  $('dtab').innerHTML = `<thead><tr><th class="cod">Código</th><th class="nm">${nomeCol}</th><th>Dotação inicial</th><th>Dotação atualizada</th><th>Empenhado</th><th>Liquidado</th>${xh('Pago')}${xh('% liquidado')}<th>% comprometido</th>${xh('Saldo a empenhar')}${xh('Reservado')}<th>Saldo disponível</th>${xh('Empenhado a pagar')}</tr></thead><tbody>` +
     (out.length ? out.join('') : `<tr><td colspan="13">${q.length>=2?`Nada encontrado para “${esc(q)}”.`:soBaixa?'Nenhuma linha com execução abaixo do esperado.':'Nenhuma despesa com estes filtros.'}</td></tr>`) +
-    (filtro ? '' : `<tr class="tot"><td></td><td>Total</td>${tx(t.ini)}${tc(t.atu)}${tc(t.emp)}${tc(t.liq)}${tx(t.pago)}<td class="xtra"${x}>${pct(ratio(t.liq,t.atu))}</td><td>${pct(ratio(t.emp+t.res,t.atu))}</td>${tx(t.atu-t.emp)}${tx(t.res)}${tx(t.atu-t.emp-t.res)}${tx(t.emp-t.pago)}</tr>`) + '</tbody>';
+    (filtro ? '' : `<tr class="tot"><td></td><td>Total</td>${tc(t.ini)}${tc(t.atu)}${tc(t.emp)}${tc(t.liq)}${tx(t.pago)}<td class="xtra"${x}>${pct(ratio(t.liq,t.atu))}</td><td>${pct(ratio(t.emp+t.res,t.atu))}</td>${tx(t.atu-t.emp)}${tx(t.res)}${tc(t.atu-t.emp-t.res)}${tx(t.emp-t.pago)}</tr>`) + '</tbody>';
 }
 function desenharMesD(T){
   const A = DESP.anos[curY], m = curMD, n = A.meses, mais = $('dmesmais').getAttribute('aria-pressed')==='true', x = mais ? '' : ' hidden';

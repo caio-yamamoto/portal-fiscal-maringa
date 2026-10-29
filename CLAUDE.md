@@ -58,6 +58,12 @@ Montar localmente: `bash scripts/atualizar.sh` (gera `site/index.html`). No Wind
   arquivos; troca de exercício em janeiro (o mês anterior é de outro ano e hoje fica de fora); tempo do
   `extrair_despesa.py` na primeira execução (lê todos os balancetes; depois usa cache em `cache_desp/`).
 
+## Layout
+
+- Cada aba tem sub-abas (`nav.subtabs` + `data-sub` nas `.sec`; o resumo e os filtros ficam fixos acima). Aplicado em
+  29/10/2026. Para voltar ao layout anterior (tudo numa página só), o último commit sem sub-abas é `e0cbe79`
+  (o servidor não aceita tags): restaurar `src/portal.html` desse commit e reaplicar as alterações feitas depois.
+
 ## Conferências que devem continuar valendo
 
 - Despesa: totais mensais do analítico = balancete simplificado do mês (empenhado, liquidado, pago, dotação atualizada).
