@@ -300,6 +300,19 @@ nav.subtabs button:focus-visible{outline:2px solid var(--accent);outline-offset:
 .sec.subfora{display:none!important}
 @media (max-width:600px){nav.subtabs button{white-space:normal;text-align:left}nav.subtabs::before{flex-basis:100%}}
 header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
+
+/* filtros em destaque, com seleção múltipla */
+.filtros{padding:12px 14px 14px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:12px;background:var(--accent-soft)}
+.filtros::before{content:"Filtros · clique e marque um ou mais itens";font:700 .7rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+@media (max-width:720px){details.fbox .filtros::before{content:"Clique e marque um ou mais itens"}}
+.filtros .combo input,.filtros .frow select{background:var(--surface);border-color:color-mix(in srgb,var(--accent) 30%,var(--line-2))}
+.filtros .combo input:disabled{opacity:.55;cursor:not-allowed}
+.filtros .combo input.tem{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.combo li{display:flex;gap:8px;align-items:flex-start}
+.combo li .ck{flex:0 0 16px;height:16px;margin-top:1px;border:1.5px solid var(--line-2);border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;line-height:1;color:transparent;background:var(--surface)}
+.combo li[aria-checked="true"] .ck{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.combo li.dica{font-size:.74rem;color:var(--muted);cursor:default;background:none;padding:4px 10px 6px}
+.combo li.dica:hover{background:none}
 </style>
 
 <div class="wrap">
@@ -333,9 +346,9 @@ header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
       <div class="filtros">
         <div class="chips" id="fchips" role="group" aria-label="Receita"></div>
         <div class="frow">
-          <label><span class="note">Categoria e origem</span><select id="forig"></select></label>
-          <label><span class="note">Natureza</span><select id="fnat"></select></label>
-          <div class="fl"><label class="note" for="ffonq">Fonte de recursos</label><div class="combo"><input id="ffonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ffonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="ffonx" aria-label="Limpar fonte" hidden>✕</button><ul id="ffonl" role="listbox" aria-label="Fontes de recursos" hidden></ul></div><select id="ffon" hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="forigq">Categoria e origem</label><div class="combo"><input id="forigq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="forigl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="forigx" aria-label="Limpar categoria e origem" hidden>✕</button><ul id="forigl" role="listbox" aria-multiselectable="true" aria-label="Categorias e origens" hidden></ul></div><select id="forig" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="fnatq">Natureza</label><div class="combo"><input id="fnatq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fnatl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="fnatx" aria-label="Limpar natureza" hidden>✕</button><ul id="fnatl" role="listbox" aria-multiselectable="true" aria-label="Naturezas de receita" hidden></ul></div><select id="fnat" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="ffonq">Fonte de recursos</label><div class="combo"><input id="ffonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ffonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="ffonx" aria-label="Limpar fonte" hidden>✕</button><ul id="ffonl" role="listbox" aria-multiselectable="true" aria-label="Fontes de recursos" hidden></ul></div><select id="ffon" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
         </div>
         <div><button type="button" class="limpar" id="flimpa" hidden>Limpar filtros</button></div>
       </div>
@@ -391,11 +404,11 @@ header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
       <summary><span id="dfsum">Filtros</span><span aria-hidden="true">▾</span></summary>
       <div class="filtros">
         <div class="frow">
-          <label><span class="note">Secretaria</span><select id="dorg"></select></label>
-          <label><span class="note">Unidade orçamentária</span><select id="dun"></select></label>
-          <div class="fl"><label class="note" for="dpaq">Projeto/atividade</label><div class="combo"><input id="dpaq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dpal" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dpax" aria-label="Limpar projeto/atividade" hidden>✕</button><ul id="dpal" role="listbox" aria-label="Projetos e atividades" hidden></ul></div><select id="dpa" hidden aria-hidden="true" tabindex="-1"></select></div>
-          <label><span class="note">Natureza da despesa</span><select id="dnat"></select></label>
-          <div class="fl"><label class="note" for="dfonq">Fonte de recursos</label><div class="combo"><input id="dfonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dfonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dfonx" aria-label="Limpar fonte" hidden>✕</button><ul id="dfonl" role="listbox" aria-label="Fontes de recursos" hidden></ul></div><select id="dfon" hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="dorgq">Secretaria</label><div class="combo"><input id="dorgq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dorgl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dorgx" aria-label="Limpar secretaria" hidden>✕</button><ul id="dorgl" role="listbox" aria-multiselectable="true" aria-label="Secretarias" hidden></ul></div><select id="dorg" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="dunq">Unidade orçamentária</label><div class="combo"><input id="dunq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dunl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dunx" aria-label="Limpar unidade orçamentária" hidden>✕</button><ul id="dunl" role="listbox" aria-multiselectable="true" aria-label="Unidades orçamentárias" hidden></ul></div><select id="dun" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="dpaq">Projeto/atividade</label><div class="combo"><input id="dpaq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dpal" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dpax" aria-label="Limpar projeto/atividade" hidden>✕</button><ul id="dpal" role="listbox" aria-multiselectable="true" aria-label="Projetos e atividades" hidden></ul></div><select id="dpa" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="dnatq">Natureza da despesa</label><div class="combo"><input id="dnatq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dnatl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dnatx" aria-label="Limpar natureza da despesa" hidden>✕</button><ul id="dnatl" role="listbox" aria-multiselectable="true" aria-label="Naturezas da despesa" hidden></ul></div><select id="dnat" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
+          <div class="fl"><label class="note" for="dfonq">Fonte de recursos</label><div class="combo"><input id="dfonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dfonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="dfonx" aria-label="Limpar fonte" hidden>✕</button><ul id="dfonl" role="listbox" aria-multiselectable="true" aria-label="Fontes de recursos" hidden></ul></div><select id="dfon" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
         </div>
         <div><button type="button" class="limpar" id="dlimpa" hidden>Limpar filtros</button></div>
       </div>
@@ -439,7 +452,7 @@ header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
     <div class="soon" id="xvazio" hidden><h2>Receita × Despesa</h2><p class="sub" id="xvaziot"></p></div>
     <div id="xcorpo" class="dcorpo">
     <div class="filtros"><div class="frow">
-      <div class="fl"><label class="note" for="xfonq">Fonte de recursos (só do exercício)</label><div class="combo"><input id="xfonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="xfonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="xfonx" aria-label="Limpar fonte" hidden>✕</button><ul id="xfonl" role="listbox" aria-label="Fontes de recursos" hidden></ul></div><select id="xfon" hidden aria-hidden="true" tabindex="-1"></select></div>
+      <div class="fl"><label class="note" for="xfonq">Fonte de recursos (só do exercício)</label><div class="combo"><input id="xfonq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="xfonl" autocomplete="off" spellcheck="false"><button type="button" class="cx" id="xfonx" aria-label="Limpar fonte" hidden>✕</button><ul id="xfonl" role="listbox" aria-multiselectable="true" aria-label="Fontes de recursos" hidden></ul></div><select id="xfon" multiple hidden aria-hidden="true" tabindex="-1"></select></div>
     </div></div>
     <div class="sec">
       <div class="sec-h"><h2 id="xkt">Resumo</h2><button type="button" class="info" data-tip="Compara, fonte a fonte, o que foi arrecadado no ano com o que foi empenhado, liquidado e pago com esses recursos. Só entram as fontes do exercício: a despesa feita com superávit de anos anteriores e a reserva de contingência ficam de fora. O empenho de contratos anuais costuma se concentrar no início do ano, por isso a comparação mais justa é com o liquidado." aria-label="Como ler estes números">i</button></div>
@@ -667,11 +680,16 @@ function arvore(itens){
 }
 
 /* ---------- Filtros ---------- */
-function prefNat(){ return $('fnat').value || $('forig').value; }
-function passa(it, ign){ const [f,c] = it, pre = [...SEL], np = prefNat(), fon = $('ffon').value;
-  if(!(ign && ign.fonte) && fon && f!==fon) return false;
+/* valores marcados de um filtro (select múltiplo escondido por trás da caixa de busca) */
+const vs = id => [...$(id).selectedOptions].map(o => o.value).filter(Boolean);
+const restaura = (s, at) => { [...s.options].forEach(o => { o.selected = !!o.value && at.includes(o.value); }); };
+const lista3 = (arr, um, varios) => !arr.length ? '' : arr.length===1 ? um(arr[0]) : arr.length<=2 ? arr.map(um).join(' + ') : `${arr.length} ${varios}`;
+const textoCombos = ids => ids.forEach(id => { if(COMBO[id] && document.activeElement!==$(id+'q')) COMBO[id].texto(); });
+function prefNat(){ const n = vs('fnat'); return n.length ? n : vs('forig'); }
+function passa(it, ign){ const [f,c] = it, pre = [...SEL], np = prefNat(), fon = vs('ffon');
+  if(!(ign && ign.fonte) && fon.length && !fon.includes(f)) return false;
   if(!(ign && ign.receita) && pre.length && !pre.some(x=>c.startsWith(x+'.'))) return false;
-  if(!(ign && ign.nat) && np && !c.startsWith(np+'.')) return false;
+  if(!(ign && ign.nat) && np.length && !np.some(x => c.startsWith(x+'.'))) return false;
   return true; }
 function montarFiltros(){
   const A = DATA.anos[curY];
@@ -680,26 +698,28 @@ function montarFiltros(){
   if(!box.children.length) box.innerHTML = `<button type="button" class="chip" data-p="">Todas as receitas</button>` + DEST.map(([n,p])=>`<button type="button" class="chip" data-p="${p}">${n}</button>`).join('');
   box.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.p ? SEL.has(b.dataset.p) : SEL.size===0));
   const so = $('forig'), sn = $('fnat'), sf = $('ffon');
-  if(so.dataset.ano !== curY){ const at = so.value;
-    so.innerHTML = '<option value="">Receitas correntes e de capital</option>' + NATALL.raiz.kids.map(cat => `<option value="${cat.key}" style="font-weight:600">${cat.code} – ${esc(cat.label)}</option>` + cat.kids.map(o=>`<option value="${o.key}">\u2003${o.code} – ${esc(o.label)}</option>`).join('')).join('');
-    so.value = NATALL.idx[at] ? at : ''; so.dataset.ano = curY; }
-  if(sn.dataset.chave !== curY+'|'+so.value){ const at = sn.value, ops = [];
-    const walk = (no,d) => no.kids.forEach(k => { if(k.key.split('.').length>7) return; ops.push(`<option value="${k.key}">${' '.repeat(d)}${k.code} – ${esc(k.label)}</option>`); walk(k,d+1); });
-    if(so.value) walk(NATALL.idx[so.value], 0);
-    sn.innerHTML = so.value ? `<option value="">Todas as naturezas de ${esc(NATALL.idx[so.value].label.toLowerCase())}</option>` + ops.join('') : '<option value="">Escolha a categoria ou origem</option>';
-    sn.disabled = !so.value; sn.value = ops.some(o=>o.includes(`value="${at}"`)) ? at : ''; sn.dataset.chave = curY+'|'+so.value; }
-  const chave = curY+'|'+[...SEL].sort().join(',')+'|'+prefNat();
-  if(sf.dataset.chave !== chave){ const at = sf.value;
+  if(so.dataset.ano !== curY){ const at = vs('forig');
+    so.innerHTML = '<option value="">Receitas correntes e de capital</option>' + NATALL.raiz.kids.map(cat => `<option value="${cat.key}">${cat.code} – ${esc(cat.label)}</option>` + cat.kids.map(o=>`<option value="${o.key}"> ${o.code} – ${esc(o.label)}</option>`).join('')).join('');
+    restaura(so, at.filter(k => NATALL.idx[k])); so.dataset.ano = curY; }
+  const origs = vs('forig');
+  if(sn.dataset.chave !== curY+'|'+origs.join(',')){ const at = vs('fnat'), ops = [], vistos = new Set();
+    const walk = (no,d) => no.kids.forEach(k => { if(k.key.split('.').length>7 || vistos.has(k.key)) return; vistos.add(k.key); ops.push([k.key, `<option value="${k.key}">${' '.repeat(d)}${k.code} – ${esc(k.label)}</option>`]); walk(k,d+1); });
+    origs.forEach(k => NATALL.idx[k] && walk(NATALL.idx[k], 0));
+    sn.innerHTML = origs.length ? '<option value="">Todas as naturezas da origem escolhida</option>' + ops.map(o=>o[1]).join('') : '<option value="">Escolha antes a categoria ou origem</option>';
+    sn.disabled = !origs.length; restaura(sn, at.filter(k => vistos.has(k))); sn.dataset.chave = curY+'|'+origs.join(','); }
+  const chave = curY+'|'+[...SEL].sort().join(',')+'|'+prefNat().join(',');
+  if(sf.dataset.chave !== chave){ const at = vs('ffon');
     const fs = [...new Set(A.itens.filter(it => passa(it,{fonte:true}) && (sumTo(it[2],12)||sumTo(it[3],12))).map(i=>i[0]))].sort((a,b)=>(+a)-(+b));
     sf.innerHTML = `<option value="">Todas as fontes (${fs.length})</option>` + fs.map(f=>`<option value="${f}">${f} – ${esc(String(A.fontes[f]||'sem arrecadação no ano').replace(/\s+/g,' ').trim())}</option>`).join('');
-    sf.value = fs.includes(at) ? at : ''; sf.dataset.chave = chave; }
-  const ativos = (SEL.size?1:0) + (prefNat()?1:0) + (sf.value?1:0);
-  if(COMBO.ffon && document.activeElement!==$('ffonq')) COMBO.ffon.texto();
+    restaura(sf, at.filter(f => fs.includes(f))); sf.dataset.chave = chave; }
+  const ativos = (SEL.size?1:0) + (prefNat().length?1:0) + (vs('ffon').length?1:0);
+  textoCombos(['forig','fnat','ffon']);
   $('flimpa').hidden = !ativos; $('fsum').textContent = ativos ? `Filtros (${ativos})` : 'Filtros';
 }
 function resumoFiltro(){
-  const nomes = DEST.filter(d=>SEL.has(d[1])).map(d=>d[0]), np = prefNat(), fon = $('ffon').value;
-  return [nomes.length ? (nomes.length>1 ? nomes.slice(0,-1).join(', ')+' e '+nomes[nomes.length-1] : nomes[0]) : '', np ? `${np} ${NATALL.idx[np].label}` : '', fon ? `fonte ${fon}` : ''].filter(Boolean).join(' · ');
+  const nomes = DEST.filter(d=>SEL.has(d[1])).map(d=>d[0]), np = prefNat(), fon = vs('ffon');
+  return [nomes.length ? (nomes.length>1 ? nomes.slice(0,-1).join(', ')+' e '+nomes[nomes.length-1] : nomes[0]) : '',
+    lista3(np, k => `${k} ${NATALL.idx[k] ? NATALL.idx[k].label : ''}`, 'naturezas'), lista3(fon, f => `fonte ${f}`, 'fontes')].filter(Boolean).join(' · ');
 }
 
 /* ---------- Gráficos ---------- */
@@ -786,7 +806,7 @@ function render(){
 /* tabela por natureza */
 function desenharNat(){
   const m = curM, mais = $('natmais').getAttribute('aria-pressed')==='true', T = arvore(FILTRADOS), q = $('qnat').value.trim();
-  const np = prefNat(); if(np){ const s = np.split('.'); for(let i=1;i<=s.length;i++) abertos.add(s.slice(0,i).join('.')); }
+  prefNat().forEach(np => { const s = np.split('.'); for(let i=1;i<=s.length;i++) abertos.add(s.slice(0,i).join('.')); });
   let filtro = null;
   if(q.length>=2){ const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(), nq = norm(q); filtro = new Set();
     const walk = (no, anc) => no.kids.forEach(k => { if(norm(k.label).includes(nq) || k.code.includes(q)){ anc.forEach(a=>filtro.add(a)); filtro.add(k.key); } walk(k, anc.concat(k.key)); }); walk(T.raiz, []); }
@@ -1011,32 +1031,39 @@ document.addEventListener('mouseover', ajustaDica); document.addEventListener('f
 const semAc = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 function fazCombo(id, aoMudar, nada){
   const q = $(id+'q'), l = $(id+'l'), s = $(id), x = $(id+'x'); let at = -1, lista = [];
-  const texto = () => { const o = s.options[s.selectedIndex];
-    q.value = s.value && o ? o.textContent : ''; q.placeholder = s.options[0] ? s.options[0].textContent + ' · digite para buscar' : ''; x.hidden = !s.value; };
-  const abrir = t => { const ps = semAc(t).split(/\s+/).filter(Boolean);
-    lista = [...s.options].map(o => ({v:o.value, t:o.textContent})).filter(o => !ps.length || (o.v && ps.every(p => semAc(o.t).includes(p))));
+  const marcados = () => [...s.selectedOptions].filter(o => o.value);
+  const texto = () => { const m = marcados();
+    q.value = m.length===1 ? m[0].textContent.trim() : m.length ? `${m.length} selecionados` : '';
+    q.title = m.map(o => o.textContent.trim()).join('\n'); q.classList.toggle('tem', m.length>0);
+    q.placeholder = s.options[0] ? s.options[0].textContent : ''; x.hidden = !m.length; q.disabled = s.disabled; };
+  const abrir = t => { const ps = semAc(t).split(/\s+/).filter(Boolean), top = l.scrollTop;
+    lista = [...s.options].filter(o => o.value).map(o => ({v:o.value, t:o.textContent, s:o.selected})).filter(o => !ps.length || ps.every(p => semAc(o.t).includes(p)));
     const re = ps.length ? new RegExp('('+ps.map(p=>p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','ig') : null;
     const hl = z => { if(!re) return esc(z); const n = semAc(z); let out = '', last = 0; n.replace(re, (m, g, off) => { out += esc(z.slice(last, off)) + '<mark>' + esc(z.slice(off, off+m.length)) + '</mark>'; last = off + m.length; return m; }); return out + esc(z.slice(last)); };
-    at = lista.length ? 0 : -1;
-    l.innerHTML = lista.length ? lista.map((o,i) => { const k = o.v ? o.t.indexOf(' – ') : -1; return `<li role="option" id="${id}o${i}" data-i="${i}" aria-selected="${i===at}">${k>0 ? `<span class="k">${hl(o.t.slice(0,k))}</span>${hl(o.t.slice(k+3))}` : hl(o.t)}</li>`; }).join('') : `<li class="nada">${nada ? capP(nada) : 'Nenhuma fonte'} com “${esc(t)}”.</li>`;
-    l.hidden = false; q.setAttribute('aria-expanded','true'); if(at>=0) q.setAttribute('aria-activedescendant', id+'o0'); };
-  const fechar = () => { l.hidden = true; q.setAttribute('aria-expanded','false'); q.removeAttribute('aria-activedescendant'); };
-  const escolher = i => { const o = lista[i]; if(!o) return; s.value = o.v; fechar(); aoMudar(); q.blur(); };
-  q.addEventListener('focus', () => { q.select(); abrir(''); });
-  q.addEventListener('input', () => abrir(q.value));
+    if(at<0 || at>=lista.length) at = lista.length ? 0 : -1;
+    const nm = marcados().length;
+    l.innerHTML = (lista.length ? `<li class="dica">${nm ? `${nm} marcado${nm>1?'s':''} · clique para marcar ou desmarcar` : 'Clique para marcar um ou mais itens'}</li>` + lista.map((o,i) => { const k = o.t.indexOf(' – ');
+      return `<li role="option" id="${id}o${i}" data-i="${i}" aria-checked="${o.s}" aria-selected="${i===at}"><span class="ck" aria-hidden="true">✓</span><span>${k>0 ? `<span class="k">${hl(o.t.slice(0,k).trim())}</span>${hl(o.t.slice(k+3))}` : hl(o.t)}</span></li>`; }).join('')
+      : `<li class="nada">${nada ? capP(nada) : 'Nenhum item encontrado'}</li>`);
+    l.hidden = false; l.scrollTop = top; q.setAttribute('aria-expanded','true'); if(at>=0) q.setAttribute('aria-activedescendant', id+'o'+at); };
+  const fechar = () => { l.hidden = true; q.setAttribute('aria-expanded','false'); q.removeAttribute('aria-activedescendant'); at = -1; };
+  const alternar = i => { const o = lista[i]; if(!o) return; const op = [...s.options].find(z => z.value===o.v); if(!op) return;
+    op.selected = !op.selected; at = i; const busca = q.value; aoMudar(); q.value = busca; abrir(busca); };
+  q.addEventListener('focus', () => { q.value = ''; l.scrollTop = 0; abrir(''); });
+  q.addEventListener('input', () => { at = 0; l.scrollTop = 0; abrir(q.value); });
   q.addEventListener('keydown', e => {
     if(e.key==='ArrowDown' || e.key==='ArrowUp'){ e.preventDefault(); if(l.hidden) abrir(q.value); if(!lista.length) return;
       at = (at + (e.key==='ArrowDown'?1:-1) + lista.length) % lista.length;
-      l.querySelectorAll('li').forEach((li,i) => li.setAttribute('aria-selected', i===at)); $(id+'o'+at).scrollIntoView({block:'nearest'}); q.setAttribute('aria-activedescendant', id+'o'+at); }
-    else if(e.key==='Enter'){ e.preventDefault(); if(at>=0) escolher(at); }
+      l.querySelectorAll('li[data-i]').forEach((li,i) => li.setAttribute('aria-selected', i===at)); $(id+'o'+at).scrollIntoView({block:'nearest'}); q.setAttribute('aria-activedescendant', id+'o'+at); }
+    else if(e.key==='Enter'){ e.preventDefault(); if(at>=0) alternar(at); }
     else if(e.key==='Escape'){ fechar(); texto(); q.blur(); } });
-  l.addEventListener('mousedown', e => { const li = e.target.closest('li[data-i]'); if(li){ e.preventDefault(); escolher(+li.dataset.i); } });
+  l.addEventListener('mousedown', e => { e.preventDefault(); const li = e.target.closest('li[data-i]'); if(li) alternar(+li.dataset.i); });
   q.addEventListener('blur', () => setTimeout(() => { fechar(); texto(); }, 120));
-  x.addEventListener('click', () => { s.value = ''; aoMudar(); });
+  x.addEventListener('click', () => { restaura(s, []); aoMudar(); texto(); });
   return {texto};
 }
-COMBO.ffon = fazCombo('ffon', render);
-$('flimpa').addEventListener('click', () => { SEL.clear(); $('forig').value = ''; $('fnat').dataset.chave = ''; $('ffon').value = ''; $('ffon').dataset.chave = ''; render(); });
+COMBO.ffon = fazCombo('ffon', render); COMBO.forig = fazCombo('forig', render); COMBO.fnat = fazCombo('fnat', render, 'escolha antes a categoria ou origem');
+$('flimpa').addEventListener('click', () => { SEL.clear(); ['forig','fnat','ffon'].forEach(id => restaura($(id), [])); $('fnat').dataset.chave = ''; $('ffon').dataset.chave = ''; render(); });
 $('rmodo').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; modo = b.dataset.modo; save(); render(); });
 $('tnat').addEventListener('click', e => { const b = e.target.closest('button.tg'); if(!b || $('qnat').value.trim().length>=2) return; const k = b.dataset.k; abertos.has(k) ? abertos.delete(k) : abertos.add(k); desenharNat(); });
 let tq; $('qnat').addEventListener('input', () => { clearTimeout(tq); tq = setTimeout(desenharNat, 150); });
@@ -1089,49 +1116,50 @@ const nomeMod = m => MODA[m] || 'Modalidade '+m;
 const cmpCodD = (a,b) => { const x = a.code.split(/[.\s·]+/), y = b.code.split(/[.\s·]+/); for(let i=0;i<Math.max(x.length,y.length);i++){ const d = (parseInt(x[i])||0)-(parseInt(y[i])||0); if(d) return d; } return a.code.localeCompare(b.code); };
 
 /* filtros */
-function passaD(it, ign){ const p = it[0].split('.'), org = $('dorg').value, un = $('dun').value, pa = $('dpa').value, nat = $('dnat').value, fon = $('dfon').value;
-  if(org && p[0]!==org) return false;
-  if(un && it[0].slice(0,6)!==un) return false;
-  if(!(ign && ign.pa) && pa && it[0]!==pa) return false;
-  if(nat && !(it[1]+'.').startsWith(nat+'.')) return false;
+function passaD(it, ign){ const p = it[0].split('.'), org = vs('dorg'), un = vs('dun'), pa = vs('dpa'), nat = vs('dnat'), fon = vs('dfon');
+  if(org.length && !org.includes(p[0])) return false;
+  if(un.length && !un.includes(it[0].slice(0,6))) return false;
+  if(!(ign && ign.pa) && pa.length && !pa.includes(it[0])) return false;
+  if(nat.length && !nat.some(n => (it[1]+'.').startsWith(n+'.'))) return false;
   if(!(ign && ign.grupo) && SELD.size && ![...SELD].some(g => it[1].startsWith(g+'.'))) return false;
-  if(!(ign && ign.fonte) && fon && it[2]!==fon) return false;
+  if(!(ign && ign.fonte) && fon.length && !fon.includes(it[2])) return false;
   return true; }
 function montarFiltrosD(){
   const A = DESP.anos[curY], so = $('dorg'), su = $('dun'), sp = $('dpa'), sn = $('dnat'), sx = $('dfon');
   if(so.dataset.ano !== curY){
-    const orgs = [...new Set(A.itens.map(i=>i[0].slice(0,2)))].sort(), at1 = so.value, at3 = sn.value;
+    const orgs = [...new Set(A.itens.map(i=>i[0].slice(0,2)))].sort(), at1 = vs('dorg'), at3 = vs('dnat');
     so.innerHTML = '<option value="">Todas as secretarias</option>' + orgs.map(o=>`<option value="${o}">${o} – ${esc(nomeOrg(o))}</option>`).join('');
     const ns = {}; A.itens.forEach(i => { const s = i[1].split('.'); const c = s[0], g = s[0]+'.'+s[1], m = g+'.'+s[2]; ns[c] = ns[c] || {}; ns[c][g] = ns[c][g] || {}; (ns[c][g][m] = ns[c][g][m] || new Set()).add(i[1]); });
     const ord = o => Object.keys(o).sort((a,b)=>cmpCodD({code:a},{code:b}));
-    sn.innerHTML = '<option value="">Todas as naturezas</option>' + ord(ns).map(c => `<option value="${c}" style="font-weight:600">${c} – ${esc(CATD[c]||'Categoria '+c)}</option>` + ord(ns[c]).map(g => `<option value="${g}"> ${g} – ${esc(GRP[g]||'Grupo '+g)}</option>` + ord(ns[c][g]).map(m => `<option value="${m}">  ${m} – ${esc(nomeMod(m.split('.')[2]))}</option>` + [...ns[c][g][m]].sort((a,b)=>cmpCodD({code:a},{code:b})).map(e => `<option value="${e}">   ${e} – ${esc(nomeEl(A,e))}</option>`).join('')).join('')).join('')).join('');
+    sn.innerHTML = '<option value="">Todas as naturezas</option>' + ord(ns).map(c => `<option value="${c}" >${c} – ${esc(CATD[c]||'Categoria '+c)}</option>` + ord(ns[c]).map(g => `<option value="${g}"> ${g} – ${esc(GRP[g]||'Grupo '+g)}</option>` + ord(ns[c][g]).map(m => `<option value="${m}">  ${m} – ${esc(nomeMod(m.split('.')[2]))}</option>` + [...ns[c][g][m]].sort((a,b)=>cmpCodD({code:a},{code:b})).map(e => `<option value="${e}">   ${e} – ${esc(nomeEl(A,e))}</option>`).join('')).join('')).join('')).join('');
     const ok = (s,v) => [...s.options].some(o=>o.value===v);
-    so.value = ok(so,at1)?at1:''; sn.value = ok(sn,at3)?at3:''; so.dataset.ano = curY; }
-  const chUN = curY+'|'+so.value;
-  if(su.dataset.chave !== chUN){ const at = su.value, U = {};
-    A.itens.forEach(i => { const u = i[0].slice(0,6); if(so.value && u.slice(0,2)!==so.value) return; const o = U[u] || (U[u] = {}); o[i[0]] = (o[i[0]]||0) + (i[4][i[4].length-1]||0); });
+    restaura(so, at1); restaura(sn, at3); so.dataset.ano = curY; }
+  const orgsS = vs('dorg'); const chUN = curY+'|'+orgsS.join(',');
+  if(su.dataset.chave !== chUN){ const at = vs('dun'), U = {};
+    A.itens.forEach(i => { const u = i[0].slice(0,6); if(orgsS.length && !orgsS.includes(u.slice(0,2))) return; const o = U[u] || (U[u] = {}); o[i[0]] = (o[i[0]]||0) + (i[4][i[4].length-1]||0); });
     const us = Object.keys(U).sort();
     const rot = u => nomeUnidade(A, u);
     su.innerHTML = `<option value="">Todas as unidades (${us.length})</option>` + us.map(u => `<option value="${u}">${u} – ${esc(rot(u))}</option>`).join('');
-    su.value = us.includes(at) ? at : ''; su.dataset.chave = chUN; }
-  const chPA = curY+'|'+so.value+'|'+su.value;
-  if(sp.dataset.chave !== chPA){ const at = sp.value;
-    const ps = [...new Set(A.itens.filter(i => (!so.value || i[0].slice(0,2)===so.value) && (!su.value || i[0].slice(0,6)===su.value)).map(i=>i[0]))].sort((a,b)=>{ const x = a.split('.'), y = b.split('.'); return (x[5]).localeCompare(y[5]) || a.localeCompare(b); });
+    restaura(su, at); su.dataset.chave = chUN; }
+  const unsS = vs('dun'); const chPA = curY+'|'+orgsS.join(',')+'|'+unsS.join(',');
+  if(sp.dataset.chave !== chPA){ const at = vs('dpa');
+    const ps = [...new Set(A.itens.filter(i => (!orgsS.length || orgsS.includes(i[0].slice(0,2))) && (!unsS.length || unsS.includes(i[0].slice(0,6)))).map(i=>i[0]))].sort((a,b)=>{ const x = a.split('.'), y = b.split('.'); return (x[5]).localeCompare(y[5]) || a.localeCompare(b); });
     sp.innerHTML = `<option value="">Todos os projetos/atividades (${ps.length})</option>` + ps.map(pr => { const s = pr.split('.'); return `<option value="${pr}">${s[5]} – ${esc(nomeAcao(A,pr))} (${s[0]}.${s[1]})</option>`; }).join('');
-    sp.value = ps.includes(at) ? at : ''; sp.dataset.chave = chPA; }
-  if(COMBO.dpa && document.activeElement!==$('dpaq')) COMBO.dpa.texto();
-  const chave = [curY, so.value, su.value, sp.value, sn.value, [...SELD].sort().join(',')].join('|');
-  if(sx.dataset.chave !== chave){ const at = sx.value;
+    restaura(sp, at); sp.dataset.chave = chPA; }
+    const chave = [curY, orgsS.join(','), unsS.join(','), vs('dpa').join(','), vs('dnat').join(','), [...SELD].sort().join(',')].join('|');
+  if(sx.dataset.chave !== chave){ const at = vs('dfon');
     const fs = [...new Set(A.itens.filter(i => passaD(i,{fonte:true})).map(i=>i[2]))].sort((a,b)=>(+a)-(+b));
     sx.innerHTML = `<option value="">Todas as fontes (${fs.length})</option>` + fs.map(f=>`<option value="${f}">${f} – ${esc(nomeFonte(f))}</option>`).join('');
-    sx.value = fs.includes(at) ? at : ''; sx.dataset.chave = chave; }
-  if(COMBO.dfon && document.activeElement!==$('dfonq')) COMBO.dfon.texto();
-  const ativos = (so.value?1:0) + (su.value?1:0) + (sp.value?1:0) + (sn.value?1:0) + (SELD.size?1:0) + (sx.value?1:0);
+    restaura(sx, at.filter(f => fs.includes(f))); sx.dataset.chave = chave; }
+  textoCombos(['dorg','dun','dpa','dnat','dfon']);
+  const ativos = ['dorg','dun','dpa','dnat','dfon'].filter(id => vs(id).length).length + (SELD.size?1:0);
   $('dlimpa').hidden = !ativos; $('dfsum').textContent = ativos ? `Filtros (${ativos})` : 'Filtros';
 }
-function resumoFiltroD(){ const A = DESP.anos[curY], so = $('dorg').value, su = $('dun').value, sp = $('dpa').value, sn = $('dnat').value, sx = $('dfon').value;
+function resumoFiltroD(){ const A = DESP.anos[curY], so = vs('dorg'), su = vs('dun'), sp = vs('dpa'), sn = vs('dnat'), sx = vs('dfon');
   const gs = DGRP.filter(g=>SELD.has(g[1])).map(g=>g[0]);
-  return [so ? nomeOrg(so) : '', su ? 'unidade '+su : '', sp ? sp.split('.')[5]+' '+nomeAcao(A,sp) : '', sn ? sn+' '+(sn.split('.').length===4 ? nomeEl(A,sn) : sn.split('.').length===3 ? nomeMod(sn.split('.')[2]) : GRP[sn]||CATD[sn]||'') : '', gs.length ? gs.join(' + ') : '', sx ? 'fonte '+sx : ''].filter(Boolean).join(' · '); }
+  const nomeNatD = n => n+' '+(n.split('.').length===4 ? nomeEl(A,n) : n.split('.').length===3 ? nomeMod(n.split('.')[2]) : GRP[n]||CATD[n]||'');
+  return [lista3(so, nomeOrg, 'secretarias'), lista3(su, u => 'unidade '+u, 'unidades'), lista3(sp, x => x.split('.')[5]+' '+nomeAcao(A,x), 'projetos/atividades'),
+    lista3(sn, nomeNatD, 'naturezas'), gs.length ? gs.join(' + ') : '', lista3(sx, f => 'fonte '+f, 'fontes')].filter(Boolean).join(' · '); }
 
 /* totais */
 const zD = () => ({ini:0, atu:new Array(12).fill(0), emp:new Array(12).fill(0), liq:new Array(12).fill(0), pago:new Array(12).fill(0)});
@@ -1270,16 +1298,16 @@ function renderDesp(){
     if(!a && !l) return '';
     return `<button type="button" class="mc" data-p="${g}" aria-pressed="${SELD.has(g)}"><span class="n">${nm}</span><span class="v">${brl(l)}</span><div class="bar" role="img" aria-label="${pct(q)} da dotação"><i style="width:${Math.max(0,Math.min(100,q||0))}%"></i></div><span class="p">${pct(q)} de ${short(a)} de dotação</span></button>`; }).join('');
   document.querySelectorAll('#dagr button').forEach(b => b.setAttribute('aria-pressed', b.dataset.a===agrD));
-  const sn = $('dnat').value; if(agrD==='nat' && sn){ const s = sn.split('.'); for(let i=1;i<=s.length;i++) abertosD.nat.add(s.slice(0,i).join('.')); }
+  const sns = vs('dnat'), sn = sns.length===1 ? sns[0] : ''; if(agrD==='nat' && sn){ const s = sn.split('.'); for(let i=1;i<=s.length;i++) abertosD.nat.add(s.slice(0,i).join('.')); }
   desenharTabD(); desenharMesD(T);
   $('rodape').textContent = `Fontes: "Balancete da despesa" (modelo analítico) do sistema contábil, emitido de janeiro até o fim de cada mês de ${curY}; o valor de cada mês é a diferença entre dois acumulados. Nomes de função e subfunção pela Portaria 42/1999; nomes das secretarias a partir das ações do orçamento. Nomes das fontes de recursos pelos relatórios da receita.`;
 }
 
 /* eventos da despesa */
 COMBO.dfon = fazCombo('dfon', renderDesp);
-['dorg','dun','dnat'].forEach(id => $(id).addEventListener('change', renderDesp));
+COMBO.dorg = fazCombo('dorg', renderDesp); COMBO.dun = fazCombo('dun', renderDesp, 'nenhuma unidade'); COMBO.dnat = fazCombo('dnat', renderDesp);
 COMBO.dpa = fazCombo('dpa', renderDesp, 'nenhum projeto/atividade');
-$('dlimpa').addEventListener('click', () => { SELD.clear(); ['dorg','dun','dpa','dnat','dfon'].forEach(id => $(id).value = ''); $('dun').dataset.chave = ''; $('dfon').dataset.chave = ''; $('dpa').dataset.chave = ''; renderDesp(); });
+$('dlimpa').addEventListener('click', () => { SELD.clear(); ['dorg','dun','dpa','dnat','dfon'].forEach(id => restaura($(id), [])); $('dun').dataset.chave = ''; $('dfon').dataset.chave = ''; $('dpa').dataset.chave = ''; renderDesp(); });
 $('dmini').addEventListener('click', e => { const b = e.target.closest('.mc'); if(!b) return; const p = b.dataset.p, multi = e.ctrlKey || e.metaKey || TOQUE;
   if(multi) SELD.has(p) ? SELD.delete(p) : SELD.add(p); else if(SELD.size===1 && SELD.has(p)) SELD.clear(); else { SELD.clear(); SELD.add(p); } renderDesp(); });
 $('dmodo').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; modoD = b.dataset.modo; saveD(); renderDesp(); });
@@ -1363,15 +1391,15 @@ function renderRxd(){
   const {F, sup} = dadosX(I), todas = Object.values(F).filter(o => o.prev || sumTo(o.arr,n) || sumTo(o.emp,n) || o.atu[n-1]);
   /* filtro de fonte */
   const sx = $('xfon'), chave = curY;
-  if(sx.dataset.chave !== chave){ const at = sx.value, fs = todas.map(o=>o.f).sort((a,b)=>(+a)-(+b));
+  if(sx.dataset.chave !== chave){ const at = vs('xfon'), fs = todas.map(o=>o.f).sort((a,b)=>(+a)-(+b));
     sx.innerHTML = `<option value="">Todas as fontes do exercício (${fs.length})</option>` + fs.map(f=>`<option value="${f}">${f} – ${esc(nomeFonte(f))}</option>`).join('');
-    sx.value = fs.includes(at) ? at : ''; sx.dataset.chave = chave; }
-  if(COMBO.xfon && document.activeElement!==$('xfonq')) COMBO.xfon.texto();
-  const sel = todas.filter(o => !sx.value || o.f===sx.value);
+    restaura(sx, at.filter(f => fs.includes(f))); sx.dataset.chave = chave; }
+  textoCombos(['xfon']); const fx = vs('xfon');
+  const sel = todas.filter(o => !fx.length || fx.includes(o.f));
   const T = {arr:new Array(12).fill(0), emp:new Array(12).fill(0), liq:new Array(12).fill(0), pago:new Array(12).fill(0)};
   sel.forEach(o => { for(let i=0;i<12;i++){ T.arr[i]+=o.arr[i]; T.emp[i]+=o.emp[i]; T.liq[i]+=o.liq[i]; T.pago[i]+=o.pago[i]; } });
   const ar = sumTo(T.arr,m), em = sumTo(T.emp,m), li = sumTo(T.liq,m), pg = sumTo(T.pago,m), sd = ar-li;
-  $('xkt').textContent = 'Resumo ' + (fechado ? `de ${curY}` : `até ${MN[m-1]} de ${curY}`) + (sx.value ? ' · fonte '+sx.value+' – '+nomeFonte(sx.value) : ' · fontes do exercício');
+  $('xkt').textContent = 'Resumo ' + (fechado ? `de ${curY}` : `até ${MN[m-1]} de ${curY}`) + (fx.length===1 ? ' · fonte '+fx[0]+' – '+nomeFonte(fx[0]) : fx.length ? ' · '+fx.length+' fontes' : ' · fontes do exercício');
   const parc = I.parcial && I.parcial<=m ? ` · ${MN[I.parcial-1]} em aberto` : '';
   $('xkpis').innerHTML =
     `<div class="kpi"><span class="label">Arrecadado ${ate}</span><span class="v">${brl(ar)}</span><span class="c">Receita líquida das fontes do exercício${parc}</span></div>`+
