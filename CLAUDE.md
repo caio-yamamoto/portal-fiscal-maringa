@@ -63,6 +63,7 @@ Montar localmente: `bash scripts/atualizar.sh` (gera `site/index.html`). No Wind
 
 ## Layout
 
+- Menu lateral (`aside.side`, azul-marinho) com período, abas, filtros da aba aberta (movidos para `#sidef` pelo JS) e, no pé, Power BI e tema; aplicado em 30/10/2026. Paleta definida no bloco "Menu lateral e paleta de sistema" do `src/portal.html`. Último commit antes do menu lateral: `cb8040b`.
 - Cada aba tem sub-abas (`nav.subtabs` + `data-sub` nas `.sec`; o resumo e os filtros ficam fixos acima). Aplicado em
   29/10/2026. Para voltar ao layout anterior (tudo numa página só), o último commit sem sub-abas é `e0cbe79`
   (o servidor não aceita tags): restaurar `src/portal.html` desse commit e reaplicar as alterações feitas depois.

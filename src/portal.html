@@ -313,10 +313,93 @@ header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
 .combo li[aria-checked="true"] .ck{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .combo li.dica{font-size:.74rem;color:var(--muted);cursor:default;background:none;padding:4px 10px 6px}
 .combo li.dica:hover{background:none}
+
+/* ===================== Menu lateral e paleta de sistema ===================== */
+/* paleta: azul-marinho institucional no menu, azul vivo para ações, fundo cinza-azulado frio */
+:root{--bg:#f2f5f9;--surface:#ffffff;--ink:#0f1b2d;--ink-2:#45556b;--muted:#7a879a;--line:#e2e8f0;--line-2:#ccd6e2;
+  --accent:#2563c9;--accent-soft:#e7effb;--on-accent:#ffffff;--s1:#2563c9;--prev:#b9cdee;--track:#e6ebf2;--mark:#e0951b;
+  --side:#0d2240;--side-2:#14305a;--side-ink:#e8eef8;--side-mut:#9fb2cc;--side-line:rgba(255,255,255,.12)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1220;--surface:#121b2c;--ink:#eef2f8;--ink-2:#b5c1d3;--muted:#8592a6;--line:#223047;--line-2:#31425e;
+  --accent:#6ea2ff;--accent-soft:#1a2b48;--on-accent:#0b1220;--s1:#6ea2ff;--prev:#2f4466;--track:#223047;--mark:#f2b84b;--side:#08111f;--side-2:#12203a}}
+:root[data-theme="dark"]{--bg:#0b1220;--surface:#121b2c;--ink:#eef2f8;--ink-2:#b5c1d3;--muted:#8592a6;--line:#223047;--line-2:#31425e;
+  --accent:#6ea2ff;--accent-soft:#1a2b48;--on-accent:#0b1220;--s1:#6ea2ff;--prev:#2f4466;--track:#223047;--mark:#f2b84b;--side:#08111f;--side-2:#12203a}
+body{background:var(--bg)}
+.app{display:grid;grid-template-columns:288px minmax(0,1fr);min-height:100vh}
+.app>main.wrap{max-width:none;margin:0;padding:28px clamp(16px,3vw,44px) 48px;gap:28px;min-width:0}
+
+/* barra lateral */
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);color:var(--side-ink);padding:22px 16px 28px;display:flex;flex-direction:column;gap:20px;
+  --band:transparent;--band-ink:var(--side-ink);--band-sub:var(--side-mut);--band-line:var(--side-line);--band-on:var(--accent);--band-on-ink:#fff}
+.side header.top{flex-direction:column;align-items:stretch;padding:0;border-radius:0;background:none;gap:16px}
+.side header.top .ente{font-family:var(--display);font-size:1.2rem;font-weight:700;color:#fff;margin:0}
+.side header.top .atu{font-size:.74rem;color:var(--side-mut)}
+.side .controls{flex-direction:column;align-items:stretch;gap:12px}
+.side .ctl{flex-direction:column;align-items:stretch;gap:5px}
+.side .ctl .lbl{color:var(--side-mut);font-size:.66rem}
+.side .seg{display:flex;width:100%;background:transparent;border-color:var(--side-line)}
+.side .seg button+button{border-left-color:var(--side-line)}
+.side .seg button:hover{background:rgba(255,255,255,.08)}
+.side .seg button{flex:1;padding:7px 6px;font-size:.82rem;color:var(--side-ink)}
+.side .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.side #msel{width:100%;background:var(--side-2);color:var(--side-ink);border:1px solid var(--side-line)}
+.side nav.tabs{flex-direction:column;gap:2px;border:0;overflow:visible;padding-top:14px;border-top:1px solid var(--side-line)}
+.side nav.tabs a{border:0;margin:0;padding:10px 12px;border-radius:8px;color:var(--side-mut);font-weight:500;position:relative}
+.side nav.tabs a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.side nav.tabs a.on{color:#fff;background:rgba(255,255,255,.12);font-weight:600}
+.side nav.tabs a.on::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--accent)}
+.side nav.tabs a.ext{margin:10px 0 0;color:#9cc2ff;font-size:.86rem}
+.side-filtros{padding-top:14px;border-top:1px solid var(--side-line)}
+.side-pe{margin-top:auto;padding-top:14px;border-top:1px solid var(--side-line);display:flex;flex-direction:column;gap:12px}
+.side-pe a.ext{color:#9cc2ff;font-size:.86rem;text-decoration:none;padding:0 12px}
+.side-pe a.ext:hover{text-decoration:underline}
+.side-filtros .sgrupo[hidden]{display:none}
+.side .filtros{background:none;border:0;padding:0;gap:12px}
+.side .filtros::before{content:"Filtros";color:#fff;font-size:.72rem}
+.side .frow{grid-template-columns:1fr;gap:12px}
+.side .frow .note,.side .fl>.note{color:var(--side-mut)}
+.side .combo input{background:var(--side-2);color:var(--side-ink);border:1px solid var(--side-line)}
+.side .combo input::placeholder{color:var(--side-mut)}
+.side .combo input.tem{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.side .combo .cx{color:var(--side-mut)}
+.side .combo ul{color:var(--ink)}
+.side .chip{background:transparent;color:var(--side-ink);border-color:var(--side-line);padding:5px 10px;font-size:.78rem}
+.side .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.side .limpar{color:#9cc2ff}
+.side header.top>div:first-child{flex:0 0 auto;display:flex;flex-direction:column;gap:4px}
+.side details.fbox>summary{color:var(--side-ink);border-color:var(--side-line);background:transparent}
+@media (min-width:961px){.side details.fbox>summary{display:none}}
+
+/* área principal: cartões brancos com sombra leve */
+.kpis{gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-left:0;border-radius:12px;padding:14px 16px;box-shadow:0 1px 2px rgba(15,27,45,.05)}
+.kpi.r{box-shadow:inset 3px 0 0 var(--accent),0 1px 2px rgba(15,27,45,.05)}
+.kpi .v{font-size:1.45rem}
+.chart,.tablebox{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px rgba(15,27,45,.05)}
+.chart{padding:10px 12px}
+.prog{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;max-width:none}
+nav.subtabs{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-left:4px solid var(--accent);box-shadow:0 2px 8px rgba(15,27,45,.07);padding:12px 14px}
+nav.subtabs::before{display:inline;content:"Seções desta aba";color:var(--accent)}
+nav.subtabs button{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);font-weight:600}
+nav.subtabs button:hover{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+nav.subtabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 40%,transparent)}
+.mc{border-color:var(--line);box-shadow:0 1px 2px rgba(15,27,45,.05)}
+#exsec .sec-h h2{background:none;padding:0;margin:0}
+.sec-h h2{font-size:1.15rem}
+
+/* telas estreitas: o menu vira faixa no topo */
+@media (max-width:960px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;padding:16px}
+  .side nav.tabs{flex-direction:row;overflow-x:auto;padding-top:10px}
+  .side nav.tabs a{white-space:nowrap}
+  .side nav.tabs a.on::before{left:8px;right:8px;top:auto;bottom:2px;width:auto;height:3px}
+  .side .controls{flex-direction:row;flex-wrap:wrap}
+  .side .ctl{flex:1 1 200px}
+}
 </style>
 
-<div class="wrap">
-  <div class="stick">
+<div class="app">
+  <aside class="side" aria-label="Menu">
   <header class="top">
     <div>
       <!-- nome do portal retirado por enquanto: <h1>Portal de Gestão Orçamentária e Fiscal</h1> -->
@@ -338,7 +421,9 @@ header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
     <a href="#limites" data-nav="limites">Limites legais</a>
     <a class="ext" href="https://app.powerbi.com/view?r=eyJrIjoiYzAxZjU0ZjMtY2MwMS00MDI4LTkzN2UtYTI5YzNjZjU4MmNmIiwidCI6IjkwMjYwOTNlLTNhZTYtNDBmMi1hMWZmLWFlODkxNDNhMDI5MyJ9" target="_blank" rel="noopener noreferrer">Dashboard no Power BI <span aria-hidden="true">↗</span><span class="sr">(abre em nova aba)</span></a>
   </nav>
-  </div>
+  <div class="side-filtros" id="sidef"></div>
+  </aside>
+  <main class="wrap">
 
   <section class="tab" data-sec="receita">
     <details class="fbox" id="fbox" open>
@@ -592,6 +677,7 @@ header.top .seg.tema button{padding:8px 11px;font-size:.82rem}
     <p class="note" id="rodape"></p>
     </details>
   </footer>
+  </main>
 </div>
 
 <script>
@@ -1011,6 +1097,16 @@ let TEMA = 'auto'; try { TEMA = localStorage.getItem('pfc-tema') || 'auto'; } ca
 aplicarTema(TEMA);
 $('tema').addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if(!b) return; TEMA = b.dataset.t; try { localStorage.setItem('pfc-tema', TEMA); } catch(e){} aplicarTema(TEMA); });
 
+
+/* ---------- Menu lateral: filtros da aba aberta ficam na lateral ---------- */
+(function(){ const sf = $('sidef');
+  const grupos = [['receita', $('fbox')], ['despesa', $('dfbox')], ['rxd', document.querySelector('#xcorpo > .filtros')]];
+  grupos.forEach(([aba, el]) => { if(!el) return; const g = document.createElement('div'); g.className = 'sgrupo'; g.dataset.for = aba; g.appendChild(el); sf.appendChild(g); });
+  /* tema e link do Power BI vão para o pé do menu, para os filtros ficarem mais perto do topo */
+  const pe = document.createElement('div'); pe.className = 'side-pe'; const ct = $('tema').closest('.ctl'), ex = document.querySelector('.side nav.tabs a.ext');
+  if(ex) pe.appendChild(ex); if(ct) pe.appendChild(ct); sf.parentNode.appendChild(pe);
+})();
+function syncSide(){ document.querySelectorAll('#sidef .sgrupo').forEach(g => g.hidden = g.dataset.for!==TAB); $('sidef').hidden = !['receita','despesa','rxd'].includes(TAB); }
 /* ---------- Eventos ---------- */
 function alternar(e, p){ const multi = e.ctrlKey || e.metaKey || TOQUE;
   if(!p) SEL.clear(); else if(multi) SEL.has(p) ? SEL.delete(p) : SEL.add(p); else if(SEL.size===1 && SEL.has(p)) SEL.clear(); else { SEL.clear(); SEL.add(p); } }
@@ -1760,8 +1856,7 @@ function refresh(){ $('recorte').hidden = ['divida','limites','metas'].includes(
 function show(){ let k=(location.hash||'#receita').slice(1); if(!document.querySelector('[data-sec="'+k+'"]')) k='receita'; const mudou = TAB!==k; TAB = k;
   document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==k);
   document.querySelectorAll('[data-nav]').forEach(a=>{a.classList.toggle('on',a.dataset.nav===k); a.setAttribute('aria-current',a.dataset.nav===k?'page':'false');});
-  if(mudou && inicial) refresh(); }
+  syncSide(); if(mudou && inicial) refresh(); }
 let inicial = false; addEventListener('hashchange',show); show(); clamp(); inicial = true; refresh();
-const stick = document.querySelector('.stick');
-addEventListener('scroll', () => { const y = window.scrollY; if(y>140) stick.classList.add('compact'); else if(y<10) stick.classList.remove('compact'); }, {passive:true});
+/* no menu lateral não há cabeçalho compacto ao rolar */
 </script>
