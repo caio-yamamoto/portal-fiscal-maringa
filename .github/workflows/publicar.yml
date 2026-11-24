@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -31,10 +31,49 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git add dados/*.json
           git diff --cached --quiet || git commit -m "Atualiza dados e portal [automático]"
+          git pull --rebase origin main || true
           git push
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+
+      # O deploy do GitHub Pages às vezes falha por instabilidade do próprio GitHub
+      # ("No artifacts named github-pages" / "Timeout reached"). Em vez de parar,
+      # espera um pouco, reenvia o site com outro nome e tenta de novo (até 3 vezes).
       - id: deploy
         uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Aguardar antes da 2ª tentativa
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 60
+      - name: Reenviar o site (2ª tentativa)
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+          name: github-pages-2
+      - id: deploy2
+        name: Publicar (2ª tentativa)
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+        with:
+          artifact_name: github-pages-2
+
+      - name: Aguardar antes da 3ª tentativa
+        if: steps.deploy2.outcome == 'failure'
+        run: sleep 120
+      - name: Reenviar o site (3ª tentativa)
+        if: steps.deploy2.outcome == 'failure'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+          name: github-pages-3
+      - id: deploy3
+        name: Publicar (3ª tentativa)
+        if: steps.deploy2.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: github-pages-3
