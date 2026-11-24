@@ -386,6 +386,22 @@ nav.subtabs button[aria-selected="true"]{background:var(--accent);border-color:v
 #exsec .sec-h h2{background:none;padding:0;margin:0}
 .sec-h h2{font-size:1.15rem}
 
+/* ampliar tabela na tela toda */
+.tb-amp{display:flex;justify-content:flex-end;margin-bottom:-14px}
+.tb-amp:has(+ .tablebox[hidden]){display:none}
+.tb-amp button{font:inherit;font-size:.78rem;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--line-2);border-radius:8px;padding:4px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tb-amp button:hover{border-color:var(--accent)}
+.tb-amp button svg{width:13px;height:13px}
+body.amp-on{overflow:hidden}
+body.amp-on::before{content:"";position:fixed;inset:0;background:rgba(8,17,31,.55);z-index:999}
+.tablebox.amp{position:fixed!important;inset:60px 16px 16px;z-index:1000;max-height:none!important;overflow:auto;overscroll-behavior:contain;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.tablebox.amp thead th{position:sticky;top:0;z-index:2;background:var(--surface);box-shadow:inset 0 -1px 0 var(--line-2)}
+.tablebox.amp tr.tot td{position:sticky;bottom:0;z-index:1;background:var(--surface);box-shadow:inset 0 2px 0 var(--line-2)}
+#ampbar{position:fixed;left:0;right:0;top:0;height:60px;padding:0 16px;background:#0d2240;z-index:1001;display:none;align-items:center;justify-content:space-between;gap:12px;color:#fff}
+body.amp-on #ampbar{display:flex}
+#ampbar b{font-family:var(--display);font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ampbar button{font:inherit;font-weight:600;font-size:.86rem;background:#fff;color:#0d2240;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;flex:none}
+
 /* telas estreitas: o menu vira faixa no topo */
 @media (max-width:960px){
   .app{grid-template-columns:1fr}
@@ -1859,4 +1875,42 @@ function show(){ let k=(location.hash||'#receita').slice(1); if(!document.queryS
   syncSide(); if(mudou && inicial) refresh(); }
 let inicial = false; addEventListener('hashchange',show); show(); clamp(); inicial = true; refresh();
 /* no menu lateral não há cabeçalho compacto ao rolar */
+/* botão "Ampliar" em todas as tabelas: mostra a tabela na tela toda (Esc ou "Fechar" volta) */
+{
+  const ICO = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2h4v4M6 14H2v-4M14 2 9.5 6.5M2 14l4.5-4.5"/></svg>';
+  const bar = document.createElement('div'); bar.id = 'ampbar';
+  bar.innerHTML = '<b></b><button type="button">Fechar ✕</button>'; document.body.appendChild(bar);
+  const titulo = tb => {
+    for(let e = tb; e && e !== document.body; e = e.parentElement)
+      for(let p = e.previousElementSibling; p; p = p.previousElementSibling){
+        const h = p.matches('h2,h3') ? p : [...p.querySelectorAll('h2,h3')].pop();
+        if(h){ const c = h.cloneNode(true); c.querySelectorAll('button,[role=button]').forEach(x => x.remove()); const t = c.textContent.replace(/\s+/g,' ').trim(); if(t) return t; }
+      }
+    return '';
+  };
+  let aberto = null;
+  const fechar = () => { if(aberto) aberto.classList.remove('amp'); aberto = null; document.body.classList.remove('amp-on'); };
+  const abrir = tb => { fechar(); aberto = tb; tb.classList.add('amp'); tb.scrollTop = 0; bar.querySelector('b').textContent = titulo(tb); document.body.classList.add('amp-on'); bar.querySelector('button').focus(); };
+  bar.querySelector('button').addEventListener('click', fechar);
+  addEventListener('keydown', e => { if(e.key === 'Escape' && aberto) fechar(); });
+  addEventListener('hashchange', fechar);
+  const chave = tb => tb.dataset.id || (tb.querySelector('table[id]') || {}).id || tb.id || '';
+  const marcar = () => {
+    if(aberto && !aberto.isConnected){ /* a tabela foi redesenhada (ordenação, filtro): continua ampliada */
+      const k = chave(aberto), novo = k && [...document.querySelectorAll('.tablebox')].find(t => chave(t) === k && t.offsetParent !== null);
+      if(novo){ aberto = novo; novo.classList.add('amp'); } else fechar();
+    }
+    document.querySelectorAll('.tablebox:not([data-amp])').forEach(tb => {
+      tb.dataset.amp = '1';
+      if(tb.closest('dialog')) return;
+      const d = document.createElement('div'); d.className = 'tb-amp';
+      d.innerHTML = `<button type="button" title="Mostrar a tabela na tela toda">${ICO}Ampliar</button>`;
+      d.firstChild.addEventListener('click', () => abrir(tb));
+      tb.before(d);
+    });
+  };
+  let pend = false;
+  new MutationObserver(() => { if(!pend){ pend = true; requestAnimationFrame(() => { pend = false; marcar(); }); } }).observe(document.body, {childList:true, subtree:true});
+  marcar();
+}
 </script>
