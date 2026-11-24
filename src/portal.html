@@ -571,7 +571,7 @@ body.amp-on #ampbar{display:flex}
     </div>
     <div class="sec" data-sub="fonte">
       <div class="sec-h"><h2>Por fonte de recursos</h2><button type="button" class="info" data-tip="Clique no título de uma coluna para ordenar; clique de novo para inverter a ordem. Clique em uma fonte para ver as receitas que entraram nela e os grupos de despesa pagos com ela. Destaque amarelo (▲ no empenhado): empenhado acima do arrecadado. Destaque vermelho (▼ no saldo): liquidado acima do arrecadado, o caso mais grave. Ordene pelo Empenhado ou pelo Saldo para agrupar essas fontes." aria-label="Sobre a tabela por fonte">i</button>
-        <div class="right"><button type="button" class="btn" id="xmais" aria-pressed="false">Mais colunas</button></div></div>
+        <div class="right"><div class="seg2" id="xdest" role="group" aria-label="Mostrar fontes"></div><button type="button" class="btn" id="xmais" aria-pressed="false">Mais colunas</button></div></div>
       <div class="tablebox rolagem"><table class="clean tree" id="xtab"></table></div>
     </div>
     </div>
@@ -1436,7 +1436,7 @@ if(window.matchMedia && matchMedia('(max-width:720px)').matches) $('dfbox').open
 /* ===================== FIM DA ABA DESPESA ===================== */
 
 /* ===================== ABA RECEITA × DESPESA ===================== */
-let curMX = null, modoX = 'mensal', ordX = {k:'ar', d:-1}; const abertosX = new Set();
+let curMX = null, modoX = 'mensal', ordX = {k:'ar', d:-1}, destX = 'todas'; const abertosX = new Set();
 try { curMX = ESC.mx; const md = localStorage.getItem('pfc-modox'); if(md==='mensal'||md==='acumulado') modoX = md; } catch(e){}
 const saveX = () => { try { localStorage.setItem('pfc-modox', modoX); } catch(e){} };
 const fonteDoExercicio = f => f!=='99999' && !fonteExerc(f) && !FONTE_FIXA[f];
@@ -1531,7 +1531,13 @@ function renderRxd(){
 }
 function desenharTabX(I, sel, m){
   const mais = $('xmais').getAttribute('aria-pressed')==='true', x = mais ? '' : ' hidden';
-  const L = sel.map(o => ({o, ar:sumTo(o.arr,m), em:sumTo(o.emp,m), li:sumTo(o.liq,m), pg:sumTo(o.pago,m), atu:o.atu[m-1]}));
+  const L0 = sel.map(o => ({o, ar:sumTo(o.arr,m), em:sumTo(o.emp,m), li:sumTo(o.liq,m), pg:sumTo(o.pago,m), atu:o.atu[m-1]}));
+  /* destaque: vermelho = liquidado acima do arrecadado; amarelo = só o empenhado acima do arrecadado */
+  const dst = z => z.ar-z.li < -0.5 ? 'verm' : z.em > z.ar+0.5 ? 'amar' : '';
+  const nD = {todas:L0.length, dest:L0.filter(z=>dst(z)).length, amar:L0.filter(z=>dst(z)==='amar').length, verm:L0.filter(z=>dst(z)==='verm').length};
+  $('xdest').innerHTML = [['todas','Todas'],['dest','Destacadas'],['amar','▲ Amarelas'],['verm','▼ Vermelhas']].map(([k,t]) =>
+    `<button type="button" data-d="${k}" aria-pressed="${destX===k}" title="${{todas:'Todas as fontes',dest:'Fontes em amarelo ou vermelho',amar:'Empenhado acima do arrecadado (liquidado ainda dentro do arrecadado)',verm:'Liquidado acima do arrecadado'}[k]}">${t} (${nD[k]})</button>`).join('');
+  const L = L0.filter(z => destX==='todas' || (destX==='dest' ? dst(z) : dst(z)===destX));
   const val = {f:z=>+z.o.f, nm:z=>nomeFonte(z.o.f), ar:z=>z.ar, em:z=>z.em, li:z=>z.li, pg:z=>z.pg, sd:z=>z.ar-z.li, pl:z=>z.ar ? z.li/z.ar : (z.li ? Infinity : -Infinity), pv:z=>z.o.prev, at:z=>z.atu, se:z=>z.ar-z.em}[ordX.k];
   L.sort((a,b) => { const va = val(a), vb = val(b); const c = typeof va==='string' ? va.localeCompare(vb,'pt-BR') : (va>vb) - (va<vb); return c*ordX.d || (+a.o.f)-(+b.o.f); });
   const th = (k, txt, cls) => { const on = ordX.k===k; return `<th class="${cls||''}"${cls&&cls.includes('xtra')?x:''} aria-sort="${on?(ordX.d>0?'ascending':'descending'):'none'}"><button type="button" class="srt${on?' on':''}" data-s="${k}">${txt}<span aria-hidden="true">${on?(ordX.d>0?' ▲':' ▼'):' ↕'}</span></button></th>`; };
@@ -1549,11 +1555,12 @@ function desenharTabX(I, sel, m){
     out.push(gs.length ? gs.map(v => `<tr><td class="cod">${v.g}</td><td class="nm" style="padding-left:44px">${esc(GRP[v.g]||'Grupo '+v.g)}</td><td></td><td>${brl(v.em)}</td><td>${brl(v.li)}</td><td>${brl(v.pg)}</td><td></td><td></td><td class="xtra"${x}></td><td class="xtra"${x}></td><td class="xtra"${x}></td></tr>`).join('') : `<tr><td></td><td class="nm note" style="padding-left:44px">Sem despesa no período</td><td colspan="9"></td></tr>`);
   });
   $('xtab').innerHTML = `<thead><tr>${th('f','Fonte','cod')}${th('nm','Nome','nm')}${th('ar','Arrecadado')}${th('em','Empenhado')}${th('li','Liquidado')}${th('pg','Pago')}${th('sd','Saldo (arrec. − liq.)')}${th('pl','% liquidado')}${th('pv','Receita prevista no ano','xtra')}${th('at','Dotação atualizada','xtra')}${th('se','Arrecadado − empenhado','xtra')}</tr></thead><tbody>` +
-    (out.length ? out.join('') : '<tr><td colspan="11">Nenhuma fonte.</td></tr>') +
+    (out.length ? out.join('') : `<tr><td colspan="11">${destX==='todas' ? 'Nenhuma fonte.' : 'Nenhuma fonte com esse destaque no período.'}</td></tr>`) +
     `<tr class="tot"><td></td><td>Total</td><td>${brl(t.ar)}</td><td>${brl(t.em)}</td><td>${brl(t.li)}</td><td>${brl(t.pg)}</td><td>${signed(brl(t.ar-t.li))}</td><td>${pct(ratio(t.li,t.ar))}</td><td class="xtra"${x}>${brl(t.prev)}</td><td class="xtra"${x}>${brl(t.atu)}</td><td class="xtra"${x}>${signed(brl(t.ar-t.em))}</td></tr></tbody>`;
 }
 COMBO.xfon = fazCombo('xfon', renderRxd);
 $('xmodo').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; modoX = b.dataset.modo; saveX(); renderRxd(); });
+$('xdest').addEventListener('click', e => { const b = e.target.closest('button[data-d]'); if(!b) return; destX = b.dataset.d; renderRxd(); });
 $('xmais').addEventListener('click', () => { const b = $('xmais'); b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')!=='true'); renderRxd(); });
 $('xtab').addEventListener('click', e => { const b = e.target.closest('button.srt'); if(!b) return; const k = b.dataset.s; if(ordX.k===k) ordX.d = -ordX.d; else ordX = {k, d: (k==='f'||k==='nm') ? 1 : -1}; renderRxd(); const nb = document.querySelector(`#xtab button.srt[data-s="${k}"]`); if(nb) nb.focus(); });
 $('xtab').addEventListener('click', e => { const b = e.target.closest('button.tg'); if(!b) return; const k = b.dataset.k; abertosX.has(k) ? abertosX.delete(k) : abertosX.add(k); renderRxd(); });
