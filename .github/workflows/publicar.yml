@@ -37,6 +37,10 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+      # O GitHub às vezes ainda não "enxerga" o site enviado logo em seguida
+      # ("Found 0 artifact(s)"): espera um pouco antes de publicar.
+      - name: Aguardar o envio ser registrado
+        run: sleep 30
 
       # O deploy do GitHub Pages às vezes falha por instabilidade do próprio GitHub
       # ("No artifacts named github-pages" / "Timeout reached"). Em vez de parar,
@@ -54,6 +58,9 @@ jobs:
         with:
           path: site
           name: github-pages-2
+      - name: Aguardar o envio ser registrado (2ª tentativa)
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 30
       - id: deploy2
         name: Publicar (2ª tentativa)
         if: steps.deploy.outcome == 'failure'
@@ -71,6 +78,9 @@ jobs:
         with:
           path: site
           name: github-pages-3
+      - name: Aguardar o envio ser registrado (3ª tentativa)
+        if: steps.deploy2.outcome == 'failure'
+        run: sleep 30
       - id: deploy3
         name: Publicar (3ª tentativa)
         if: steps.deploy2.outcome == 'failure'
